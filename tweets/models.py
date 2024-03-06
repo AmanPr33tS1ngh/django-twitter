@@ -5,7 +5,7 @@ from user.models import UserProfile
 class Tweet(models.Model):
     parent = models.ForeignKey("self", null=True, on_delete=models.SET_NULL) # tweets on our tweet(threads)
     content = models.TextField(blank=True, null=True, default=None)
-    user = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(UserProfile, related_name='tweet_user', blank=True)
     

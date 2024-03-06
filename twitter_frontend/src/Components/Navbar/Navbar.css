@@ -1,0 +1,14 @@
+.home-nav {
+  display: grid;
+  grid-template-columns: auto auto;
+  text-align: center;
+}
+.font-bold {
+  font-weight: bold;
+}
+.active {
+  color: black;
+}
+.de-active {
+  color: rgb(118, 102, 102);
+}

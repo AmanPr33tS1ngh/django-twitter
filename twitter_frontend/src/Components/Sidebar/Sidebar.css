@@ -1,0 +1,28 @@
+.side-bar {
+  display: grid;
+  grid-template-columns: 15% 85%;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.m-5 {
+  margin-left: 10px;
+}
+
+.mpt-0 {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.post {
+  background-color: rgb(29, 155, 240);
+  color: white;
+  padding: 5px;
+  border-radius: 25px;
+  display: block;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 500;
+  margin: auto;
+  width: 75%;
+}

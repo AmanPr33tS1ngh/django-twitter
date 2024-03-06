@@ -4,14 +4,15 @@ from rest_framework.views import APIView
 from .models import Tweet
 from django.core import serializers
 from user.models import UserProfile
+from .serializers import TweetSerializer
 
 # Views
 class GetTweets(APIView):
     def get(self, request, *args, **kwargs):
         try:
-            tweet = Tweet.objects.filter()
-            print(tweet)
-            return JsonResponse({'success': True, 'tweet': serializers.serialize('json', tweet)})
+            tweets = Tweet.objects.filter()
+            print(tweets)
+            return JsonResponse({'success': True, 'tweets': TweetSerializer(tweets, many=True).data})
         except Exception as e:
             print('error while getting tweets', str(e))
             return JsonResponse({'success': False, "msg": str(e)})
@@ -20,7 +21,9 @@ class GetTweets(APIView):
         try:
             user = request.user
             if user.is_anonymous:
-                user = UserProfile.objects.filter(user__username='amanpreet').first()
+                username = request.data.get("username")
+                print('username', request.data)
+                user = UserProfile.objects.filter(user__username=username).first()
             if not user:
                 return JsonResponse({'success': False, 'msg': 'user not found!'})
             content = request.data.get('content')
