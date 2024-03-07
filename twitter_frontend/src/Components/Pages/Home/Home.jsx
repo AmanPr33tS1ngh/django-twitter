@@ -27,7 +27,7 @@ const Home = () => {
       {tweets.map((tweet) => (
         <Post
           content={tweet.content}
-          username={tweet.user_profile?.username}
+          username={tweet.user?.username}
           timestamp={tweet.post_duration}
         />
       ))}

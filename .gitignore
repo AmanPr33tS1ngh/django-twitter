@@ -17,5 +17,6 @@ twitter_frontend/node_modules/.*
 .vscode/
 *.pyc
 node_modules/
+db.sqlite3
 \
 .run/Unnamed.run.xml

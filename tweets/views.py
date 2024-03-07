@@ -1,9 +1,7 @@
-from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from .models import Tweet
-from django.core import serializers
-from user.models import UserProfile
+from user.models import User
 from .serializers import TweetSerializer
 
 # Views
@@ -23,7 +21,7 @@ class GetTweets(APIView):
             if user.is_anonymous:
                 username = request.data.get("username")
                 print('username', request.data)
-                user = UserProfile.objects.filter(user__username=username).first()
+                user = User.objects.filter(username=username).first()
             if not user:
                 return JsonResponse({'success': False, 'msg': 'user not found!'})
             content = request.data.get('content')

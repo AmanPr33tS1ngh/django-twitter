@@ -1,17 +1,17 @@
 
 from rest_framework import serializers
 from .models import *
-from user.serializers import UserProfileSerializer
+from user.serializers import UserSerializer
 from datetime import datetime
-from django.utils import timezone, timesince
+from django.utils import timezone
 
 class TweetSerializer(serializers.ModelSerializer):
-    user_profile = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
     post_duration = serializers.SerializerMethodField()
     like_count = serializers.SerializerMethodField()
     
-    def get_user_profile(self, obj):
-        return UserProfileSerializer(obj.user).data
+    def get_user(self, obj):
+        return UserSerializer(obj.user).data
     
     def get_like_count(self, obj):
         return obj.likes.count()
@@ -38,4 +38,4 @@ class TweetSerializer(serializers.ModelSerializer):
             
     class Meta:
         model = Tweet
-        fields = ("content", "user_profile", "post_duration", "like_count")
+        fields = ("content", "user", "post_duration", "like_count")

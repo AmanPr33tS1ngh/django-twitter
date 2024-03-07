@@ -1,11 +1,10 @@
 from django.db import models
-from django.contrib.auth import get_user_model
 # Create your models here.
+# from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 
-user = get_user_model()
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(user, related_name="user", on_delete=models.CASCADE)
+class User(User):
     banner = models.ImageField(upload_to="user_banner/", default='user_banner.jpg')
     profile_picture = models.ImageField(upload_to="user_banner/", default='user_banner.jpg')
     joining_date = models.DateTimeField(auto_now_add=True, null=True)
@@ -15,4 +14,4 @@ class UserProfile(models.Model):
     is_verified = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return super().__str__() + " -> " + self.user.username
+        return super().__str__() + " -> " + self.username
