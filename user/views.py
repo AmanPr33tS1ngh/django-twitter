@@ -91,7 +91,7 @@ class SignIn(APIView):
 
             
           
-class SignOut(APIView):
+class LogOut(APIView):
     def post(self, request, *args, **kwargs):
         try:
             logout(request)

@@ -1,5 +1,11 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 import "./App.css";
 import Navbar from "./Components/Navbar/Navbar";
 import Home from "./Components/Pages/Home/Home";
@@ -18,7 +24,6 @@ import { useSelector } from "react-redux";
 
 function App() {
   const { isAuthenticated } = useSelector((state) => state.reducer);
-  console.log("isAuthenticated", isAuthenticated);
   return (
     <div className={`${isAuthenticated ? "d-grid px-12 py-4" : ""} h-screen`}>
       <BrowserRouter>
