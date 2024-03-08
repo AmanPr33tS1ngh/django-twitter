@@ -3,15 +3,11 @@ import {
   BrowserRouter,
   Routes,
   Route,
-  Navigate,
-  useNavigate,
 } from "react-router-dom";
 import "./App.css";
-import Navbar from "./Components/Navbar/Navbar";
 import Home from "./Components/Pages/Home/Home";
 import SignUp from "./Components/Pages/SignUp/SignUp";
 import SignIn from "./Components/Pages/SignIn/SignIn";
-import Sidebar from "./Components/Sidebar/Sidebar";
 import Trending from "./Components/Pages/Trending/Trending";
 import Profile from "./Components/Pages/Profile/Profile";
 import Explore from "./Components/Pages/Explore/Explore";
@@ -28,7 +24,6 @@ function App() {
     <div className={`${isAuthenticated ? "d-grid px-12 py-4" : ""} h-screen`}>
       <BrowserRouter>
         <AuthProvider>
-          {isAuthenticated ? <Sidebar /> : null}
           <Routes>
             <Route exact path="/" element={<AuthRoute element={<Home />} />} />
             <Route
@@ -69,7 +64,6 @@ function App() {
               element={<AuthRoute element={<Messages />} />}
             />
           </Routes>
-          {isAuthenticated ? <Trending /> : null}
         </AuthProvider>
       </BrowserRouter>
     </div>

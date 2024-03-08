@@ -3,7 +3,7 @@ import "./SignUp.css";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../../ReUsableComponents/Input/Input";
 import axios from "axios";
-import { LOGIN } from "../../Redux/AuthTypes/AuthTypes";
+import { LOGIN } from "../../Redux/ActionTypes/ActionTypes";
 import { useDispatch } from "react-redux";
 
 const SignUp = () => {
@@ -19,11 +19,8 @@ const SignUp = () => {
   });
   const handleSignUp = () => {
     let endpoint = "http://127.0.0.1:8000/users/sign_up/";
-    console.log("endpoint", endpoint);
-    let data = credentials;
-    axios.post(endpoint, data).then((res) => {
+    axios.post(endpoint, credentials).then((res) => {
       const responseData = res.data;
-      console.log("SignUp", "responseData", responseData);
       if (responseData.success) {
         dispatch({
           type: LOGIN,

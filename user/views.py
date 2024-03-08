@@ -6,6 +6,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from .serializers import UserSerializer
 # Create your views here.
+from rest_framework import permissions
+from rest_framework.authentication import SessionAuthentication
 
 class UserAPI(APIView):
     def post(self, request, *args, **kwargs):
@@ -24,8 +26,9 @@ class UserAPI(APIView):
             print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
-          
+
 class SignUp(APIView):
+    permission_classes = (permissions.AllowAny, )
     def post(self, request, *args, **kwargs):
         try:
             user = request.user
@@ -60,15 +63,18 @@ class SignUp(APIView):
             if user:
                 login(request, user)
                 return JsonResponse({'success': True, 'msg': "User Created", user: UserSerializer(user).data})
-            
+
             return JsonResponse({'success': False, 'msg': "Failed to authenticate user."})
-            
+
         except Exception as e:
             print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
-            
+
 class SignIn(APIView):
+    permission_classes = (permissions.AllowAny, )
+    authentication_classes = (SessionAuthentication, )
+
     def post(self, request, *args, **kwargs):
         try:
             user = request.user
@@ -89,8 +95,8 @@ class SignIn(APIView):
             print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
-            
-          
+
+
 class LogOut(APIView):
     def post(self, request, *args, **kwargs):
         try:
@@ -100,4 +106,3 @@ class LogOut(APIView):
             print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
-            

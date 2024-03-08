@@ -1,4 +1,4 @@
-import * as AuthType from "../AuthTypes/AuthTypes";
+import * as ActionTypes from "../ActionTypes/ActionTypes";
 
 const initialState = {
   isAuthenticated: false,
@@ -6,12 +6,12 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case AuthType.LOGIN:
+    case ActionTypes.LOGIN:
       return {
         ...state,
         isAuthenticated: true,
       };
-    case AuthType.LOGOUT:
+    case ActionTypes.LOGOUT:
       return {
         ...state,
         isAuthenticated: false,

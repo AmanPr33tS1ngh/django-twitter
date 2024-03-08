@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, {useContext, useState} from "react";
 import "./SignIn.css";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../../ReUsableComponents/Input/Input";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { LOGIN } from "../../Redux/AuthTypes/AuthTypes";
+import { LOGIN } from "../../Redux/ActionTypes/ActionTypes";
+import AuthContext from "../../Authentication/AuthProvider";
 
 const SignIn = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const {loginUser} = useContext(AuthContext);
 
   const [user, setUser] = useState({
     username: "",
@@ -18,24 +18,6 @@ const SignIn = () => {
     setUser({
       ...user,
       [e.target.name]: e.target.value,
-    });
-  };
-  const handleSignIn = () => {
-    let endpoint = "http://127.0.0.1:8000/users/sign_in/";
-    console.log("endpoint", endpoint);
-    let data = user;
-    axios.post(endpoint, data).then((res) => {
-      const responseData = res.data;
-      if (responseData.success) {
-        dispatch({
-          type: LOGIN,
-          payload: {
-            authenticated: true,
-          },
-        });
-        navigate("/");
-      }
-      console.log("SignIn", "responseData", responseData);
     });
   };
   return (
@@ -60,7 +42,7 @@ const SignIn = () => {
               disabled={!user.username || !user.password}
               className={`bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded 
               disabled:bg-gray-300 disabled:cursor-not-allowed button block m-auto	`}
-              onClick={handleSignIn}
+              onClick={()=>loginUser(user)}
             >
               Sign In
             </button>

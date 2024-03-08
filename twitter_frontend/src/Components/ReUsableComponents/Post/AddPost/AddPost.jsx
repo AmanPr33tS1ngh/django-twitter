@@ -18,11 +18,9 @@ const AddPost = () => {
 
   const addPost = () => {
     let endpoint = "http://127.0.0.1:8000/tweets/tweet_api/";
-    console.log("endpoint", post);
     let data = post;
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
-      console.log(responseData);
     });
   };
   const closeAddPostModal = () => {

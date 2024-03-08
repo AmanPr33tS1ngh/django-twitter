@@ -1,10 +1,9 @@
 from django.db import models
 # Create your models here.
-# from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
 
-class User(User):
+class User(AbstractUser):
     banner = models.ImageField(upload_to="user_banner/", default='user_banner.jpg')
     profile_picture = models.ImageField(upload_to="user_banner/", default='user_banner.jpg')
     joining_date = models.DateTimeField(auto_now_add=True, null=True)

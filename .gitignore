@@ -4,6 +4,7 @@
 .run
 *.7z
 .idea/
+.idea/*
 .DS_Store
 .idea
 */migrations/
