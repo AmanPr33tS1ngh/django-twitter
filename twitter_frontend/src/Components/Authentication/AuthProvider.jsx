@@ -1,6 +1,8 @@
 import { createContext, useState, useEffect } from 'react'
 import {jwtDecode} from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import {LOGIN, LOGOUT} from "../Redux/ActionTypes/ActionTypes";
 
 const AuthContext = createContext();
 export const AuthProvider = ({children}) => {
@@ -9,6 +11,8 @@ export const AuthProvider = ({children}) => {
     let [loading, setLoading] = useState(true)
 
     const navigate = useNavigate();
+      const dispatch = useDispatch();
+
     let loginUser = async (user )=> {
         let response = await fetch('http://127.0.0.1:8000/users/api/token/', {
             method:'POST',
@@ -23,7 +27,12 @@ export const AuthProvider = ({children}) => {
             setAuthTokens(data)
             setUser(jwtDecode(data.access))
             localStorage.setItem('authTokens', JSON.stringify(data))
-
+            dispatch({
+              type: LOGIN,
+              payload: {
+                authenticated: true,
+              },
+            });
             navigate('/');
         }else{
             alert('Something went wrong!')
@@ -35,6 +44,12 @@ export const AuthProvider = ({children}) => {
         setAuthTokens(null)
         setUser(null)
         localStorage.removeItem('authTokens')
+        dispatch({
+          type: LOGOUT,
+          payload: {
+            authenticated: false,
+          },
+        });
         navigate('/sign_in')
     }
 

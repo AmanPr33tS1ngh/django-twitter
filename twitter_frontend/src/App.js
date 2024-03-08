@@ -50,6 +50,11 @@ function App() {
             />
             <Route
               exact
+              path="/explore/tabs/:tab"
+              element={<AuthRoute element={<Explore />} />}
+            />
+            <Route
+              exact
               path="/bookmarks"
               element={<AuthRoute element={<Bookmarks />} />}
             />
