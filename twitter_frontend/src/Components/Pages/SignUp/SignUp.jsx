@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "./SignUp.css";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../../ReUsableComponents/Input/Input";
 import axios from "axios";
 import { LOGIN } from "../../Redux/ActionTypes/ActionTypes";
 import { useDispatch } from "react-redux";
-
+import AuthContext from "../../Authentication/AuthProvider";
 const SignUp = () => {
+  const { signUp } = useContext(AuthContext);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
@@ -17,21 +19,7 @@ const SignUp = () => {
     verifyPassword: "",
     email: "",
   });
-  const handleSignUp = () => {
-    let endpoint = "http://127.0.0.1:8000/users/sign_up/";
-    axios.post(endpoint, credentials).then((res) => {
-      const responseData = res.data;
-      if (responseData.success) {
-        dispatch({
-          type: LOGIN,
-          payload: {
-            authenticated: true,
-          },
-        });
-        navigate("/");
-      }
-    });
-  };
+
   const handleChange = (e) => {
     setCredentials({
       ...credentials,
@@ -79,7 +67,7 @@ const SignUp = () => {
           placeholder={"Verify Password..."}
         />
         <div>
-          <button className="button" onClick={handleSignUp}>
+          <button className="button" onClick={() => signUp(credentials)}>
             Sign Up
           </button>
         </div>

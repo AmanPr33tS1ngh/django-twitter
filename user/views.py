@@ -8,6 +8,26 @@ from .serializers import UserSerializer
 # Create your views here.
 from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.views.decorators.csrf import csrf_exempt
+
+
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        token['name'] = user.username
+
+        return token
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
 
 class UserAPI(APIView):
     def post(self, request, *args, **kwargs):
@@ -25,7 +45,6 @@ class UserAPI(APIView):
         except Exception as e:
             print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
-
 
 class SignUp(APIView):
     permission_classes = (permissions.AllowAny, )
@@ -58,18 +77,25 @@ class SignUp(APIView):
                 email=email
             )
 
-            authenticate(request, username=username, password=password)
-            print(user)
-            if user:
-                login(request, user)
-                return JsonResponse({'success': True, 'msg': "User Created", user: UserSerializer(user).data})
+            authenticated_user = authenticate(request, username=username, password=password)
+            
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            
+            token_serializer = MyTokenObtainPairSerializer(data={'username': user.username, 'password': password})
+            token_serializer.is_valid(raise_exception=True)
+            print("auth", user)
+            
+            if authenticated_user:
+                login(request, authenticated_user)
+                return JsonResponse({'success': True, 'msg': "User Created", "user": UserSerializer(user).data, 
+                                     "token": {'access_token': access_token, 'refresh_token': str(refresh)}})
 
             return JsonResponse({'success': False, 'msg': "Failed to authenticate user."})
 
         except Exception as e:
             print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
-
 
 class SignIn(APIView):
     permission_classes = (permissions.AllowAny, )

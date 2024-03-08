@@ -71,6 +71,7 @@ const Sidebar = () => {
         <Link className="post" to={"/compose/post"}>
           Post
         </Link>
+        <button></button>
       </nav>
     </aside>
   );

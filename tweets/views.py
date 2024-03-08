@@ -2,7 +2,8 @@ from django.http import JsonResponse
 from rest_framework.views import APIView
 from .models import Tweet
 from user.models import User
-from .serializers import TweetSerializer
+from .serializers import TweetSerializer, TweetLabelValueSerializer
+from user.serializers import UserLabelValueSerializer
 
 # Views
 class GetTweets(APIView):
@@ -40,3 +41,24 @@ class GetTweets(APIView):
             print('error while creating tweet', str(e))
             return JsonResponse({'success': False, "msg": str(e)})
         
+
+class GetMatchingTweets(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            user = request.user
+            # if user.is_anonymous:
+                # return JsonResponse({'success': False, 'msg': 'You need to authenticate first to search!'})
+            input_val = request.data.get('input_val')
+            if not input_val:
+                return JsonResponse({'success': True, 'results': list()})
+
+            tweets = Tweet.objects.filter(content__icontains=input_val)[:5]
+            result = TweetLabelValueSerializer(tweets, many=True).data
+            
+            users = User.objects.filter(username__icontains=input_val)[:5]
+            matching_users = UserLabelValueSerializer(users, many=True).data
+            print(matching_users)
+            return JsonResponse({'success': True, 'msg': 'new tweet', 'results': result, "users": matching_users})
+        except Exception as e:
+            print('error while creating tweet', str(e))
+            return JsonResponse({'success': False, "msg": str(e)})

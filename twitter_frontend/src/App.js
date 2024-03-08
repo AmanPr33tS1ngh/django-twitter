@@ -1,9 +1,5 @@
-import React from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-} from "react-router-dom";
+import React, { useContext } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
 import Home from "./Components/Pages/Home/Home";
 import SignUp from "./Components/Pages/SignUp/SignUp";
@@ -16,16 +12,19 @@ import Notifications from "./Components/Pages/Notifications/Notifications";
 import Messages from "./Components/Pages/Messages/Messages";
 import { AuthProvider } from "./Components/Authentication/AuthProvider";
 import AuthRoute from "./Components/Authentication/AuthRoute";
-import { useSelector } from "react-redux";
 
 function App() {
-  const { isAuthenticated } = useSelector((state) => state.reducer);
   return (
-    <div className={`${isAuthenticated ? "d-grid px-12 py-4" : ""} h-screen`}>
+    <div>
       <BrowserRouter>
         <AuthProvider>
           <Routes>
             <Route exact path="/" element={<AuthRoute element={<Home />} />} />
+            <Route
+              exact
+              path="/:profile"
+              element={<AuthRoute element={<Profile />} />}
+            />
             <Route
               path="/compose/post/"
               exact
@@ -46,6 +45,11 @@ function App() {
             <Route
               exact
               path="/explore"
+              element={<AuthRoute element={<Explore />} />}
+            />
+            <Route
+              exact
+              path="/explore/:search"
               element={<AuthRoute element={<Explore />} />}
             />
             <Route

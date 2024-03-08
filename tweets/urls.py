@@ -3,6 +3,7 @@ from .views import *
 from twitter import settings
 url_patterns = [
     path('tweet_api/', GetTweets.as_view(), name='get_tweets'),
+    path('get_matching_tweets/', GetMatchingTweets.as_view(), name="get_matching_tweets")
 ]
 
 if settings.DEBUG:

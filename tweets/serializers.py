@@ -39,3 +39,18 @@ class TweetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tweet
         fields = ("content", "user", "post_duration", "like_count")
+
+
+class TweetLabelValueSerializer(serializers.ModelSerializer):
+    label = serializers.SerializerMethodField()
+    value = serializers.SerializerMethodField()
+    
+    def get_label(self, obj):
+        return str(obj.content)
+    
+    def get_value(self, obj):
+        return obj.id
+    
+    class Meta:
+        model = Tweet
+        fields = ("label", "value", )

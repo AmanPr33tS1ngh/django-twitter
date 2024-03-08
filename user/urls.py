@@ -2,7 +2,6 @@ from django.urls import path
 from .views import *
 from twitter import settings
 from rest_framework_simplejwt.views import TokenRefreshView
-from .serializers import MyTokenObtainPairView
 
 url_patterns = [
     path('user_api/', UserAPI.as_view(), name='users'),
