@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from .models import User
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
-from .serializers import UserSerializer
+from .serializers import UserSerializer, UserProfileSerializer
 # Create your views here.
 from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication
@@ -127,7 +127,24 @@ class LogOut(APIView):
     def post(self, request, *args, **kwargs):
         try:
             logout(request)
-            return JsonResponse({'success': True, 'msg': "Couldn't signin due to an error. Please try again later"})
+            return JsonResponse({'success': True, 'msg': "Logged out!"})
+        except Exception as e:
+            print('err while creating user', str(e))
+            return JsonResponse({'success': False, 'msg': "err: " + str(e)})
+
+
+class GetProfile(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            profile_name = request.data.get('profile')
+            if not profile_name:
+                return JsonResponse({'success': False, 'msg': 'Please provide valid username'})
+            profile = User.objects.filter(username=profile_name).first()
+            if not profile:
+                return JsonResponse({'success': False, 'msg': 'Please provide valid username'})
+            
+
+            return JsonResponse({'success': True, 'msg': "Got profile!", "user": UserProfileSerializer(profile).data})
         except Exception as e:
             print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})

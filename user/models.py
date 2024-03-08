@@ -11,6 +11,6 @@ class User(AbstractUser):
     location = models.TextField(max_length=200, default=None, blank=True, null=True)
     is_private = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
-
+    
     def __str__(self) -> str:
         return super().__str__() + " -> " + self.username
