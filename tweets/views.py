@@ -1,8 +1,8 @@
 from django.http import JsonResponse
 from rest_framework.views import APIView
-from .models import Tweet
+from .models import *
 from user.models import User
-from .serializers import TweetSerializer, TweetLabelValueSerializer
+from .serializers import *
 from user.serializers import UserLabelValueSerializer
 
 # Views
@@ -76,4 +76,36 @@ class GetTweetsBasedOnTab(APIView):
             print('error while creating tweet', str(e))
             return JsonResponse({'success': False, "msg": str(e)})
         
-        
+
+
+class BookmarkTweet(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            user = request.user
+            if user.is_anonymous:
+                user = User.objects.filter(username='superuser').first()
+                # return JsonResponse({'success': False, 'msg': 'Please login to bookmark tweets'})
+
+            tweet_id = request.data.get("tweet_id")
+            if not tweet_id:
+                return JsonResponse({'success': False, 'msg': 'There was an issue while saving this bookmark. Please try again later'})
+            tweet = Tweet.objects.filter(id=id).first()
+            if not tweet:
+                return JsonResponse({'success': False, 'msg': 'There was an error while saving this bookmark. Please try again later'})
+
+            bookmarks = Bookmark.objects.filter(user=user).first()
+            if not bookmarks:
+                bookmarks = Bookmark.objects.create(
+                    user=user,
+                )
+            bookmarked_tweet = bookmarks.tweet.filter(id=tweet_id).first()
+            if bookmarked_tweet:
+                bookmarks.tweet.remove(bookmarked_tweet)
+            else:
+                bookmarks.tweet.remove(tweet)
+            
+            return JsonResponse({'success': True, 'msg': "Got profile!", "user": BookmarkSerializer(bookmarks).data})
+        except Exception as e:
+            print('err while creating user', str(e))
+            return JsonResponse({'success': False, 'msg': "err: " + str(e)})
+

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.views import APIView
-from .models import User
+from .models import *
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from .serializers import UserSerializer, UserProfileSerializer
@@ -10,8 +10,8 @@ from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.views.decorators.csrf import csrf_exempt
-from tweets.serializers import TweetSerializer
-from tweets.models import Tweet
+from tweets.serializers import TweetSerializer, BookmarkSerializer
+from tweets.models import Tweet, Bookmark
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -146,18 +146,22 @@ class GetProfile(APIView):
             not_private = not profile.is_private
             view_type = request.data.get('view_type')
             posts = likes = replies = Tweet.objects.none()
+            serialized_bookmarks = None
             
             if not_private and view_type == 'likes':
                 likes = Tweet.objects.filter(likes=profile).order_by("timestamp")
             elif not_private  and view_type == 'replies':
                 replies = Tweet.objects.filter(parent__isnull=False, user=profile).order_by("timestamp")
+            elif not_private  and view_type == 'bookmarks':
+                bookmark = Bookmark.objects.filter(user=profile).first()
+                if bookmark:
+                    serialized_bookmarks = TweetSerializer(bookmark.tweets.all()).data
             else:
                 posts = Tweet.objects.filter(user=profile).order_by("timestamp")
             
             return JsonResponse({'success': True, 'msg': "Got profile!", "user": UserProfileSerializer(profile).data,
                                  'posts': TweetSerializer(posts, many=True).data, 'replies': TweetSerializer(replies, many=True).data, 
-                                 'likes': TweetSerializer(likes, many=True).data})
+                                 'likes': TweetSerializer(likes, many=True).data, 'bookmarks': serialized_bookmarks})
         except Exception as e:
-            print('err while creating user', str(e))
+            print('err at get_profile', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
-

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Input from "../../ReUsableComponents/Input/Input";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -50,6 +50,7 @@ const Explore = () => {
   const navigateTo = (tag) => {
     navigate(`/explore/${tag}`);
   };
+
   return (
     <div>
       <Input placeholder="Search..." value={inputVal} onChange={handleChange} />
@@ -58,26 +59,6 @@ const Explore = () => {
         users={matchingUsers}
         showResults={!!inputVal}
       />
-      <div className="dfc">
-        <button className="p-5" onClick={() => navigateTo("")}>
-          For you
-        </button>
-        <button className="p-5" onClick={() => navigateTo("tabs/trending")}>
-          Trending
-        </button>
-        <button className="p-5" onClick={() => navigateTo("tabs/news")}>
-          News
-        </button>
-        <button className="p-5" onClick={() => navigateTo("tabs/sports")}>
-          Sports
-        </button>
-        <button
-          className="p-5"
-          onClick={() => navigateTo("tabs/entertainment")}
-        >
-          Entertainment
-        </button>
-      </div>
     </div>
   );
 };

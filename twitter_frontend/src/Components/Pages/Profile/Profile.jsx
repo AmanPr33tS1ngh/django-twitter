@@ -24,12 +24,15 @@ const Profile = () => {
   const [posts, setPosts] = useState([]);
   const [replies, setReplies] = useState([]);
   const [likes, setLikes] = useState([]);
+  const [bookmarks, setBookmarks] = useState([]);
 
   const buttons = useMemo(() => [
     { name: "Posts", to: "" },
     { name: "Replies", to: "replies" },
     { name: "Likes", to: "likes" },
+    { name: "Bookmarks", to: "bookmarks" },
   ]);
+
   const getProfile = () => {
     const endpoint = "http://127.0.0.1:8000/users/get_profile/";
     const data = { profile: profile, view_type: view_type };
@@ -40,6 +43,7 @@ const Profile = () => {
       const posts = responseData.posts;
       const replies = responseData.replies;
       const likes = responseData.likes;
+      const bookmarks = responseData.bookmarks;
       if (user) {
         setUser({
           username: user.username,
@@ -54,12 +58,13 @@ const Profile = () => {
       setPosts(posts || []);
       setReplies(replies || []);
       setLikes(likes || []);
+      setBookmarks(bookmarks || []);
     });
   };
   const navigateTo = (type) => {
     navigate(`/${user.username}/${type}`);
   };
-
+  const bookmarkTweet = () => {};
   return (
     <div className="profile">
       <div className="banner">
@@ -88,37 +93,27 @@ const Profile = () => {
         <div>
           {!view_type
             ? posts.length
-              ? posts.map((post) => (
-                  <Post
-                    content={post.content}
-                    username={post.user?.username}
-                    timestamp={post.post_duration}
-                  />
-                ))
+              ? posts.map((post) => <Post {...post} bookmark={bookmarkTweet} />)
               : "No Posts"
             : null}
           {view_type === "likes"
             ? likes.length
-              ? likes.map((like) => (
-                  <Post
-                    content={like.content}
-                    username={like.user?.username}
-                    timestamp={like.post_duration}
-                  />
-                ))
+              ? likes.map((like) => <Post {...like} bookmark={bookmarkTweet} />)
               : "No Likes"
             : null}
-          {console.log("view_type", view_type)}
           {view_type === "replies"
             ? replies.length
               ? replies.map((reply) => (
-                  <Post
-                    content={reply.content}
-                    username={reply.user?.username}
-                    timestamp={reply.post_duration}
-                  />
+                  <Post {...reply} bookmark={bookmarkTweet} />
                 ))
               : "No Replies"
+            : null}
+          {view_type === "bookmarks"
+            ? bookmarks.length
+              ? bookmarks.map((bookmark) => (
+                  <Post {...bookmark} bookmark={bookmarkTweet} />
+                ))
+              : "No Bookmarks"
             : null}
         </div>
       </div>

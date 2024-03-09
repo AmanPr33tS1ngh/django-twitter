@@ -62,7 +62,7 @@
 }
 .dfg {
   display: grid;
-  grid-template-columns: 33% 34% 33%;
+  grid-template-columns: 25% 25% 25% 25%;
   align-items: center;
 }
 .btn {

@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Navbar from "../../Navbar/Navbar";
 import axios from "axios";
 import Post from "../../ReUsableComponents/Post/Post";
@@ -10,7 +10,7 @@ import AuthContext from "../../Authentication/AuthProvider";
 
 const Home = () => {
   const [tweets, setTweets] = useState([]);
-  const {logoutUser} = useContext(AuthContext);
+  const { logoutUser } = useContext(AuthContext);
 
   useEffect(() => {
     getTweets();
@@ -22,6 +22,15 @@ const Home = () => {
       setTweets(responseData.tweets);
     });
   };
+  const bookmark = (id) => {
+    let endpoint = "http://127.0.0.1:8000/tweets/bookmark/";
+
+    axios.post(endpoint, { tweet_id: id }).then((res) => {
+      let responseData = res.data;
+      console.log(responseData);
+      // setTweets(responseData.tweets);
+    });
+  };
   return (
     <div>
       {window.location.href.includes("compose/post") ? <AddPost /> : null}
@@ -29,11 +38,7 @@ const Home = () => {
 
       <button onClick={logoutUser}>LOG OUT</button>
       {tweets.map((tweet) => (
-        <Post
-          content={tweet.content}
-          username={tweet.user?.username}
-          timestamp={tweet.post_duration}
-        />
+        <Post {...tweet} bookmark={bookmark} />
       ))}
     </div>
   );

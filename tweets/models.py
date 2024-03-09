@@ -12,3 +12,11 @@ class Tweet(models.Model):
     def __str__(self) -> str:
         return super().__str__() + " -> " + self.content
     
+
+class Bookmark(models.Model):
+    tweets = models.ManyToManyField(Tweet, related_name="tweets")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    def __str__(self) -> str:
+        return super().__str__() + " -> " + self.tweet.content
+    

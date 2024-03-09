@@ -38,7 +38,7 @@ class TweetSerializer(serializers.ModelSerializer):
             
     class Meta:
         model = Tweet
-        fields = ("content", "user", "post_duration", "like_count")
+        fields = ("id", "content", "user", "post_duration", "like_count")
 
 
 class TweetLabelValueSerializer(serializers.ModelSerializer):
@@ -54,3 +54,18 @@ class TweetLabelValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tweet
         fields = ("label", "value", )
+
+
+class BookmarkSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    tweets = serializers.SerializerMethodField()
+    
+    def get_user(self, obj):
+        return UserSerializer(obj.user).data
+    
+    def get_tweets(self, obj):
+        return TweetSerializer(obj.tweets, many=True).data
+    
+    class Meta:
+        model = Bookmark
+        fields = ("user", "tweets", )
