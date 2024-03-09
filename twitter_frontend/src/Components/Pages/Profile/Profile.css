@@ -1,11 +1,15 @@
-.profile {
+/* .profile {
   max-width: 600px;
   margin: 0 auto;
-}
+} */
 
 .banner {
   position: relative;
   overflow: hidden;
+  z-index: 1;
+  height: 8rem;
+
+  background-color: black;
 }
 
 .banner img {
@@ -16,18 +20,21 @@
 
 .profile-info {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* align-items: center; */
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   margin-top: -50px;
-  padding: 20px;
+  /* padding: 20px; */
 }
 
 .profile-picture {
   width: 120px;
+  z-index: 2;
+  position: relative;
+  background: white;
   height: 120px;
   overflow: hidden;
   border-radius: 50%;
@@ -52,4 +59,24 @@
   font-size: 1rem;
   color: #555;
   margin-bottom: 10px;
+}
+.dfg {
+  display: grid;
+  grid-template-columns: 33% 34% 33%;
+  align-items: center;
+}
+.btn {
+  font-weight: bold;
+  color: gray;
+  padding: 5px 10px;
+}
+.btn:hover {
+  background-color: rgb(238, 234, 234);
+}
+.btn-active {
+  font-weight: bold;
+  color: gray;
+}
+.p-20 {
+  padding: 20px;
 }

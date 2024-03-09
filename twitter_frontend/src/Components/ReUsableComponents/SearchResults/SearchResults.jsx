@@ -9,7 +9,6 @@ const SearchResults = ({ results, users, showResults }) => {
   return (
     showResults && (
       <div className="search">
-        {console.log(users, results)}
         <div className="mt-4">
           <h2 className="text-xl font-bold mb-2">Search Results</h2>
           <Result results={results} type={"tweet"} iconType={faSearch} />

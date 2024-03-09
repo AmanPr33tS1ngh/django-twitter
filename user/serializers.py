@@ -52,6 +52,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
     profile_picture = serializers.SerializerMethodField()
     banner = serializers.SerializerMethodField()
     full_name = serializers.SerializerMethodField()
+    joining_date = serializers.SerializerMethodField()
+    biography = serializers.SerializerMethodField()
     
     def get_profile_picture(self, obj):
         try:
@@ -74,6 +76,20 @@ class UserProfileSerializer(serializers.ModelSerializer):
             print('err', str(e))
             return None
 
+    def get_joining_date(self, obj):
+        try:
+            return obj.joining_date.strftime("%d %b %Y")
+        except Exception as e:
+            print('err', str(e))
+            return None
+
+    def get_biography(self, obj):
+        try:
+            return obj.biography
+        except Exception as e:
+            print('err', str(e))
+            return None
+
     class Meta:
         model = User
-        fields = ("banner", "full_name", "username", "location", "profile_picture")
+        fields = ("banner", "full_name", "username", "location", "profile_picture", "biography", "joining_date")

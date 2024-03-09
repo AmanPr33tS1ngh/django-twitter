@@ -36,7 +36,7 @@ class GetTweets(APIView):
             )
             
             print(tweet)
-            return JsonResponse({'success': True, 'msg': 'new tweet'})
+            return JsonResponse({'success': True, 'msg': 'new tweet', 'tweet': TweetSerializer(tweet).data})
         except Exception as e:
             print('error while creating tweet', str(e))
             return JsonResponse({'success': False, "msg": str(e)})
@@ -62,3 +62,18 @@ class GetMatchingTweets(APIView):
         except Exception as e:
             print('error while creating tweet', str(e))
             return JsonResponse({'success': False, "msg": str(e)})
+        
+
+class GetTweetsBasedOnTab(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            user = request.user
+            # if user.is_anonymous:
+                # return JsonResponse({'success': False, 'msg': 'You need to authenticate first to search!'})
+            tweets = Tweet.objects.filter().order_by("timestamp")
+            return JsonResponse({'success': True, 'msg': 'new tweet', 'tweets': TweetSerializer(tweets, many=True).data})
+        except Exception as e:
+            print('error while creating tweet', str(e))
+            return JsonResponse({'success': False, "msg": str(e)})
+        
+        

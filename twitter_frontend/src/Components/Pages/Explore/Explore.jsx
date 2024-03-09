@@ -13,18 +13,16 @@ const Explore = () => {
 
   const { tab, search } = useParams();
 
-  console.log("tab", tab, search);
   useEffect(() => {
     getTweets();
   }, [tab]);
   const getTweets = () => {
-    const endpoint = "http://127.0.0.1:8000/tweets/get_matching_tweets/";
+    const endpoint = "http://127.0.0.1:8000/tweets/get_tweets_with_tab/";
     const data = {
       tab: tab,
     };
     axios.post(endpoint, data).then((res) => {
       const responseData = res.data;
-      console.log(responseData);
     });
   };
   const handleChange = (e) => {
@@ -44,20 +42,17 @@ const Explore = () => {
     };
     axios.post(endpoint, data).then((res) => {
       const responseData = res.data;
-      console.log(responseData);
       setMatchingResults(responseData.results);
       setMatchingUsers(responseData.users);
     });
   };
 
   const navigateTo = (tag) => {
-    console.log("tag", tag);
     navigate(`/explore/${tag}`);
   };
   return (
     <div>
       <Input placeholder="Search..." value={inputVal} onChange={handleChange} />
-      {console.log(matchingTweets, matchingUsers)}
       <SearchResults
         results={matchingTweets}
         users={matchingUsers}

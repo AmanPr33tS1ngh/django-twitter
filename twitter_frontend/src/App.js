@@ -26,17 +26,17 @@ function App() {
               element={<AuthRoute element={<Profile />} />}
             />
             <Route
+              exact
+              path="/:profile/:view_type"
+              element={<AuthRoute element={<Profile />} />}
+            />
+            <Route
               path="/compose/post/"
               exact
               element={<AuthRoute element={<Home />} isSign={true} />}
             />
             <Route exact path="/sign_in" element={<SignIn />} />
             <Route exact path="/sign_up" element={<SignUp />} />
-            <Route
-              exact
-              path="/profile"
-              element={<AuthRoute element={<Profile />} />}
-            />
             <Route
               exact
               path="/trending"

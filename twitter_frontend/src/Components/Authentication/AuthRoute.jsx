@@ -7,7 +7,6 @@ import Trending from "../Pages/Trending/Trending";
 
 const AuthRoute = ({ element, isSign }) => {
   const { user, authTokens } = useContext(AuthContext);
-  console.log(user, authTokens);
   const isAuthenticated = useSelector((state) => state.reducer);
 
   return isAuthenticated || isSign ? (

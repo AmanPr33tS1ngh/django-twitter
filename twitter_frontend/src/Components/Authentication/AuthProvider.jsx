@@ -31,7 +31,6 @@ export const AuthProvider = ({ children }) => {
       }),
     });
     const data = await response.json();
-    console.log("data", data);
     if (response.status === 200) {
       setAuthTokens(data);
       setUser(jwtDecode(data.access));
@@ -56,7 +55,6 @@ export const AuthProvider = ({ children }) => {
     const endpoint = "http://127.0.0.1:8000/users/sign_up/";
     axios.post(endpoint, credentials).then((res) => {
       const responseData = res.data;
-      console.log("responseData signup", responseData);
       if (responseData.success) {
         setAuthTokens(responseData.token);
         setUser(jwtDecode(responseData.token.access_token));
@@ -86,7 +84,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateToken = async () => {
-    console.log("authTokens?.refresh", authTokens?.refresh);
     const response = await fetch(
       "http://127.0.0.1:8000/users/api/token/refresh/",
       {
@@ -123,9 +120,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    console.log("useEffect");
     if (loading) {
-      console.log("loading");
       updateToken();
     }
 
@@ -133,7 +128,6 @@ export const AuthProvider = ({ children }) => {
 
     const interval = setInterval(() => {
       if (authTokens) {
-        console.log("authTokensauthTokens");
         updateToken();
       }
     }, fourMinutes);

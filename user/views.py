@@ -10,8 +10,8 @@ from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.views.decorators.csrf import csrf_exempt
-
-
+from tweets.serializers import TweetSerializer
+from tweets.models import Tweet
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -86,12 +86,12 @@ class SignUp(APIView):
             token_serializer.is_valid(raise_exception=True)
             print("auth", user)
             
-            if authenticated_user:
-                login(request, authenticated_user)
-                return JsonResponse({'success': True, 'msg': "User Created", "user": UserSerializer(user).data, 
-                                     "token": {'access_token': access_token, 'refresh_token': str(refresh)}})
-
-            return JsonResponse({'success': False, 'msg': "Failed to authenticate user."})
+            if not authenticated_user:
+                return JsonResponse({'success': False, 'msg': "Failed to authenticate user."})
+        
+            login(request, authenticated_user)
+            return JsonResponse({'success': True, 'msg': "User Created", "user": UserSerializer(user).data, 
+                                    "token": {'access_token': access_token, 'refresh_token': str(refresh)}})
 
         except Exception as e:
             print('err while creating user', str(e))
@@ -140,11 +140,23 @@ class GetProfile(APIView):
             if not profile_name:
                 return JsonResponse({'success': False, 'msg': 'Please provide valid username'})
             profile = User.objects.filter(username=profile_name).first()
+            print(profile)
             if not profile:
                 return JsonResponse({'success': False, 'msg': 'Please provide valid username'})
+            not_private = not profile.is_private
+            view_type = request.data.get('view_type')
+            posts = likes = replies = Tweet.objects.none()
             
-
-            return JsonResponse({'success': True, 'msg': "Got profile!", "user": UserProfileSerializer(profile).data})
+            if not_private and view_type == 'likes':
+                likes = Tweet.objects.filter(likes=profile).order_by("timestamp")
+            elif not_private  and view_type == 'replies':
+                replies = Tweet.objects.filter(parent__isnull=False, user=profile).order_by("timestamp")
+            else:
+                posts = Tweet.objects.filter(user=profile).order_by("timestamp")
+            
+            return JsonResponse({'success': True, 'msg': "Got profile!", "user": UserProfileSerializer(profile).data,
+                                 'posts': TweetSerializer(posts, many=True).data, 'replies': TweetSerializer(replies, many=True).data, 
+                                 'likes': TweetSerializer(likes, many=True).data})
         except Exception as e:
             print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
