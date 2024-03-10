@@ -31,12 +31,10 @@ export const AuthProvider = ({ children }) => {
       }),
     });
     const data = await response.json();
-    console.log("Data", data);
     if (response.status === 200) {
       setAuthTokens(data);
       setUser(jwtDecode(data.access));
 
-      console.log("Data", jwtDecode(data.access));
       localStorage.setItem("authTokens", JSON.stringify(data));
       dispatch({
         type: LOGIN,
@@ -58,7 +56,6 @@ export const AuthProvider = ({ children }) => {
     const endpoint = "http://127.0.0.1:8000/users/sign_up/";
     axios.post(endpoint, credentials).then((res) => {
       const responseData = res.data;
-      console.log("responseData", responseData);
       if (responseData.success) {
         setAuthTokens(responseData.token);
         setUser(jwtDecode(responseData.token.access_token));

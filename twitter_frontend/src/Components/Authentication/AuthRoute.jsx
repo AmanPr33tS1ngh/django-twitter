@@ -7,13 +7,13 @@ import Trending from "../Pages/Trending/Trending";
 
 const AuthRoute = ({ element, isSign }) => {
   const { user, authTokens } = useContext(AuthContext);
-  const isAuthenticated = useSelector((state) => state.reducer);
-
+  const { isAuthenticated } = useSelector((state) => state.reducer);
   return isAuthenticated || isSign ? (
-    <div className={`${isAuthenticated ? "d-grid px-12 py-4" : ""} h-screen`}>
-      {isAuthenticated ? <Sidebar /> : null}
-      {element}
-      {isAuthenticated ? <Trending /> : null}
+    <div>
+      <div className={`${isAuthenticated ? "d-grid px-12 py-4" : ""} h-screen`}>
+        {isAuthenticated ? <Sidebar /> : null}
+        {element}
+      </div>
     </div>
   ) : (
     <Navigate to="/sign_in" />

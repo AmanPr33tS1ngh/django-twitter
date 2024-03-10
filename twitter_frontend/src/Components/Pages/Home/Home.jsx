@@ -12,7 +12,7 @@ const Home = () => {
   const { user } = useContext(AuthContext);
   const [tweets, setTweets] = useState([]);
   const { logoutUser } = useContext(AuthContext);
-
+  const navigate = useNavigate();
   useEffect(() => {
     getTweets();
   }, []);
@@ -23,16 +23,16 @@ const Home = () => {
       setTweets(responseData.tweets);
     });
   };
-  const actions = (e, id, action_type) => {
+  const actions = (e, post, action_type) => {
+    console.log("post, action_type, ", post, action_type);
     e.stopPropagation();
     if (action_type === "bookmark" || action_type == "like") {
-      console.log("id", id);
       let endpoint = `http://127.0.0.1:8000/tweets/take_action/`;
       console.log("use", user, user.name);
       if (!user.name) return;
       axios
         .post(endpoint, {
-          tweet_id: id,
+          tweet_id: post?.id,
           user: user?.name,
           action_type: action_type,
         })
@@ -41,13 +41,15 @@ const Home = () => {
           console.log(responseData);
           // setTweets(responseData.tweets);
         });
+    } else if (action_type === "comment") {
+      navigate(`/post/${post?.user?.username}/${post?.id}`);
     }
   };
   return (
     <div>
-      {window.location.href.includes("compose/post") ? <AddPost /> : null}
       <Navbar />
       <button onClick={logoutUser}>LOG OUT</button>
+      {console.log("tweets", tweets)}
       {tweets.map((tweet) => (
         <Post post={tweet} actions={actions} />
       ))}

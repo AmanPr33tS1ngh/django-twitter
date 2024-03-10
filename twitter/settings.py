@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # internal
     'tweets',
     'user',
+    'chat',
 ]
 
 MIDDLEWARE = [

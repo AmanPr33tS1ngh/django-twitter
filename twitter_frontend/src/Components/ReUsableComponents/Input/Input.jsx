@@ -1,7 +1,14 @@
 import React from "react";
 import "./Input.css";
 
-const Input = ({ placeholder, onChange, value, className = "", name }) => {
+const Input = ({
+  placeholder,
+  onChange,
+  value,
+  className = "",
+  name,
+  disabled = false,
+}) => {
   return (
     <input
       placeholder={placeholder}
@@ -10,6 +17,7 @@ const Input = ({ placeholder, onChange, value, className = "", name }) => {
       className={className}
       id="input"
       name={name}
+      disabled={disabled}
     />
   );
 };

@@ -11,6 +11,7 @@ import Notifications from "./Components/Pages/Notifications/Notifications";
 import Messages from "./Components/Pages/Messages/Messages";
 import { AuthProvider } from "./Components/Authentication/AuthProvider";
 import AuthRoute from "./Components/Authentication/AuthRoute";
+import AddPost from "./Components/ReUsableComponents/Post/AddPost/AddPost";
 
 function App() {
   return (
@@ -30,17 +31,22 @@ function App() {
               element={<AuthRoute element={<Profile />} />}
             />
             <Route
-              path="/compose/post/"
+              path="/post/:username/:id"
               exact
-              element={<AuthRoute element={<Home />} isSign={true} />}
+              element={<AuthRoute element={<AddPost />} />}
+            />
+            <Route
+              path="/post"
+              exact
+              element={<AuthRoute element={<AddPost />} />}
             />
             <Route exact path="/sign_in" element={<SignIn />} />
             <Route exact path="/sign_up" element={<SignUp />} />
-            <Route
+            {/* <Route
               exact
               path="/trending"
               element={<AuthRoute element={<Trending />} />}
-            />
+            /> */}
             <Route
               exact
               path="/explore"
@@ -59,6 +65,11 @@ function App() {
             <Route
               exact
               path="/messages"
+              element={<AuthRoute element={<Messages />} />}
+            />
+            <Route
+              exact
+              path="/messages/:slug"
               element={<AuthRoute element={<Messages />} />}
             />
           </Routes>

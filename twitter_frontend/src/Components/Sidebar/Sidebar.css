@@ -4,7 +4,9 @@
   padding: 10px;
   margin: 10px 0;
 }
-
+.sidebar {
+  border-right: 0.5px solid rgb(225, 222, 222);
+}
 .m-5 {
   margin-left: 10px;
 }

@@ -57,6 +57,18 @@ class UserAPI(APIView):
             print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
+class GetUsers(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            username = request.data.get('username')
+            if not username:
+                return JsonResponse({'success': False, 'msg': "please provide username"})
+            users = User.objects.filter(username__icontains=username)
+            return JsonResponse({'success': True, 'msg': "users", "users": UserSerializer(users, many=True).data})
+        except Exception as e:
+            print('err while creating user', str(e))
+            return JsonResponse({'success': False, 'msg': "err: " + str(e)})
+
 class SignUp(APIView):
     permission_classes = (permissions.AllowAny, )
     def post(self, request, *args, **kwargs):
@@ -70,7 +82,6 @@ class SignUp(APIView):
             password = request.data.get('password').strip()
             email = request.data.get('email').strip()
             verify_pass = request.data.get('verifyPassword').strip()
-            print(username, first_name, last_name, password, email, verify_pass)
             if User.objects.filter(username=username).exists():
                 return JsonResponse({'success': False, 'msg': "Username/email already registered. Please try with another username."})
 
@@ -87,7 +98,7 @@ class SignUp(APIView):
                 password=password,
                 email=email
             )
-
+            print("created_user", user)
             authenticated_user = authenticate(request, username=username, password=password)
             
             refresh = RefreshToken.for_user(user)

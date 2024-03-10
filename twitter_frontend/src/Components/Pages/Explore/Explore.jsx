@@ -25,7 +25,6 @@ const Explore = () => {
     };
     axios.post(endpoint, data).then((res) => {
       const responseData = res.data;
-      console.log("responseData12323", responseData);
       setTweet(responseData.tweet);
       setReplies(responseData.replies);
     });
@@ -86,7 +85,13 @@ const Explore = () => {
       />
       {console.log("TWEET", tweet)}
       {tweet ? <Post post={tweet} actions={actions} /> : null}
+      <br />
       <hr />
+      <hr />
+      <hr />
+      <hr />
+      <br />
+      <h2>Replies</h2>
       {replies?.map((reply) => (
         <Post post={reply} actions={actions} />
       ))}

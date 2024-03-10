@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 
 const Post = ({ post, actions }) => {
   const navigate = useNavigate();
-  console.log("1231231", post, actions);
   return (
     <div className="x-post" onClick={() => navigate(`/status/${post?.id}`)}>
       <div className="user-info">
@@ -28,28 +27,22 @@ const Post = ({ post, actions }) => {
       </div>
       <p className="post-content">{post?.content}</p>
       <div className="actions">
-        <button
-          className="m-1rem"
-          onClick={(e) => actions(e, post?.id, "like")}
-        >
-          <FontAwesomeIcon icon={faHeart} />
+        <button className="m-1rem" onClick={(e) => actions(e, post, "like")}>
+          <FontAwesomeIcon icon={faHeart} /> {post?.like_count}
         </button>
-        <button
-          className="m-1rem"
-          onClick={(e) => actions(e, post?.id, "share")}
-        >
+        {/* <button className="m-1rem" onClick={(e) => actions(e, post, "share")}>
           <FontAwesomeIcon icon={faShare} />
-        </button>
+        </button> */}
         <button
           className="m-1rem"
-          onClick={(e) => actions(e, post?.id, "comment")}
+          onClick={(e) => actions(e, post, "comment")}
           // onClick={(e) => comment(e, post?.id)}
         >
-          <FontAwesomeIcon icon={faComment} />
+          <FontAwesomeIcon icon={faComment} /> {post?.replies_count}
         </button>
         <button
           className="m-1rem"
-          onClick={(e) => actions(e, post?.id, "bookmark")}
+          onClick={(e) => actions(e, post, "bookmark")}
         >
           <FontAwesomeIcon icon={faBookmark} />
         </button>

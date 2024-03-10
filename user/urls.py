@@ -9,6 +9,8 @@ url_patterns = [
     path('sign_up/', SignUp.as_view(), name='users'),
     path('sign_out/', LogOut.as_view(), name='users'),
     path('get_profile/', GetProfile.as_view(), name='users'),
+    path('get_users/', GetUsers.as_view(), name='get_users'),
+    
     path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

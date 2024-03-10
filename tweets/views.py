@@ -12,7 +12,7 @@ from rest_framework.authentication import TokenAuthentication
 class GetTweets(APIView):
     def get(self, request, *args, **kwargs):
         try:
-            tweets = Tweet.objects.filter()
+            tweets = Tweet.objects.filter(parent__isnull=True)
             return JsonResponse({'success': True, 'tweets': TweetSerializer(tweets, many=True).data})
         except Exception as e:
             print('error while getting tweets', str(e))
@@ -32,11 +32,15 @@ class GetTweets(APIView):
             content = request.data.get('content')
             if not content:
                 return JsonResponse({'success': False, 'msg': 'Please add content!'})
-
+            parent_id = request.data.get('id')
+            parent_username = request.data.get("parent_username")
+            print("parent_username", parent_username, "user", user)
+            parent = Tweet.objects.filter(id=parent_id, user__username=parent_username).first()
+            
             tweet = Tweet.objects.create(
                 user=user,
                 content=content,
-                parent=None,
+                parent=parent,
             )
             
             return JsonResponse({'success': True, 'msg': 'new tweet', 'tweet': TweetSerializer(tweet).data})
