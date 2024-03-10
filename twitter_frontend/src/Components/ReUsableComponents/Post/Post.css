@@ -7,6 +7,7 @@
 }
 .x-post:hover {
   background-color: #fcf4f4;
+  cursor: pointer;
 }
 
 .user-info {
@@ -41,12 +42,14 @@
 
 .actions {
   display: flex;
+  justify-content: space-around;
+
   margin-top: 1rem;
 }
 
 .like-button,
 .share-button {
-  color: #007bff;
+  color: red;
   background-color: transparent;
   border: none;
   cursor: pointer;
@@ -55,5 +58,15 @@
 }
 
 .share-button {
-  color: #ffc107;
+  color: black;
+}
+.time {
+  margin-top: 8px;
+  font-weight: 100;
+  color: gray;
+  font-size: 12px;
+}
+.m-1rem {
+  margin-right: 1rem;
+  text-align: center;
 }

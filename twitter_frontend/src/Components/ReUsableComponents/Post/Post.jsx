@@ -1,12 +1,19 @@
 import React from "react";
 import "./Post.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBookmark, faBookBookmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBookmark,
+  faComment,
+  faHeart,
+  faShare,
+} from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
-const Post = (post, bookmark) => {
-  console.log(post, bookmark);
+const Post = ({ post, actions }) => {
+  const navigate = useNavigate();
+  console.log("1231231", post, actions);
   return (
-    <div className="x-post">
+    <div className="x-post" onClick={() => navigate(`/status/${post?.id}`)}>
       <div className="user-info">
         <img
           className="avatar"
@@ -14,7 +21,6 @@ const Post = (post, bookmark) => {
           alt="User Avatar"
         />
         <div className="user-details">
-          {console.log("poststtt", post)}
           <p className="username">{post?.user?.full_name}</p>
           <p>@{post?.user?.username}</p>
           <p className="timestamp">{post?.timestamp}</p>
@@ -22,12 +28,33 @@ const Post = (post, bookmark) => {
       </div>
       <p className="post-content">{post?.content}</p>
       <div className="actions">
-        <button className="like-button">Like</button>
-        <button className="share-button">Share</button>
-        <button onClick={() => bookmark(post?.id)}>
+        <button
+          className="m-1rem"
+          onClick={(e) => actions(e, post?.id, "like")}
+        >
+          <FontAwesomeIcon icon={faHeart} />
+        </button>
+        <button
+          className="m-1rem"
+          onClick={(e) => actions(e, post?.id, "share")}
+        >
+          <FontAwesomeIcon icon={faShare} />
+        </button>
+        <button
+          className="m-1rem"
+          onClick={(e) => actions(e, post?.id, "comment")}
+          // onClick={(e) => comment(e, post?.id)}
+        >
+          <FontAwesomeIcon icon={faComment} />
+        </button>
+        <button
+          className="m-1rem"
+          onClick={(e) => actions(e, post?.id, "bookmark")}
+        >
           <FontAwesomeIcon icon={faBookmark} />
         </button>
       </div>
+      <p className="time">{post?.post_duration}</p>
     </div>
   );
 };

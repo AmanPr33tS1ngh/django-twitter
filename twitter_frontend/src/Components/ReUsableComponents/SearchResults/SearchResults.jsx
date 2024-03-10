@@ -26,7 +26,7 @@ const Result = ({ results, type, iconType }) => {
         <li style={{ alignItems: "center" }} key={index} className="mb-2">
           <Link
             className="link"
-            to={`/${type === "user" ? "" : "explore/"}${result.value}`}
+            to={`/${type === "user" ? "" : "status/"}${result.value}`}
           >
             <FontAwesomeIcon icon={iconType} />
             {result.label}

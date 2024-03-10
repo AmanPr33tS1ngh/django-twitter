@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
 import Home from "./Components/Pages/Home/Home";
@@ -7,7 +7,6 @@ import SignIn from "./Components/Pages/SignIn/SignIn";
 import Trending from "./Components/Pages/Trending/Trending";
 import Profile from "./Components/Pages/Profile/Profile";
 import Explore from "./Components/Pages/Explore/Explore";
-import Bookmarks from "./Components/Pages/Bookmark/Bookmarks";
 import Notifications from "./Components/Pages/Notifications/Notifications";
 import Messages from "./Components/Pages/Messages/Messages";
 import { AuthProvider } from "./Components/Authentication/AuthProvider";
@@ -49,18 +48,8 @@ function App() {
             />
             <Route
               exact
-              path="/explore/:search"
+              path="/status/:id"
               element={<AuthRoute element={<Explore />} />}
-            />
-            <Route
-              exact
-              path="/explore/tabs/:tab"
-              element={<AuthRoute element={<Explore />} />}
-            />
-            <Route
-              exact
-              path="/bookmarks"
-              element={<AuthRoute element={<Bookmarks />} />}
             />
             <Route
               exact

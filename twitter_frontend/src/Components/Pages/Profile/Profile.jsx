@@ -26,12 +26,15 @@ const Profile = () => {
   const [likes, setLikes] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
 
-  const buttons = useMemo(() => [
-    { name: "Posts", to: "" },
-    { name: "Replies", to: "replies" },
-    { name: "Likes", to: "likes" },
-    { name: "Bookmarks", to: "bookmarks" },
-  ]);
+  const buttons = useMemo(
+    () => [
+      { name: "Posts", to: "" },
+      { name: "Replies", to: "replies" },
+      { name: "Likes", to: "likes" },
+      { name: "Bookmarks", to: "bookmarks" },
+    ],
+    []
+  );
 
   const getProfile = () => {
     const endpoint = "http://127.0.0.1:8000/users/get_profile/";
@@ -64,7 +67,27 @@ const Profile = () => {
   const navigateTo = (type) => {
     navigate(`/${user.username}/${type}`);
   };
-  const bookmarkTweet = () => {};
+
+  const actions = (e, id, action_type) => {
+    e.stopPropagation();
+    if (action_type === "bookmark" || action_type == "like") {
+      console.log("id", id);
+      let endpoint = `http://127.0.0.1:8000/tweets/take_action/`;
+      console.log("use", user, user.username);
+      if (!user.username) return;
+      axios
+        .post(endpoint, {
+          tweet_id: id,
+          user: user?.username,
+          action_type: action_type,
+        })
+        .then((res) => {
+          let responseData = res.data;
+          console.log(responseData);
+          // setTweets(responseData.tweets);
+        });
+    }
+  };
   return (
     <div className="profile">
       <div className="banner">
@@ -85,7 +108,14 @@ const Profile = () => {
         </div>
         <div className="dfg">
           {buttons.map((button) => (
-            <button onClick={() => navigateTo(button.to)} className="btn">
+            <button
+              onClick={() => navigateTo(button.to)}
+              className={
+                view_type === button.to || (!view_type && button.to === "")
+                  ? "active-btn"
+                  : "btn"
+              }
+            >
               {button.name}
             </button>
           ))}
@@ -93,25 +123,23 @@ const Profile = () => {
         <div>
           {!view_type
             ? posts.length
-              ? posts.map((post) => <Post {...post} bookmark={bookmarkTweet} />)
+              ? posts.map((post) => <Post post={post} actions={actions} />)
               : "No Posts"
             : null}
           {view_type === "likes"
             ? likes.length
-              ? likes.map((like) => <Post {...like} bookmark={bookmarkTweet} />)
+              ? likes.map((like) => <Post post={like} actions={actions} />)
               : "No Likes"
             : null}
           {view_type === "replies"
             ? replies.length
-              ? replies.map((reply) => (
-                  <Post {...reply} bookmark={bookmarkTweet} />
-                ))
+              ? replies.map((reply) => <Post post={reply} actions={actions} />)
               : "No Replies"
             : null}
           {view_type === "bookmarks"
             ? bookmarks.length
               ? bookmarks.map((bookmark) => (
-                  <Post {...bookmark} bookmark={bookmarkTweet} />
+                  <Post post={bookmark} actions={actions} />
                 ))
               : "No Bookmarks"
             : null}

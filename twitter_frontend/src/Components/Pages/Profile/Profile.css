@@ -73,9 +73,9 @@
 .btn:hover {
   background-color: rgb(238, 234, 234);
 }
-.btn-active {
+.active-btn {
   font-weight: bold;
-  color: gray;
+  color: black;
 }
 .p-20 {
   padding: 20px;

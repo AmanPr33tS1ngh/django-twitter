@@ -8,7 +8,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_full_name(self, obj):
         try:
-            print("full_name", obj)
             return f"{obj.first_name} {obj.last_name}"
         except Exception as e:
             print('er', str(e))
@@ -16,7 +15,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_profile_picture(self, obj):
         try:
-            print("pro", obj)
             return str(obj.profile_picture)
         except Exception as e:
             print('err', str(e))

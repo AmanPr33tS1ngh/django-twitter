@@ -11,7 +11,7 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.views.decorators.csrf import csrf_exempt
 from tweets.serializers import TweetSerializer, BookmarkSerializer
-from tweets.models import Tweet, Bookmark
+from tweets.models import Tweet, Interaction
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -19,10 +19,21 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-
         token['name'] = user.username
-
         return token
+    
+    def validate(self, attrs):
+        username = attrs.get('username')
+        password = attrs.get('password')
+        request = self.context.get('request')
+        print("check", username, password, request)
+        user = authenticate(request=request, username=username, password=password)
+
+        if user:
+            login(request, user)
+        data = super().validate(attrs)
+        print("request.user", request.user)
+        return data
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -140,28 +151,27 @@ class GetProfile(APIView):
             if not profile_name:
                 return JsonResponse({'success': False, 'msg': 'Please provide valid username'})
             profile = User.objects.filter(username=profile_name).first()
-            print(profile)
             if not profile:
                 return JsonResponse({'success': False, 'msg': 'Please provide valid username'})
             not_private = not profile.is_private
             view_type = request.data.get('view_type')
             posts = likes = replies = Tweet.objects.none()
-            serialized_bookmarks = None
+            serialized_bookmarks = serialized_likes = None
+            bookmark = Interaction.objects.filter(user=profile, interaction_type="bookmark").first()
+            likes = Interaction.objects.filter(user=profile, interaction_type="like").first()
             
-            if not_private and view_type == 'likes':
-                likes = Tweet.objects.filter(likes=profile).order_by("timestamp")
+            if likes and not_private and view_type == 'likes':
+                serialized_likes = TweetSerializer(likes.tweets.all().order_by("timestamp"), many=True).data
             elif not_private  and view_type == 'replies':
                 replies = Tweet.objects.filter(parent__isnull=False, user=profile).order_by("timestamp")
-            elif not_private  and view_type == 'bookmarks':
-                bookmark = Bookmark.objects.filter(user=profile).first()
-                if bookmark:
-                    serialized_bookmarks = TweetSerializer(bookmark.tweets.all()).data
+            elif bookmark and not_private  and view_type == 'bookmarks':
+                serialized_bookmarks = TweetSerializer(bookmark.tweets.all().order_by("timestamp"), many=True).data
             else:
                 posts = Tweet.objects.filter(user=profile).order_by("timestamp")
             
             return JsonResponse({'success': True, 'msg': "Got profile!", "user": UserProfileSerializer(profile).data,
                                  'posts': TweetSerializer(posts, many=True).data, 'replies': TweetSerializer(replies, many=True).data, 
-                                 'likes': TweetSerializer(likes, many=True).data, 'bookmarks': serialized_bookmarks})
+                                 'likes': serialized_likes, 'bookmarks': serialized_bookmarks})
         except Exception as e:
             print('err at get_profile', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})

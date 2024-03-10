@@ -5,12 +5,14 @@ from user.models import User
 from .serializers import *
 from user.serializers import UserLabelValueSerializer
 
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+
 # Views
 class GetTweets(APIView):
     def get(self, request, *args, **kwargs):
         try:
             tweets = Tweet.objects.filter()
-            print(tweets)
             return JsonResponse({'success': True, 'tweets': TweetSerializer(tweets, many=True).data})
         except Exception as e:
             print('error while getting tweets', str(e))
@@ -20,9 +22,11 @@ class GetTweets(APIView):
         try:
             user = request.user
             if user.is_anonymous:
+                print("is anonymous")
                 username = request.data.get("username")
                 print('username', request.data)
                 user = User.objects.filter(username=username).first()
+            print(user)
             if not user:
                 return JsonResponse({'success': False, 'msg': 'user not found!'})
             content = request.data.get('content')
@@ -35,7 +39,6 @@ class GetTweets(APIView):
                 parent=None,
             )
             
-            print(tweet)
             return JsonResponse({'success': True, 'msg': 'new tweet', 'tweet': TweetSerializer(tweet).data})
         except Exception as e:
             print('error while creating tweet', str(e))
@@ -57,55 +60,81 @@ class GetMatchingTweets(APIView):
             
             users = User.objects.filter(username__icontains=input_val)[:5]
             matching_users = UserLabelValueSerializer(users, many=True).data
-            print(matching_users)
             return JsonResponse({'success': True, 'msg': 'new tweet', 'results': result, "users": matching_users})
         except Exception as e:
             print('error while creating tweet', str(e))
             return JsonResponse({'success': False, "msg": str(e)})
         
 
-class GetTweetsBasedOnTab(APIView):
+class GetTweet(APIView):
     def post(self, request, *args, **kwargs):
         try:
             user = request.user
+            tweet_id = request.data.get('tweet_id')
+            if not tweet_id:
+                return JsonResponse({'success': False, 'msg': 'Wrong url'})
             # if user.is_anonymous:
                 # return JsonResponse({'success': False, 'msg': 'You need to authenticate first to search!'})
-            tweets = Tweet.objects.filter().order_by("timestamp")
-            return JsonResponse({'success': True, 'msg': 'new tweet', 'tweets': TweetSerializer(tweets, many=True).data})
+            tweet = Tweet.objects.filter(id=tweet_id).first()
+            replies = Tweet.objects.filter(parent=tweet).order_by('timestamp')
+            return JsonResponse({'success': True, 'msg': 'new tweet', "replies":TweetSerializer(replies, many=True).data,
+                                 'tweet': TweetSerializer(tweet).data})
+        
         except Exception as e:
             print('error while creating tweet', str(e))
             return JsonResponse({'success': False, "msg": str(e)})
         
 
 
-class BookmarkTweet(APIView):
+class TakeAction(APIView):
+    authentication_classes = [TokenAuthentication]
+
     def post(self, request, *args, **kwargs):
         try:
             user = request.user
+            username = request.data.get("user")
+            print(user)
             if user.is_anonymous:
-                user = User.objects.filter(username='superuser').first()
+                user = User.objects.filter(username=request.data.get("user")).first()
+            print(user)
                 # return JsonResponse({'success': False, 'msg': 'Please login to bookmark tweets'})
-
+        
             tweet_id = request.data.get("tweet_id")
             if not tweet_id:
                 return JsonResponse({'success': False, 'msg': 'There was an issue while saving this bookmark. Please try again later'})
-            tweet = Tweet.objects.filter(id=id).first()
+            tweet = Tweet.objects.filter(id=tweet_id).first()
             if not tweet:
                 return JsonResponse({'success': False, 'msg': 'There was an error while saving this bookmark. Please try again later'})
 
-            bookmarks = Bookmark.objects.filter(user=user).first()
+            interaction_type = request.data.get("action_type")
+            print("interaction_type", interaction_type)
+            bookmarks = Interaction.objects.filter(user=user, interaction_type=interaction_type).first()
             if not bookmarks:
-                bookmarks = Bookmark.objects.create(
+                bookmarks = Interaction.objects.create(
                     user=user,
+                    interaction_type=interaction_type,
                 )
-            bookmarked_tweet = bookmarks.tweet.filter(id=tweet_id).first()
-            if bookmarked_tweet:
-                bookmarks.tweet.remove(bookmarked_tweet)
+
+            if bookmarks.tweets.filter(id=tweet_id).exists():
+                bookmarks.tweets.remove(tweet)
             else:
-                bookmarks.tweet.remove(tweet)
+                bookmarks.tweets.add(tweet)
             
-            return JsonResponse({'success': True, 'msg': "Got profile!", "user": BookmarkSerializer(bookmarks).data})
+            return JsonResponse({'success': True, 'msg': "Got profile!", "bookmarks": TweetSerializer(bookmarks.tweets.all(), many=True).data,})
         except Exception as e:
             print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
+class GetBookmarks(APIView):
+    def post(self, request,  *args, **kwargs):
+        try:
+            user = User.objects.filter(username=request.data.get("username")).first()
+            if not user:
+                return JsonResponse({'success': False, 'msg': "User not found"})
+            bookmark = Interaction.objects.filter(user=user, interaction_type="bookmark", ).first()
+            if not bookmark:
+                return JsonResponse({'success': False, 'msg': "No bookmarks found"})
+            return JsonResponse({'success': True, 'bookmarks': TweetSerializer(bookmark.tweets.all(), many=True).data})
+        except Exception as e:
+            print('err', str(e))
+            return JsonResponse({'success': False, 'msg': str(e)})

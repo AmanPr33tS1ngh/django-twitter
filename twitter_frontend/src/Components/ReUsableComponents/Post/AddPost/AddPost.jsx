@@ -33,7 +33,6 @@ const AddPost = () => {
           <span className="close-modal" onClick={closeAddPostModal}>
             &times;
           </span>
-          <h2>Create a Post</h2>
           <textarea
             placeholder="Write your username here..."
             rows="2"

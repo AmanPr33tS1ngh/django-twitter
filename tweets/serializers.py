@@ -31,6 +31,8 @@ class TweetSerializer(serializers.ModelSerializer):
                 return f"{hours}h ago"
             elif minutes > 0:
                 return f"{minutes}m ago"
+            elif seconds > 0:
+                return f"{seconds}s ago"
             else:
                 return "Just now"
         except Exception as e:
@@ -67,5 +69,5 @@ class BookmarkSerializer(serializers.ModelSerializer):
         return TweetSerializer(obj.tweets, many=True).data
     
     class Meta:
-        model = Bookmark
-        fields = ("user", "tweets", )
+        model = Interaction
+        fields = ("user", "tweets", "interaction_type")
