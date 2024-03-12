@@ -12,23 +12,8 @@ import Messages from "./Components/Pages/Messages/Messages";
 import { AuthProvider } from "./Components/Authentication/AuthProvider";
 import AuthRoute from "./Components/Authentication/AuthRoute";
 import AddPost from "./Components/ReUsableComponents/Post/AddPost/AddPost";
-import socketIOClient from "socket.io-client";
 
-let socket;
 function App() {
-  useEffect(() => {
-    socket = socketIOClient("http://localhost:12346", {
-      // query: { username: username },
-      secure: true,
-      transports: ["websocket"],
-      path: "/",
-      reconnectionDelay: 1000,
-      reconnection: true,
-      reconnectionAttempts: Infinity,
-    });
-
-    socket.on("connect");
-  }, []);
   return (
     <div>
       <BrowserRouter>

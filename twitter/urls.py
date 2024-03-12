@@ -23,4 +23,5 @@ urlpatterns = [
     path('tweets/', include('tweets.urls')),
     path('users/', include('user.urls')),
     path('chat/', include('chat.urls')),
+    path("ws/", include('web_socket.urls')),
 ]

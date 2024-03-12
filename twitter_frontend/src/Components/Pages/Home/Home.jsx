@@ -24,11 +24,11 @@ const Home = () => {
     });
   };
   const actions = (e, post, action_type) => {
-    console.log("post, action_type, ", post, action_type);
+    // console.log("post, action_type, ", post, action_type);
     e.stopPropagation();
     if (action_type === "bookmark" || action_type == "like") {
       let endpoint = `http://127.0.0.1:8000/tweets/take_action/`;
-      console.log("use", user, user.name);
+      // console.log("use", user, user.name);
       if (!user.name) return;
       axios
         .post(endpoint, {
@@ -38,7 +38,7 @@ const Home = () => {
         })
         .then((res) => {
           let responseData = res.data;
-          console.log(responseData);
+          // console.log(responseData);
           // setTweets(responseData.tweets);
         });
     } else if (action_type === "comment") {
@@ -49,7 +49,7 @@ const Home = () => {
     <div>
       <Navbar />
       <button onClick={logoutUser}>LOG OUT</button>
-      {console.log("tweets", tweets)}
+      {/* {console.log("tweets", tweets)} */}
       {tweets.map((tweet) => (
         <Post post={tweet} actions={actions} />
       ))}

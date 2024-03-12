@@ -16,17 +16,19 @@ https://docs.djangoproject.com/en/5.0/howto/deployment/asgi/
 # application = get_asgi_application()
 
 import os
-import sys
-import django
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "twitter.settings")
-django.setup()
 from django.core.asgi import get_asgi_application
-django_app = get_asgi_application()
-from chat.server import sio
-import socketio
-import uvicorn
-app = socketio.ASGIApp(sio, other_asgi_app=django_app)
-
-if __name__ == "__main__":
-    uvicorn.run(app, host='localhost', port=12346)
+ 
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'twitter.settings')
+from channels.routing import ProtocolTypeRouter , URLRouter
+from web_socket.routing import websocket_urlpatterns
+ 
+application = ProtocolTypeRouter(
+    {
+        "http" : get_asgi_application() , 
+        "websocket" :
+            URLRouter(
+                websocket_urlpatterns
+            )    
+        
+    }
+)

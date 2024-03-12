@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
     const endpoint = "http://127.0.0.1:8000/users/sign_out/";
     axios.post(endpoint).then((res) => {
       const responseData = res.data;
-      console.log("signout responseData", responseData);
+      // console.log("signout responseData", responseData);
       if (responseData.success) {
         setAuthTokens(null);
         setUser(null);

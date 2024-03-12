@@ -18,7 +18,7 @@ const MessageHandler = ({ messageHandler }) => {
     const endpoint = "http://127.0.0.1:8000/chat/send_message/";
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
-      console.log("ressss papapapappap", responseData);
+      // console.log("ressss papapapappap", responseData);
       setMessage("");
       messageHandler(responseData.message);
     });

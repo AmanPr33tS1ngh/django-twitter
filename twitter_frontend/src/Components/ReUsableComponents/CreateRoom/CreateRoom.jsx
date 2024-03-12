@@ -25,7 +25,7 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
     };
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
-      console.log("ressss", responseData);
+      // console.log("ressss", responseData);
       setUsers(responseData.users);
     });
   };
@@ -36,10 +36,10 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
       username: username,
       group_name: groupName,
     };
-    console.log("data", data);
+    // console.log("data", data);
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
-      console.log("ressss", responseData);
+      // console.log("ressss", responseData);
       setRooms(responseData.room);
     });
   };

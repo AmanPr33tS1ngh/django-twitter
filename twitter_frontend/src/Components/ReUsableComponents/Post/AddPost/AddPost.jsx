@@ -24,7 +24,7 @@ const AddPost = () => {
     };
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
-      console.log("ressss", responseData);
+      // console.log("ressss", responseData);
     });
   };
 

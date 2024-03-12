@@ -54,12 +54,12 @@ const ChatPanel = ({ room, messageHandler }) => {
               >
                 <span className={isUser ? "user-msg" : "receiver-msg"}>
                   {message.content}
-                  {console.log(
+                  {/* {console.log(
                     "messjojoage",
                     user?.name,
                     message?.sender?.username,
                     user?.name === message?.sender?.username
-                  )}
+                  )} */}
                 </span>
               </div>
             );

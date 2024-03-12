@@ -71,9 +71,9 @@ const Profile = () => {
   const actions = (e, id, action_type) => {
     e.stopPropagation();
     if (action_type === "bookmark" || action_type == "like") {
-      console.log("id", id);
+      // console.log("id", id);
       let endpoint = `http://127.0.0.1:8000/tweets/take_action/`;
-      console.log("use", user, user.username);
+      // console.log("use", user, user.username);
       if (!user.username) return;
       axios
         .post(endpoint, {
@@ -83,7 +83,7 @@ const Profile = () => {
         })
         .then((res) => {
           let responseData = res.data;
-          console.log(responseData);
+          // console.log(responseData);
           // setTweets(responseData.tweets);
         });
     }

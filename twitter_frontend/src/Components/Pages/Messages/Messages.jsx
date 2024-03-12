@@ -11,6 +11,29 @@ import { useNavigate, useParams } from "react-router-dom";
 import ChatPanel from "../../ReUsableComponents/ChatPanel/ChatPanel";
 
 const Messages = () => {
+  let socket = null;
+
+  const createConnection = () => {
+    socket = new WebSocket(`ws://127.0.0.1:8000/ws/`);
+    socket.onopen = function (e) {
+      console.log("opOpen", e);
+    };
+
+    socket.onclose = function (event) {
+      console.log("closedd", event);
+    };
+
+    socket.onmessage = function (e) {
+      console.log("onmessage", e);
+      try {
+        let data = JSON.parse(e.data);
+        console.log("onmessage", data);
+      } catch (e) {
+        console.log("error on message", e);
+      }
+    };
+  };
+
   const { slug } = useParams();
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
@@ -18,13 +41,16 @@ const Messages = () => {
   const [room, setRoom] = useState(null);
   const [createRoom, setCreateRoom] = useState(false);
   useEffect(() => {
+    createConnection();
     getRooms();
+    return () => socket.close(1000, "Connection closed");
   }, []);
-  useEffect(() => {
-    if (slug) {
-      getRoom();
-    }
-  }, [slug]);
+
+  // useEffect(() => {
+  //   if (slug) {
+  //     getRoom();
+  //   }
+  // }, [slug]);
   const getRoom = () => {
     let endpoint = "http://127.0.0.1:8000/chat/get_room/";
     let data = {
@@ -33,19 +59,19 @@ const Messages = () => {
     };
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
-      console.log("ressss chatchat123123", responseData);
+      // console.log("ressss chatchat123123", responseData);
       if (responseData.room) setRoom(responseData.room);
     });
   };
   const getRooms = () => {
-    console.log(user?.name);
+    // console.log(user?.name);
     let endpoint = "http://127.0.0.1:8000/chat/get_rooms/";
     let data = {
       username: user?.name,
     };
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
-      console.log("ressss ", responseData);
+      // console.log("ressss ", responseData);
       if (responseData.rooms) setRooms(responseData.rooms);
     });
   };
@@ -54,14 +80,14 @@ const Messages = () => {
   };
 
   const setCreatedRoom = (room) => {
-    console.log("room setCreatedRoom", room);
+    // console.log("room setCreatedRoom", room);
     if (room) setRooms([...rooms, room]);
   };
   const openMessage = (room) => {
     navigate(`/messages/${room}`);
   };
   const messageHandler = (message) => {
-    console.log("prev", room);
+    // console.log("prev", room);
     const messages = room?.messages;
     messages?.push(message);
     const newRoom = { ...room, messages: messages };
@@ -69,7 +95,7 @@ const Messages = () => {
   };
   return (
     <div className="dgrid">
-      {console.log("SLususususu", slug, room)}
+      {/* {console.log("SLususususu", slug, room)} */}
       <div
         style={{
           borderRight: "0.5px solid rgb(225, 222, 222)",
