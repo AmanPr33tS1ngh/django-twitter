@@ -3,5 +3,5 @@ from .consumers import ChatConsumer
 
 print('urlssss')
 urlpatterns = [
-    path("ws/", ChatConsumer),
+    path("ws/<str:slug>/", ChatConsumer),
 ]

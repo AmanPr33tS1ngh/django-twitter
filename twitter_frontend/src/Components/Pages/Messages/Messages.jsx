@@ -11,12 +11,24 @@ import { useNavigate, useParams } from "react-router-dom";
 import ChatPanel from "../../ReUsableComponents/ChatPanel/ChatPanel";
 
 const Messages = () => {
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+  const [rooms, setRooms] = useState([]);
+  const [room, setRoom] = useState(null);
+  const [createRoom, setCreateRoom] = useState(false);
+
   let socket = null;
 
   const createConnection = () => {
-    socket = new WebSocket(`ws://127.0.0.1:8000/ws/`);
+    socket = new WebSocket(`ws://127.0.0.1:8000/ws/${slug}`);
     socket.onopen = function (e) {
-      console.log("opOpen", e);
+      console.log("opOpen", e, slug);
+      const message = {
+        type: "chat_message",
+        slug: slug,
+      };
+      socket.send(JSON.stringify(message));
     };
 
     socket.onclose = function (event) {
@@ -34,23 +46,17 @@ const Messages = () => {
     };
   };
 
-  const { slug } = useParams();
-  const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
-  const [rooms, setRooms] = useState([]);
-  const [room, setRoom] = useState(null);
-  const [createRoom, setCreateRoom] = useState(false);
   useEffect(() => {
-    createConnection();
     getRooms();
-    return () => socket.close(1000, "Connection closed");
   }, []);
 
-  // useEffect(() => {
-  //   if (slug) {
-  //     getRoom();
-  //   }
-  // }, [slug]);
+  useEffect(() => {
+    if (slug) {
+      createConnection();
+      getRoom();
+    }
+    return () => (socket ? socket.close(1000, "Connection closed") : null);
+  }, [slug]);
   const getRoom = () => {
     let endpoint = "http://127.0.0.1:8000/chat/get_room/";
     let data = {
