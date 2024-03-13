@@ -18,9 +18,11 @@ const Messages = () => {
   const [rooms, setRooms] = useState([]);
   const [room, setRoom] = useState(null);
   const [createRoom, setCreateRoom] = useState(false);
-
+  console.log(user);
   const createConnection = () => {
-    socket = new WebSocket(`ws://127.0.0.1:8000/ws/${slug}/`);
+    socket = new WebSocket(
+      `ws://127.0.0.1:8000/ws/${user?.name ? user?.name : "group"}/${slug}/`
+    );
 
     socket.onopen = function (e) {
       console.log("WebSocket connection opened");
@@ -36,16 +38,10 @@ const Messages = () => {
     };
 
     socket.onmessage = function (event) {
-      console.log("Message received:", event.data);
       try {
         let data = JSON.parse(event.data);
-        console.log("data", data);
-        if (data.action_type === "chat_message") {
-          const messages = room?.messages;
-          messages?.push(data.new_message);
-          const newRoom = { ...room, messages: messages };
-          setRoom(newRoom);
-          console.log("newROOORORO", room);
+        if (data.action_type === "chat_message" && data.new_room) {
+          setRoom(data.new_room);
         }
       } catch (error) {
         console.log("Error parsing message:", error);
@@ -53,12 +49,13 @@ const Messages = () => {
     };
   };
 
-  const messageHandler = (message) => {
+  const messageHandler = (e, message) => {
+    // e.preventDefault();
+    console.log("calling function");
     if (!socket) {
       console.error("WebSocket connection is not initialized.");
       return;
     }
-
     const data = {
       username: user?.name,
       message: message,

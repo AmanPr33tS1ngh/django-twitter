@@ -26,7 +26,6 @@ class RoomSerializer(serializers.ModelSerializer):
     def get_participants(self, obj):
         try:
             user = self.context.get('user')
-            print('seri', user)
             if not user:
                 return UserProfileSerializer(obj.participants.all(), many=True).data
             participants = obj.participants.filter().exclude(username=user.username)
@@ -41,13 +40,10 @@ class RoomSerializer(serializers.ModelSerializer):
     def get_participant(self, obj):
         try:
             user = self.context.get('user')
-            print('seri', user)
             participant = obj.participants.filter().exclude(username=user.username)
-            print("participant check", participant)
+
             if participant.count() == 1:
-                print(1)
                 participant = participant.first()
-                print(2, participant)
                 return UserProfileSerializer(participant).data
             return None
         
@@ -93,7 +89,6 @@ class RoomSerializerWithMessage(serializers.ModelSerializer):
     def get_participants(self, obj):
         try:
             user = self.context.get('user')
-            print('seri', user)
             if not user:
                 return UserProfileSerializer(obj.participants.all(), many=True).data
             participants = obj.participants.filter().exclude(username=user.username)
@@ -108,13 +103,9 @@ class RoomSerializerWithMessage(serializers.ModelSerializer):
     def get_participant(self, obj):
         try:
             user = self.context.get('user')
-            print('seri', user)
             participant = obj.participants.filter().exclude(username=user.username)
-            print("participant check", participant)
             if participant.count() == 1:
-                print(1)
                 participant = participant.first()
-                print(2, participant)
                 return UserProfileSerializer(participant).data
             return None
         

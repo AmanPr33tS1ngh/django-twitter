@@ -5,6 +5,7 @@ import AuthContext from "../../Authentication/AuthProvider";
 
 const ChatPanel = ({ room, messageHandler }) => {
   const { user } = useContext(AuthContext);
+  console.log("ChatPanel", room);
   return (
     <div style={{ padding: "10px" }}>
       <div

@@ -16,10 +16,10 @@ class CreateRoom(APIView):
         try:
             user = User.objects.filter(username=request.data.get('username')).first()
             participant_usernames = request.data.get("participant_usernames")
-            print(participant_usernames)
+
             if not participant_usernames:
                 participant_usernames = list()
-            print(participant_usernames)
+
             participants = User.objects.filter(username__in=participant_usernames)
             if not participants.exists():
                 return JsonResponse({'success': False, 'msg': "add users to chat with them"})
@@ -41,12 +41,10 @@ class GetRooms(APIView):
         try:
             
             user = User.objects.filter(username=request.data.get("username")).first()
-            print('chat', user)
             if not user:
                 return JsonResponse({'success': False, 'msg': "Authenticate first"})
                 
             rooms = Room.objects.filter(participants=user)
-            print(rooms)
             return JsonResponse({'success': True, 'msg': 'got rooms', "rooms": RoomSerializer(rooms, many=True, context={"user": user}).data})
         
         except Exception as e:
@@ -57,7 +55,6 @@ class GetRoom(APIView):
     def post(self, request, *args, **kwargs):
         try:
             user = User.objects.filter(username=request.data.get("username")).first()
-            print('chat', user)
             if not user:
                 return JsonResponse({'success': False, 'msg': "Authenticate first"})
             slug = request.data.get('slug')
@@ -66,7 +63,6 @@ class GetRoom(APIView):
             if not room:
                 return JsonResponse({'success': False, 'msg': "Wrong slug!"})
 
-            print(room)
             return JsonResponse({'success': True, 'msg': 'got rooms', "room": RoomSerializerWithMessage(room, context={"user": user}).data})
         
         except Exception as e:
@@ -77,8 +73,8 @@ class GetRoom(APIView):
 class SendMessage(APIView):
     def post(self, request, *args, **kwargs):
         try:
+            print("called send message SendMessage")
             user = User.objects.filter(username=request.data.get("username")).first()
-            print('message', user)
             if not user:
                 return JsonResponse({'success': False, 'msg': "Authenticate first"})
             slug = request.data.get('slug')
@@ -96,7 +92,6 @@ class SendMessage(APIView):
                 content=content,
             )
             
-            print(room)
             return JsonResponse({'success': True, 'msg': 'got rooms', "message": MessageSerializer(message).data})
         
         except Exception as e:

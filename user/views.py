@@ -26,13 +26,11 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         username = attrs.get('username')
         password = attrs.get('password')
         request = self.context.get('request')
-        print("check", username, password, request)
         user = authenticate(request=request, username=username, password=password)
 
         if user:
             login(request, user)
         data = super().validate(attrs)
-        print("request.user", request.user)
         return data
 
 
@@ -106,7 +104,6 @@ class SignUp(APIView):
             
             token_serializer = MyTokenObtainPairSerializer(data={'username': user.username, 'password': password})
             token_serializer.is_valid(raise_exception=True)
-            print("auth", user)
             
             if not authenticated_user:
                 return JsonResponse({'success': False, 'msg': "Failed to authenticate user."})
@@ -126,7 +123,6 @@ class SignIn(APIView):
     def post(self, request, *args, **kwargs):
         try:
             user = request.user
-            print(user)
             if user.is_authenticated:
                 return JsonResponse({'success': False, 'msg': "You are already authenticated. Refresh the page"})
             username = request.data.get('username')
@@ -134,7 +130,6 @@ class SignIn(APIView):
             if not User.objects.filter(username=username).exists():
                 return JsonResponse({'success': False, 'msg': "Username is not registered. Please Sign up first."})
             user = authenticate(request, username=username, password=password)
-            print(user)
             if user:
                 login(request, user)
                 return JsonResponse({'success': True, 'msg': "Sign up successful!"})

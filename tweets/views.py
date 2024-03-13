@@ -22,11 +22,9 @@ class GetTweets(APIView):
         try:
             user = request.user
             if user.is_anonymous:
-                print("is anonymous")
                 username = request.data.get("username")
-                print('username', request.data)
                 user = User.objects.filter(username=username).first()
-            print(user)
+
             if not user:
                 return JsonResponse({'success': False, 'msg': 'user not found!'})
             content = request.data.get('content')
@@ -34,7 +32,7 @@ class GetTweets(APIView):
                 return JsonResponse({'success': False, 'msg': 'Please add content!'})
             parent_id = request.data.get('id')
             parent_username = request.data.get("parent_username")
-            print("parent_username", parent_username, "user", user)
+
             parent = Tweet.objects.filter(id=parent_id, user__username=parent_username).first()
             
             tweet = Tweet.objects.create(
@@ -97,11 +95,9 @@ class TakeAction(APIView):
         try:
             user = request.user
             username = request.data.get("user")
-            print(user)
             if user.is_anonymous:
                 user = User.objects.filter(username=request.data.get("user")).first()
-            print(user)
-                # return JsonResponse({'success': False, 'msg': 'Please login to bookmark tweets'})
+            # return JsonResponse({'success': False, 'msg': 'Please login to bookmark tweets'})
         
             tweet_id = request.data.get("tweet_id")
             if not tweet_id:
@@ -111,7 +107,6 @@ class TakeAction(APIView):
                 return JsonResponse({'success': False, 'msg': 'There was an error while saving this bookmark. Please try again later'})
 
             interaction_type = request.data.get("action_type")
-            print("interaction_type", interaction_type)
             bookmarks = Interaction.objects.filter(user=user, interaction_type=interaction_type).first()
             if not bookmarks:
                 bookmarks = Interaction.objects.create(

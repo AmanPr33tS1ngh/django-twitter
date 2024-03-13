@@ -5,7 +5,7 @@ const MessageHandler = ({ messageHandler }) => {
   const [message, setMessage] = useState();
   const sendMessage = (e) => {
     e.preventDefault();
-    messageHandler(message);
+    messageHandler(e, message);
   };
   return (
     <div>
