@@ -10,6 +10,7 @@ import { faCommentMedical } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useParams } from "react-router-dom";
 import ChatPanel from "../../ReUsableComponents/ChatPanel/ChatPanel";
 
+let socket = null;
 const Messages = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -18,34 +19,59 @@ const Messages = () => {
   const [room, setRoom] = useState(null);
   const [createRoom, setCreateRoom] = useState(false);
 
-  let socket = null;
-
   const createConnection = () => {
-    socket = new WebSocket(`ws://127.0.0.1:8000/ws/${slug}`);
+    socket = new WebSocket(`ws://127.0.0.1:8000/ws/${slug}/`);
+
     socket.onopen = function (e) {
-      console.log("opOpen", e, slug);
+      console.log("WebSocket connection opened");
       const message = {
-        type: "chat_message",
+        action_type: "connect",
         slug: slug,
       };
       socket.send(JSON.stringify(message));
     };
 
     socket.onclose = function (event) {
-      console.log("closedd", event);
+      console.log("WebSocket connection closed", event);
     };
 
-    socket.onmessage = function (e) {
-      console.log("onmessage", e);
+    socket.onmessage = function (event) {
+      console.log("Message received:", event.data);
       try {
-        let data = JSON.parse(e.data);
-        console.log("onmessage", data);
-      } catch (e) {
-        console.log("error on message", e);
+        let data = JSON.parse(event.data);
+        console.log("data", data);
+        if (data.action_type === "chat_message") {
+          const messages = room?.messages;
+          messages?.push(data.new_message);
+          const newRoom = { ...room, messages: messages };
+          setRoom(newRoom);
+          console.log("newROOORORO", room);
+        }
+      } catch (error) {
+        console.log("Error parsing message:", error);
       }
     };
   };
 
+  const messageHandler = (message) => {
+    if (!socket) {
+      console.error("WebSocket connection is not initialized.");
+      return;
+    }
+
+    const data = {
+      username: user?.name,
+      message: message,
+      room_name: slug,
+      action_type: "chat_message",
+    };
+    console.log("WebSocket.OPEN", WebSocket.OPEN);
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify(data));
+    } else {
+      console.error("WebSocket connection is not open.");
+    }
+  };
   useEffect(() => {
     getRooms();
   }, []);
@@ -91,13 +117,6 @@ const Messages = () => {
   };
   const openMessage = (room) => {
     navigate(`/messages/${room}`);
-  };
-  const messageHandler = (message) => {
-    // console.log("prev", room);
-    const messages = room?.messages;
-    messages?.push(message);
-    const newRoom = { ...room, messages: messages };
-    setRoom(newRoom);
   };
   return (
     <div className="dgrid">

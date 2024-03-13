@@ -19,6 +19,7 @@ const ChatPanel = ({ room, messageHandler }) => {
         style={{
           height: "92vh",
           overflow: "scroll",
+          paddingBottom: "500px",
         }}
       >
         <div id="profile">

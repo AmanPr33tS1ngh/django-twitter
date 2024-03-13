@@ -1,27 +1,11 @@
 import React, { useContext, useState } from "react";
 import Input from "../Input/Input";
-import AuthContext from "../../Authentication/AuthProvider";
-import axios from "axios";
-import { useParams } from "react-router-dom";
 
 const MessageHandler = ({ messageHandler }) => {
-  const { slug } = useParams();
-  const { user } = useContext(AuthContext);
   const [message, setMessage] = useState();
   const sendMessage = (e) => {
     e.preventDefault();
-    const data = {
-      username: user?.name,
-      message: message,
-      slug: slug,
-    };
-    const endpoint = "http://127.0.0.1:8000/chat/send_message/";
-    axios.post(endpoint, data).then((res) => {
-      let responseData = res.data;
-      // console.log("ressss papapapappap", responseData);
-      setMessage("");
-      messageHandler(responseData.message);
-    });
+    messageHandler(message);
   };
   return (
     <div>
