@@ -179,18 +179,32 @@ class GetProfile(APIView):
             bookmark = Interaction.objects.filter(user=profile, interaction_type="bookmark").first()
             likes = Interaction.objects.filter(user=profile, interaction_type="like").first()
             
+            # if likes and not_private and view_type == 'likes':
+            #     serialized_likes = TweetSerializer(likes.tweets.all().order_by("timestamp"), context={'user': user}, many=True).data
+            # elif not_private  and view_type == 'replies':
+            #     replies = Tweet.objects.filter(parent__isnull=False, user=profile).order_by("timestamp")
+            # elif bookmark and not_private  and view_type == 'bookmarks':
+            #     serialized_bookmarks = TweetSerializer(bookmark.tweets.all().order_by("timestamp"), context={'user': user}, many=True).data
+            # else:
+            #     posts = Tweet.objects.filter(user=profile).order_by("timestamp")
+            print('view_type', view_type)
             if likes and not_private and view_type == 'likes':
-                serialized_likes = TweetSerializer(likes.tweets.all().order_by("timestamp"), context={'user': user}, many=True).data
+                posts = likes.tweets.all().order_by("timestamp")
             elif not_private  and view_type == 'replies':
-                replies = Tweet.objects.filter(parent__isnull=False, user=profile).order_by("timestamp")
+                posts = Tweet.objects.filter(parent__isnull=False, user=profile).order_by("timestamp")
             elif bookmark and not_private  and view_type == 'bookmarks':
-                serialized_bookmarks = TweetSerializer(bookmark.tweets.all().order_by("timestamp"), context={'user': user}, many=True).data
+                posts = bookmark.tweets.all().order_by("timestamp")
             else:
                 posts = Tweet.objects.filter(user=profile).order_by("timestamp")
+                
+            serialized_data = TweetSerializer(posts, many=True, context={'user': user}).data
             
             return JsonResponse({'success': True, 'msg': "Got profile!", "user": UserProfileSerializer(profile).data,
-                                 'posts': TweetSerializer(posts, many=True, context={'user': user}).data, 'replies': TweetSerializer(replies, many=True, context={'user': user}).data, 
-                                 'likes': serialized_likes, 'bookmarks': serialized_bookmarks})
+                                 'posts': serialized_data,})
+            
+            # return JsonResponse({'success': True, 'msg': "Got profile!", "user": UserProfileSerializer(profile).data,
+            #                      'posts': TweetSerializer(posts, many=True, context={'user': user}).data, 'replies': TweetSerializer(replies, many=True, context={'user': user}).data, 
+            #                      'likes': serialized_likes, 'bookmarks': serialized_bookmarks})
         except Exception as e:
             print('err at get_profile', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})

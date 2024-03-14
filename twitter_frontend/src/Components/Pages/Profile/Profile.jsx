@@ -21,9 +21,9 @@ const Profile = () => {
     canEditProfile: false,
   });
   const [posts, setPosts] = useState([]);
-  const [replies, setReplies] = useState([]);
-  const [likes, setLikes] = useState([]);
-  const [bookmarks, setBookmarks] = useState([]);
+  // const [replies, setReplies] = useState([]);
+  // const [likes, setLikes] = useState([]);
+  // const [bookmarks, setBookmarks] = useState([]);
 
   const buttons = useMemo(
     () => [
@@ -42,11 +42,13 @@ const Profile = () => {
     axios.post(endpoint, data).then((res) => {
       const responseData = res.data;
       console.log("responseData", responseData);
+      // const responseData = res.data;
+      // console.log("responseData", responseData);
       const user = responseData.user;
       const posts = responseData.posts;
-      const replies = responseData.replies;
-      const likes = responseData.likes;
-      const bookmarks = responseData.bookmarks;
+      // const replies = responseData.replies;
+      // const likes = responseData.likes;
+      // const bookmarks = responseData.bookmarks;
       if (user) {
         setUser({
           username: user.username,
@@ -58,10 +60,31 @@ const Profile = () => {
           canEditProfile: user.can_edit_profile,
         });
       }
-      setPosts(posts || []);
-      setReplies(replies || []);
-      setLikes(likes || []);
-      setBookmarks(bookmarks || []);
+      setPosts(
+        posts ||
+          // || replies || likes ||bookmarks
+          []
+      );
+      // const user = responseData.user;
+      // const posts = responseData.posts;
+      // const replies = responseData.replies;
+      // const likes = responseData.likes;
+      // const bookmarks = responseData.bookmarks;
+      // if (user) {
+      //   setUser({
+      //     username: user.username,
+      //     banner: user.banner,
+      //     profilePicture: user.profile_picture,
+      //     fullName: user.full_name,
+      //     location: user.location,
+      //     bio: user.biography,
+      //     canEditProfile: user.can_edit_profile,
+      //   });
+      // }
+      // setPosts(posts || []);
+      // setReplies(replies || []);
+      // setLikes(likes || []);
+      // setBookmarks(bookmarks || []);
     });
   };
   const navigateTo = (type) => {
@@ -69,6 +92,7 @@ const Profile = () => {
   };
 
   const actions = (e, post, action_type) => {
+    console.log("post, action_type", post, action_type);
     e.stopPropagation();
     if (action_type === "comment") {
       navigate(`/post/${post?.user?.username}/${post?.id}`);
@@ -149,12 +173,15 @@ const Profile = () => {
           ))}
         </div>
         <div>
-          {!view_type
-            ? posts.length
+          {
+            // !view_type
+            // ?
+            posts.length
               ? posts.map((post) => <Post post={post} actions={actions} />)
               : "No Posts"
-            : null}
-          {view_type === "likes"
+            // : null
+          }
+          {/* {view_type === "likes"
             ? likes.length
               ? likes.map((like) => <Post post={like} actions={actions} />)
               : "No Likes"
@@ -170,7 +197,7 @@ const Profile = () => {
                   <Post post={bookmark} actions={actions} />
                 ))
               : "No Bookmarks"
-            : null}
+            : null} */}
         </div>
       </div>
     </div>
