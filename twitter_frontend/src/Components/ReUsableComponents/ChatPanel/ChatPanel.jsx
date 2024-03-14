@@ -7,11 +7,11 @@ const ChatPanel = ({ room, messageHandler }) => {
 
   return (
     <div className={"p-4"}>
-      <div className={"text-xl font-semibold"}>
+      <div className={"text-xl font-semibold pb-5"}>
         {room?.participant ? room?.participant?.full_name : room?.name}
       </div>
-      <div className={"h-[92vh] overflow-y-scroll pb-20"}>
-        <div
+      <div className={"h-[88vh] overflow-y-scroll pb-20"}>
+        {/* <div
           className={
             "mt-4 text-center py-2 px-4 cursor-pointer hover:bg-gray-200"
           }
@@ -32,21 +32,21 @@ const ChatPanel = ({ room, messageHandler }) => {
               Joined on {room?.participant?.joining_date}
             </div>
           ) : null}
-        </div>
+        </div> */}
         <div>
           {room?.messages?.map((message) => {
             const isUser = user?.name === message?.sender?.username;
             return (
               <div
-                classname={`flex ${
+                className={`flex ${
                   isUser ? "justify-start" : "justify-end"
                 } items-center mx-2`}
               >
                 <span
                   className={`px-4 py-3 rounded-full text-sm font-medium ${
                     isUser
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-300 bg-opacity-40 "
+                      ? "bg-gray-300 bg-opacity-40 "
+                      : "bg-blue-500 text-white"
                   }`}
                 >
                   {message.content}
