@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import Input from "../../ReUsableComponents/Input/Input";
 import AuthContext from "../../Authentication/AuthProvider";
-import axios from "axios";
+import axios from "../../Redux/Axios/axios";
 import Room from "../../ReUsableComponents/Room/Room";
 import CreateRoom from "../../ReUsableComponents/CreateRoom/CreateRoom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -111,15 +111,11 @@ const Messages = () => {
   };
   return (
     <div className="grid grid-cols-2">
-      <div
-          className={'col-span-1 border-r border-gray-300  relative'}
-      >
-        <h1 className={'text-lg font-medium ml-4'}>
-          Messages
-        </h1>
+      <div className={"col-span-1 border-r border-gray-300  relative"}>
+        <h1 className={"text-lg font-medium ml-4"}>Messages</h1>
         <button
           onClick={() => setCreateRoom(!createRoom)}
-          className={'absolute top-0 right-4 p-2'}
+          className={"absolute top-0 right-4 p-2"}
         >
           <FontAwesomeIcon icon={faCommentMedical} />
         </button>
@@ -138,9 +134,7 @@ const Messages = () => {
           ))}
         </div>
       </div>
-      <div
-          className={'col-span-1 relative'}
-      >
+      <div className={"col-span-1 relative"}>
         <ChatPanel room={room} messageHandler={messageHandler} />
       </div>
     </div>

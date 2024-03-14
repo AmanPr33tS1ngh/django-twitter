@@ -9,6 +9,8 @@ class TweetSerializer(serializers.ModelSerializer):
     post_duration = serializers.SerializerMethodField()
     like_count = serializers.SerializerMethodField()
     replies_count = serializers.SerializerMethodField()
+    is_bookmarked = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
     
     def get_user(self, obj):
         return UserSerializer(obj.user).data
@@ -18,8 +20,33 @@ class TweetSerializer(serializers.ModelSerializer):
     
     def get_replies_count(self, obj):
         return Tweet.objects.filter(parent=obj).count()
-        # return Interaction.objects.filter(user=obj.user, interaction_type="bookmark").count()
     
+    def get_is_bookmarked(self, obj):
+        try:
+            user = self.context.get('user')
+            
+            print('get_is_bookmarked11', self.context)
+            if not user:
+                return False
+            print('get_is_bookmarked', user)
+            return Interaction.objects.filter(tweets__id=obj.id, user=user, interaction_type="bookmark").exists()
+        except Exception as e:
+            print('ksksk', str(e))
+            return False
+        
+    def get_is_liked(self, obj):
+        try:
+            user = self.context.get('user')
+            
+            print('get_is_liked11', self.context)
+            if not user:
+                return False
+            print('get_is_liked', user)
+            return Interaction.objects.filter(tweets__id=obj.id, user=user, interaction_type="like").exists()
+        except Exception as e:
+            print('ksksk', str(e))
+            return False
+        
     def get_post_duration(self, obj):
         try:
             time_difference = timezone.now() - obj.timestamp
@@ -44,7 +71,7 @@ class TweetSerializer(serializers.ModelSerializer):
             
     class Meta:
         model = Tweet
-        fields = ("id", "content", "user", "post_duration", "like_count", "replies_count",)
+        fields = ("id", "content", "user", "post_duration", "like_count", "replies_count", "is_bookmarked", "is_liked")
 
 
 class TweetLabelValueSerializer(serializers.ModelSerializer):

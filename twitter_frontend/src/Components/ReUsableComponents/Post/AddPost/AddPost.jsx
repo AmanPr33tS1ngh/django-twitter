@@ -1,9 +1,9 @@
 import React, { useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import axios from "../../../Redux/Axios/axios";
 import AuthContext from "../../../Authentication/AuthProvider";
 
-const AddPost = ({showClose}) => {
+const AddPost = ({ showClose }) => {
   const { username, id } = useParams();
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -21,6 +21,7 @@ const AddPost = ({showClose}) => {
       parent_username: username,
       id: id,
     };
+    console.log("data", data);
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
       // console.log("ressss", responseData);
@@ -33,18 +34,26 @@ const AddPost = ({showClose}) => {
 
   return (
     <div className="bg-white p-8">
-      {showClose ? <span className="absolute top-0 right-0 text-xl cursor-pointer" onClick={closeAddPostModal}>
-        &times;
-      </span>:null}
+      {showClose ? (
+        <span
+          className="absolute top-0 right-0 text-xl cursor-pointer"
+          onClick={closeAddPostModal}
+        >
+          &times;
+        </span>
+      ) : null}
       <textarea
-          className={'block'}
+        className={"block"}
         placeholder="Write your post here..."
         rows="4"
         name="content"
         cols="50"
         onChange={changePost}
       />
-      <button className="bg-blue-500 text-white px-5 py-2 text-base cursor-pointer mt-4" onClick={addPost}>
+      <button
+        className="bg-blue-500 text-white px-5 py-2 text-base cursor-pointer mt-4"
+        onClick={addPost}
+      >
         Post
       </button>
     </div>

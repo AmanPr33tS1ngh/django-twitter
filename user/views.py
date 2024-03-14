@@ -14,6 +14,7 @@ from tweets.serializers import TweetSerializer, BookmarkSerializer
 from tweets.models import Tweet, Interaction
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -29,7 +30,9 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         user = authenticate(request=request, username=username, password=password)
 
         if user:
+            print("logginding")
             login(request, user)
+        print('request user', request.user)
         data = super().validate(attrs)
         return data
 
@@ -41,8 +44,8 @@ class MyTokenObtainPairView(TokenObtainPairView):
 class UserAPI(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            username = request.data.get('username')
-            if not username:
+            username = request.user
+            if username.is_anonymous:
                 return JsonResponse({'success': False, 'msg': "please provide username"})
             user = User.objects.filter(username=username).first()
             if not user:
@@ -58,9 +61,14 @@ class UserAPI(APIView):
 class GetUsers(APIView):
     def post(self, request, *args, **kwargs):
         try:
+            user = request.user
+            if user.is_anonymous:
+                return JsonResponse({'success': False, 'msg': "please authenticate first"})
+
             username = request.data.get('username')
             if not username:
                 return JsonResponse({'success': False, 'msg': "please provide username"})
+            
             users = User.objects.filter(username__icontains=username)
             return JsonResponse({'success': True, 'msg': "users", "users": UserSerializer(users, many=True).data})
         except Exception as e:
@@ -133,11 +141,11 @@ class SignIn(APIView):
             if user:
                 login(request, user)
                 return JsonResponse({'success': True, 'msg': "Sign up successful!"})
+            print(request.user)
             return JsonResponse({'success': True, 'msg': "Couldn't signin due to an error. Please try again later"})
         except Exception as e:
             print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
-
 
 
 class LogOut(APIView):
@@ -150,9 +158,14 @@ class LogOut(APIView):
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
 
-class GetProfile(APIView):
+class GetProfile(APIView):    
+    authentication_classes = [JWTAuthentication]
+
     def post(self, request, *args, **kwargs):
         try:
+            user = request.user
+            print(request.user.is_authenticated)
+            print(request.user)
             profile_name = request.data.get('profile')
             if not profile_name:
                 return JsonResponse({'success': False, 'msg': 'Please provide valid username'})
@@ -167,16 +180,16 @@ class GetProfile(APIView):
             likes = Interaction.objects.filter(user=profile, interaction_type="like").first()
             
             if likes and not_private and view_type == 'likes':
-                serialized_likes = TweetSerializer(likes.tweets.all().order_by("timestamp"), many=True).data
+                serialized_likes = TweetSerializer(likes.tweets.all().order_by("timestamp"), context={'user': user}, many=True).data
             elif not_private  and view_type == 'replies':
                 replies = Tweet.objects.filter(parent__isnull=False, user=profile).order_by("timestamp")
             elif bookmark and not_private  and view_type == 'bookmarks':
-                serialized_bookmarks = TweetSerializer(bookmark.tweets.all().order_by("timestamp"), many=True).data
+                serialized_bookmarks = TweetSerializer(bookmark.tweets.all().order_by("timestamp"), context={'user': user}, many=True).data
             else:
                 posts = Tweet.objects.filter(user=profile).order_by("timestamp")
             
             return JsonResponse({'success': True, 'msg': "Got profile!", "user": UserProfileSerializer(profile).data,
-                                 'posts': TweetSerializer(posts, many=True).data, 'replies': TweetSerializer(replies, many=True).data, 
+                                 'posts': TweetSerializer(posts, many=True, context={'user': user}).data, 'replies': TweetSerializer(replies, many=True, context={'user': user}).data, 
                                  'likes': serialized_likes, 'bookmarks': serialized_bookmarks})
         except Exception as e:
             print('err at get_profile', str(e))

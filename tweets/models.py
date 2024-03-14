@@ -8,7 +8,6 @@ class Tweet(models.Model):
     content = models.TextField(blank=True, null=True, default=None)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
     timestamp = models.DateTimeField(auto_now_add=True)
-    likes = models.ManyToManyField(User, related_name='tweet_user', blank=True)
     
     def __str__(self) -> str:
         return super().__str__() + " -> " + self.content

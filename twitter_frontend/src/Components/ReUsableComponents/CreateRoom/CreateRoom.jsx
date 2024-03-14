@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Input from "../Input/Input";
 import { debounce } from "lodash";
-import axios from "axios";
+import axios from "../../Redux/Axios/axios";
 
 const CreateRoom = ({ handleClose, setRooms, username }) => {
   const [inputVal, setInputVal] = useState("");
@@ -68,13 +68,20 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
     setParticipants(filteredParticipants);
   };
   return (
-    <div style={{
-    background: "rgb(0 0 0 / 28%)"}} className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-10">
+    <div
+      style={{
+        background: "rgb(0 0 0 / 28%)",
+      }}
+      className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-10"
+    >
       <div className="bg-white rounded-lg w-1/2 absolute p-8 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <button className="absolute top-2 left-2" onClick={handleClose}>
           <FontAwesomeIcon icon={faCircleXmark} />
         </button>
-        <button onClick={createRoom} className="absolute top-2 right-2 bg-gray-300 rounded-full text-sm px-4 py-1">
+        <button
+          onClick={createRoom}
+          className="absolute top-2 right-2 bg-gray-300 rounded-full text-sm px-4 py-1"
+        >
           Next <FontAwesomeIcon icon={faArrowRight} />
         </button>
         <Input
@@ -89,14 +96,12 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
             onChange={groupHandleChange}
           />
         ) : null}
-        <div className={'m-2'}>
+        <div className={"m-2"}>
           {participants.map((participant) => (
-            <span
-                className={'bg-black px-2 py-1 text-white rounded-full mr-2'}
-            >
+            <span className={"bg-black px-2 py-1 text-white rounded-full mr-2"}>
               {participant}
               <button
-                className={'ml-2' }
+                className={"ml-2"}
                 onClick={() => removeParticipant(participant)}
               >
                 <FontAwesomeIcon icon={faCircleXmark} />
@@ -105,9 +110,7 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
           ))}
         </div>
         <hr style={{ margin: "1rem" }} />
-        <ul
-          className={'h-500 px-4 py-2 overflow-y-scroll'}
-        >
+        <ul className={"h-500 px-4 py-2 overflow-y-scroll"}>
           {users.map((user, index) => (
             <li
               key={index}
@@ -115,7 +118,9 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
               onClick={() => addParticipants(user)}
             >
               <div
-                className={'flex items-center cursor-pointer grid grid-cols-1 md:grid-cols-10 pb-10'}
+                className={
+                  " items-center cursor-pointer grid grid-cols-1 md:grid-cols-10 pb-10" //flex
+                }
               >
                 <FontAwesomeIcon icon={faUser} />
                 {user.username}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Input from "../../ReUsableComponents/Input/Input";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../../Redux/Axios/axios";
 import SearchResults from "../../ReUsableComponents/SearchResults/SearchResults";
 import { debounce } from "lodash";
 import Post from "../../ReUsableComponents/Post/Post";
@@ -54,35 +54,70 @@ const Explore = () => {
     navigate(`/explore/${tag}`);
   };
 
-  const actions = (e, id, action_type) => {
+  const actions = (e, post, action_type) => {
     e.stopPropagation();
-    if (action_type === "bookmark" || action_type == "like") {
-      // console.log("id", id);
-      let endpoint = `http://127.0.0.1:8000/tweets/take_action/`;
-      // console.log("use", tweet, tweet.name);
-      if (!tweet.username) return;
-      axios
-        .post(endpoint, {
-          tweet_id: id,
-          user: tweet?.name,
-          action_type: action_type,
-        })
-        .then((res) => {
-          let responseData = res.data;
-          // console.log(responseData);
-          // setTweets(responseData.tweets);
-        });
+    console.log("id", post?.id);
+    if (action_type === "comment") {
+      navigate(`/post/${post?.user?.username}/${post?.id}`);
+      return;
     }
+    let endpoint = `http://127.0.0.1:8000/tweets/take_action/`;
+
+    axios
+      .post(endpoint, {
+        tweet_id: post?.id,
+        user: post?.user?.username,
+        action_type: action_type,
+      })
+      .then((res) => {
+        let responseData = res.data;
+        console.log("responsfaseData", responseData);
+        if (responseData.success) {
+          if (tweet?.id === post?.id) {
+            const newTweet = tweet;
+            if (action_type === "bookmark") {
+              newTweet.is_bookmarked = !tweet.is_bookmarked;
+            } else if (action_type === "like") {
+              newTweet.is_liked = !tweet.is_liked;
+              if (newTweet.is_liked) {
+                newTweet.like_count += 1;
+              } else {
+                newTweet.like_count -= 1;
+              }
+            }
+            setTweet(newTweet);
+            return;
+          }
+          const newReplies = replies?.filter((p) => {
+            if (p.id === post?.id) {
+              if (action_type === "bookmark") {
+                p.is_bookmarked = !p.is_bookmarked;
+              } else if (action_type === "like") {
+                p.is_liked = !p.is_liked;
+                if (p.is_liked) {
+                  p.like_count += 1;
+                } else {
+                  p.like_count -= 1;
+                }
+              }
+            }
+            return p;
+          });
+          setReplies(newReplies);
+        }
+        // console.log(responseData);
+        // setTweets(responseData.tweets);
+      });
   };
   return (
-    <div className={'relative'}>
+    <div className={"relative"}>
       <Input placeholder="Search..." value={inputVal} onChange={handleChange} />
       <SearchResults
         results={matchingTweets}
         users={matchingUsers}
         showResults={!!inputVal}
       />
-      {/* {console.log("TWEET", tweet)} */}
+      {console.log("TWEET", tweet)}
       {tweet ? <Post post={tweet} actions={actions} /> : null}
       <br />
       <hr />
