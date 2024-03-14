@@ -1,10 +1,10 @@
 import React from "react";
-import "./Navbar.css";
+
 const Navbar = () => {
   return (
-    <nav className="home-nav">
-      <button className={`font-bold	active`}>For you</button>
-      <button className={`font-bold	de-active`}>Following</button>
+    <nav className="grid grid-cols-2 justify-center">
+      <button className={`font-bold	text-black`}>For you</button>
+      <button className={`font-bold	text-gray-600`}>Following</button>
     </nav>
   );
 };

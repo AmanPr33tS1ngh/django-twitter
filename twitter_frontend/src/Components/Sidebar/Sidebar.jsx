@@ -1,6 +1,5 @@
 import React, { useContext, useMemo } from "react";
 import { Link } from "react-router-dom";
-import "./Sidebar.css";
 import AuthContext from "../Authentication/AuthProvider";
 
 const Sidebar = () => {
@@ -41,39 +40,33 @@ const Sidebar = () => {
     []
   );
   return (
-    <aside className="sidebar">
+    <aside className="col-span-1 items-center p-2 my-2">
       <nav className="flex flex-col flex-1 space-y-6 ">
-        <Link to={"/"} className="side-bar mpt-0">
+        <Link to={"/"} className="grid grid-cols-7 gap-x-4 items-center p-2 my-2 mpt-0">
           <svg
             viewBox="0 0 24 24"
             aria-hidden="true"
-            style={{ height: "30px" }}
+            className={'h-[30px]' }
           >
             <g>
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
             </g>
           </svg>
         </Link>
         {sidebar.map((item) => (
-          <Link className="side-bar" to={item.to}>
+          <Link className="grid grid-cols-7 gap-x-4 items-center p-2 my-2" to={item.to}>
             <svg
-              style={{ height: "25px", display: "inline" }}
               viewBox="0 0 24 24"
               aria-hidden="true"
-              className="inline"
+              className="inline h-[25px]"
             >
               <g>
-                <path d={item.path}></path>
+                <path d={item.path}/>
               </g>
             </svg>
             <span className="flex-1 text-base font-medium">{item.name}</span>
           </Link>
         ))}
-        {/* 
-        <Link className="post" to={"/post"}>
-          Post
-        </Link> */}
-        {/* <button></button> */}
       </nav>
     </aside>
   );

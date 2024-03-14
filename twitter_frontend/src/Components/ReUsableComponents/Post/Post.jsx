@@ -1,53 +1,47 @@
 import React from "react";
-import "./Post.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBookmark,
   faComment,
   faHeart,
-  faShare,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
 const Post = ({ post, actions }) => {
   const navigate = useNavigate();
   return (
-    <div className="x-post" onClick={() => navigate(`/status/${post?.id}`)}>
-      <div className="user-info">
+    <div className="bg-white p-4 rounded-md shadow-md mb-4 transition-colors duration-300 hover:bg-red-50 cursor-pointer" onClick={() => navigate(`/status/${post?.id}`)}>
+      <div className="flex items-center">
         <img
-          className="avatar"
+          className="w-12 h-12 rounded-full mr-4"
           src="https://via.placeholder.com/50"
           alt="User Avatar"
         />
-        <div className="user-details">
-          <p className="username">{post?.user?.full_name}</p>
+        <div className="font-bold">
+          <p className="text-lg font-bold">{post?.user?.full_name}</p>
           <p>@{post?.user?.username}</p>
-          <p className="timestamp">{post?.timestamp}</p>
+          <p className="text-sm text-gray-500">{post?.timestamp}</p>
         </div>
       </div>
-      <p className="post-content">{post?.content}</p>
-      <div className="actions">
-        <button className="m-1rem" onClick={(e) => actions(e, post, "like")}>
+      <p className="mt-4 text-base text-gray-700">{post?.content}</p>
+      <div className="justify-around mt-4">
+        <button className="mr-4 text-center text-gray-400 font-light text-sm" onClick={(e) => actions(e, post, "like")}>
           <FontAwesomeIcon icon={faHeart} /> {post?.like_count}
         </button>
-        {/* <button className="m-1rem" onClick={(e) => actions(e, post, "share")}>
-          <FontAwesomeIcon icon={faShare} />
-        </button> */}
         <button
-          className="m-1rem"
+          className="mr-4 text-center text-gray-400 font-light text-sm"
           onClick={(e) => actions(e, post, "comment")}
-          // onClick={(e) => comment(e, post?.id)}
         >
           <FontAwesomeIcon icon={faComment} /> {post?.replies_count}
         </button>
         <button
-          className="m-1rem"
+          className="mr-4 text-center text-gray-400 font-light text-sm"
           onClick={(e) => actions(e, post, "bookmark")}
         >
           <FontAwesomeIcon icon={faBookmark} />
         </button>
       </div>
-      <p className="time">{post?.post_duration}</p>
+      <p className="mt-8 font-light text-gray-500 text-xs">{post?.post_duration}</p>
     </div>
   );
 };

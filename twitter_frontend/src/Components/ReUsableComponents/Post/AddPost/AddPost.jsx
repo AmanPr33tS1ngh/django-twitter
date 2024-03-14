@@ -1,10 +1,9 @@
 import React, { useContext, useState } from "react";
-import "./AddPost.css";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import AuthContext from "../../../Authentication/AuthProvider";
 
-const AddPost = () => {
+const AddPost = ({showClose}) => {
   const { username, id } = useParams();
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -33,32 +32,22 @@ const AddPost = () => {
   };
 
   return (
-    // <div className="post-modal">
-    // <div className="modal-overlay">
-    <div className="modal-content">
-      <span className="close-modal" onClick={closeAddPostModal}>
+    <div className="bg-white p-8">
+      {showClose ? <span className="absolute top-0 right-0 text-xl cursor-pointer" onClick={closeAddPostModal}>
         &times;
-      </span>
-      {/* <textarea
-        placeholder="Write your username here..."
-        rows="2"
-        name="username"
-        cols="50"
-        onChange={changePost}
-      /> */}
+      </span>:null}
       <textarea
+          className={'block'}
         placeholder="Write your post here..."
         rows="4"
         name="content"
         cols="50"
         onChange={changePost}
       />
-      <button className="post-button" onClick={addPost}>
+      <button className="bg-blue-500 text-white px-5 py-2 text-base cursor-pointer mt-4" onClick={addPost}>
         Post
       </button>
     </div>
-    // </div>
-    // </div>
   );
 };
 

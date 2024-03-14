@@ -9,12 +9,10 @@ const AuthRoute = ({ element, isSign }) => {
   const { user, authTokens } = useContext(AuthContext);
   const { isAuthenticated } = useSelector((state) => state.reducer);
   return isAuthenticated || isSign ? (
-    <div>
-      <div className={`${isAuthenticated ? "d-grid px-12 py-4" : ""} h-screen`}>
+      <div className={`${isAuthenticated ? "grid grid-cols-4 px-12 py-4" : ""} h-screen`}>
         {isAuthenticated ? <Sidebar /> : null}
-        {element}
+          <div className={'col-span-3'}>{element}</div>
       </div>
-    </div>
   ) : (
     <Navigate to="/sign_in" />
   );

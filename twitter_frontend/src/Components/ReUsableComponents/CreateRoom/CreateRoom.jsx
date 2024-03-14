@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./CreateRoom.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleXmark,
@@ -9,7 +8,6 @@ import {
 import Input from "../Input/Input";
 import { debounce } from "lodash";
 import axios from "axios";
-import SearchResults from "../SearchResults/SearchResults";
 
 const CreateRoom = ({ handleClose, setRooms, username }) => {
   const [inputVal, setInputVal] = useState("");
@@ -70,12 +68,13 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
     setParticipants(filteredParticipants);
   };
   return (
-    <div className="modal-overlay">
-      <div className="create-room-modal">
-        <button className="x-mark-left" onClick={handleClose}>
+    <div style={{
+    background: "rgb(0 0 0 / 28%)"}} className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-10">
+      <div className="bg-white rounded-lg w-1/2 absolute p-8 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <button className="absolute top-2 left-2" onClick={handleClose}>
           <FontAwesomeIcon icon={faCircleXmark} />
         </button>
-        <button onClick={createRoom} className="x-mark-right">
+        <button onClick={createRoom} className="absolute top-2 right-2 bg-gray-300 rounded-full text-sm px-4 py-1">
           Next <FontAwesomeIcon icon={faArrowRight} />
         </button>
         <Input
@@ -90,20 +89,14 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
             onChange={groupHandleChange}
           />
         ) : null}
-        <div style={{ margin: "5px" }}>
+        <div className={'m-2'}>
           {participants.map((participant) => (
             <span
-              style={{
-                background: "black",
-                padding: "5px 10px",
-                color: "white",
-                borderRadius: "25px",
-                marginRight: "5px",
-              }}
+                className={'bg-black px-2 py-1 text-white rounded-full mr-2'}
             >
               {participant}
               <button
-                style={{ marginLeft: "5px" }}
+                className={'ml-2' }
                 onClick={() => removeParticipant(participant)}
               >
                 <FontAwesomeIcon icon={faCircleXmark} />
@@ -113,11 +106,7 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
         </div>
         <hr style={{ margin: "1rem" }} />
         <ul
-          style={{
-            height: "500px",
-            padding: "10px",
-            overflowY: "scroll",
-          }}
+          className={'h-500 px-4 py-2 overflow-y-scroll'}
         >
           {users.map((user, index) => (
             <li
@@ -126,14 +115,7 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
               onClick={() => addParticipants(user)}
             >
               <div
-                style={{
-                  alignItems: "center",
-                  cursor: "pointer",
-                  alignItems: "center",
-                  display: "grid",
-                  gridTemplateColumns: "8% 92%",
-                  paddingBottom: "10px",
-                }}
+                className={'flex items-center cursor-pointer grid grid-cols-1 md:grid-cols-10 pb-10'}
               >
                 <FontAwesomeIcon icon={faUser} />
                 {user.username}

@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 import Input from "../../ReUsableComponents/Input/Input";
-import "./Messages.css";
 import AuthContext from "../../Authentication/AuthProvider";
 import axios from "axios";
 import Room from "../../ReUsableComponents/Room/Room";
@@ -18,7 +17,7 @@ const Messages = () => {
   const [rooms, setRooms] = useState([]);
   const [room, setRoom] = useState(null);
   const [createRoom, setCreateRoom] = useState(false);
-  console.log(user);
+
   const createConnection = () => {
     socket = new WebSocket(
       `ws://127.0.0.1:8000/ws/${user?.name ? user?.name : "group"}/${slug}/`
@@ -50,7 +49,6 @@ const Messages = () => {
   };
 
   const messageHandler = (e, message) => {
-    // e.preventDefault();
     console.log("calling function");
     if (!socket) {
       console.error("WebSocket connection is not initialized.");
@@ -88,19 +86,16 @@ const Messages = () => {
     };
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
-      // console.log("ressss chatchat123123", responseData);
       if (responseData.room) setRoom(responseData.room);
     });
   };
   const getRooms = () => {
-    // console.log(user?.name);
     let endpoint = "http://127.0.0.1:8000/chat/get_rooms/";
     let data = {
       username: user?.name,
     };
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
-      // console.log("ressss ", responseData);
       if (responseData.rooms) setRooms(responseData.rooms);
     });
   };
@@ -109,32 +104,22 @@ const Messages = () => {
   };
 
   const setCreatedRoom = (room) => {
-    // console.log("room setCreatedRoom", room);
     if (room) setRooms([...rooms, room]);
   };
   const openMessage = (room) => {
     navigate(`/messages/${room}`);
   };
   return (
-    <div className="dgrid">
-      {/* {console.log("SLususususu", slug, room)} */}
+    <div className="grid grid-cols-2">
       <div
-        style={{
-          borderRight: "0.5px solid rgb(225, 222, 222)",
-          position: "relative",
-        }}
+          className={'col-span-1 border-r border-gray-300  relative'}
       >
-        <h1 style={{ fontSize: "20px", fontWeight: 500, marginLeft: "10px" }}>
+        <h1 className={'text-lg font-medium ml-4'}>
           Messages
         </h1>
         <button
           onClick={() => setCreateRoom(!createRoom)}
-          style={{
-            position: "absolute",
-            top: 0,
-            right: "10px",
-            padding: "5px",
-          }}
+          className={'absolute top-0 right-4 p-2'}
         >
           <FontAwesomeIcon icon={faCommentMedical} />
         </button>
@@ -154,11 +139,7 @@ const Messages = () => {
         </div>
       </div>
       <div
-        style={{
-          // height: "100vh",
-          // overflowY: "scroll",
-          position: "relative",
-        }}
+          className={'col-span-1 relative'}
       >
         <ChatPanel room={room} messageHandler={messageHandler} />
       </div>

@@ -4,7 +4,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import SearchResults from "../../ReUsableComponents/SearchResults/SearchResults";
 import { debounce } from "lodash";
-import "./Explore.css";
 import Post from "../../ReUsableComponents/Post/Post";
 
 const Explore = () => {
@@ -76,7 +75,7 @@ const Explore = () => {
     }
   };
   return (
-    <div>
+    <div className={'relative'}>
       <Input placeholder="Search..." value={inputVal} onChange={handleChange} />
       <SearchResults
         results={matchingTweets}

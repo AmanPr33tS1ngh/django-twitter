@@ -2,9 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import Navbar from "../../Navbar/Navbar";
 import axios from "axios";
 import Post from "../../ReUsableComponents/Post/Post";
-import AddPost from "../../ReUsableComponents/Post/AddPost/AddPost";
-import { LOGOUT } from "../../Redux/ActionTypes/ActionTypes";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../../Authentication/AuthProvider";
 

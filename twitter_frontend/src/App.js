@@ -1,10 +1,8 @@
 import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import "./App.css";
 import Home from "./Components/Pages/Home/Home";
 import SignUp from "./Components/Pages/SignUp/SignUp";
 import SignIn from "./Components/Pages/SignIn/SignIn";
-import Trending from "./Components/Pages/Trending/Trending";
 import Profile from "./Components/Pages/Profile/Profile";
 import Explore from "./Components/Pages/Explore/Explore";
 import Notifications from "./Components/Pages/Notifications/Notifications";

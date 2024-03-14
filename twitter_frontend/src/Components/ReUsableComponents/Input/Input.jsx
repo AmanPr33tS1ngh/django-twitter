@@ -1,5 +1,4 @@
 import React from "react";
-import "./Input.css";
 
 const Input = ({
   placeholder,
@@ -11,11 +10,11 @@ const Input = ({
 }) => {
   return (
     <input
+        id={'input'}
       placeholder={placeholder}
       onChange={onChange}
       value={value}
-      className={className}
-      id="input"
+      className={`p-2 rounded-lg bg-gray-200 my-2 w-full mx-auto ${className}`}
       name={name}
       disabled={disabled}
     />

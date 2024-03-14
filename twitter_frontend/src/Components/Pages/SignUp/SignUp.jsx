@@ -1,16 +1,10 @@
 import React, { useContext, useState } from "react";
-import "./SignUp.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Input from "../../ReUsableComponents/Input/Input";
-import axios from "axios";
-import { LOGIN } from "../../Redux/ActionTypes/ActionTypes";
-import { useDispatch } from "react-redux";
 import AuthContext from "../../Authentication/AuthProvider";
+
 const SignUp = () => {
   const { signUp } = useContext(AuthContext);
-
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
     username: "",
     first_name: "",
@@ -27,8 +21,8 @@ const SignUp = () => {
     });
   };
   return (
-    <div className="container">
-      <div className="form-container">
+    <div className="flex justify-center items-center h-screen">
+      <div className="bg-white p-20 rounded-lg shadow-md max-w-md w-full text-center">
         <h2>Sign Up</h2>
         <Input
           onChange={handleChange}
@@ -67,11 +61,12 @@ const SignUp = () => {
           placeholder={"Verify Password..."}
         />
         <div>
-          <button className="button" onClick={() => signUp(credentials)}>
+          <button className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-md cursor-pointer text-base"
+                  onClick={() => signUp(credentials)}>
             Sign Up
           </button>
         </div>
-        <p className="link">
+        <p className="block text-blue-500 hover:text-blue-700 mt-2 text-sm">
           Already have an account? <Link to={"/sign_in"}>Sign in here</Link>.
         </p>
       </div>

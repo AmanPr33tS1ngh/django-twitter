@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import "./Profile.css";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import Post from "../../ReUsableComponents/Post/Post";
@@ -89,31 +88,31 @@ const Profile = () => {
     }
   };
   return (
-    <div className="profile">
-      <div className="banner">
+    <div>
+      <div className="h-32 bg-black relative overflow-hidden z-10">
         <img src={user.banner} alt="Banner" />
       </div>
-      <div className="profile-info">
-        <div className="p-20">
-          <div className="profile-picture">
+      <div className=" relative bg-white rounded-lg shadow-md mt-[-50px] p-6">
+        <div className="px-20 py-20">
+          <div className="w-32 h-32 z-20 relative bg-white overflow-hidden rounded-full border-4 border-white shadow-md mb-8">
             <img src={user.profilePicture} alt="Profile" />
           </div>
-          <div className="user-details">
-            <h1>{user.fullName}</h1>
-            <p>@{user.username}</p>
+          <div>
+            <h1 className={'text-base text-gray-600 mb-4'}>{user.fullName}</h1>
+            <p className={'text-xl font-semibold mb-1'}>@{user.username}</p>
             <br />
-            <p>{user.bio || "bio"}</p>
-            <p>{user.location || "location"}</p>
+            <p className={'text-xl font-semibold mb-1'}>{user.bio || "bio"}</p>
+            <p className={'text-xl font-semibold mb-1'}>{user.location || "location"}</p>
           </div>
         </div>
-        <div className="dfg">
+        <div className="grid grid-cols-4 items-center">
           {buttons.map((button) => (
             <button
               onClick={() => navigateTo(button.to)}
               className={
                 view_type === button.to || (!view_type && button.to === "")
-                  ? "active-btn"
-                  : "btn"
+                  ? "font-bold text-black"
+                  : "font-bold text-gray-500 py-1 px-2 transition-colors duration-300 ease-in-out hover:bg-gray-200"
               }
             >
               {button.name}

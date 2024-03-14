@@ -3,12 +3,11 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faUser } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import "./SearchResults.css";
 
 const SearchResults = ({ results, users, showResults }) => {
   return (
     showResults && (
-      <div className="search">
+      <div className="absolute z-10 bg-white shadow rounded p-4 w-full">
         <div className="mt-4">
           <h2 className="text-xl font-bold mb-2">Search Results</h2>
           <Result results={results} type={"tweet"} iconType={faSearch} />
@@ -23,13 +22,13 @@ const Result = ({ results, type, iconType }) => {
   return (
     <ul>
       {results?.map((result, index) => (
-        <li style={{ alignItems: "center" }} key={index} className="mb-2">
+        <li key={index} className="mb-2 items-center">
           <Link
-            className="link"
+            className="grid grid-cols-10 text-black items-center font-medium text-base"
             to={`/${type === "user" ? "" : "status/"}${result.value}`}
           >
-            <FontAwesomeIcon icon={iconType} />
-            {result.label}
+            <span className={'col-span-1'} ><FontAwesomeIcon icon={iconType} /></span>
+              <span className={'col-span-9'} >{result.label}</span>
           </Link>
         </li>
       ))}

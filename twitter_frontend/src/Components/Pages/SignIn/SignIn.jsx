@@ -1,10 +1,6 @@
 import React, {useContext, useState} from "react";
-import "./SignIn.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Input from "../../ReUsableComponents/Input/Input";
-import axios from "axios";
-import { useDispatch } from "react-redux";
-import { LOGIN } from "../../Redux/ActionTypes/ActionTypes";
 import AuthContext from "../../Authentication/AuthProvider";
 
 const SignIn = () => {
@@ -21,10 +17,10 @@ const SignIn = () => {
     });
   };
   return (
-    <div className="container">
+    <div className="flex justify-center items-center h-screen">
       <div>
-        <h1 className="">Join the community</h1>
-        <div className="form-container">
+        <div className="bg-white p-20 rounded-lg shadow-md max-w-md w-full text-center">
+          <h1 className="">Join the community</h1>
           <Input
             placeholder="Enter username"
             className="block m-5"
@@ -47,7 +43,7 @@ const SignIn = () => {
               Sign In
             </button>
           </div>
-          <p className="link">
+          <p className="block text-blue-500 hover:text-blue-700 mt-2 text-sm">
             Don't have an account? <Link to={"/sign_up"}>Sign up here</Link>.
           </p>
         </div>

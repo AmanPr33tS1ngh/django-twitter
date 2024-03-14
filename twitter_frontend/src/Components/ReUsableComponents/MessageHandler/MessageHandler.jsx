@@ -10,13 +10,7 @@ const MessageHandler = ({ messageHandler }) => {
   return (
     <div>
       <form
-        style={{
-          position: "absolute",
-          width: "100%",
-          bottom: "10px",
-
-          background: "white",
-        }}
+        className={'absolute w-full bottom-10 bg-white'}
         onSubmit={sendMessage}
       >
         <Input
@@ -26,12 +20,7 @@ const MessageHandler = ({ messageHandler }) => {
         />
         <button
           disabled={!message?.trim()}
-          style={{
-            position: "absolute",
-            top: "30%",
-            width: "20px",
-            right: "10%",
-          }}
+          className={'absolute top-1/3 w-20 right-10'}
           type="submit"
         >
           <svg
@@ -40,7 +29,7 @@ const MessageHandler = ({ messageHandler }) => {
             style={{ color: "rgb(29, 155, 240)" }}
           >
             <g>
-              <path d="M2.504 21.866l.526-2.108C3.04 19.719 4 15.823 4 12s-.96-7.719-.97-7.757l-.527-2.109L22.236 12 2.504 21.866zM5.981 13c-.072 1.962-.34 3.833-.583 5.183L17.764 12 5.398 5.818c.242 1.349.51 3.221.583 5.183H10v2H5.981z"></path>
+              <path d="M2.504 21.866l.526-2.108C3.04 19.719 4 15.823 4 12s-.96-7.719-.97-7.757l-.527-2.109L22.236 12 2.504 21.866zM5.981 13c-.072 1.962-.34 3.833-.583 5.183L17.764 12 5.398 5.818c.242 1.349.51 3.221.583 5.183H10v2H5.981z"/>
             </g>
           </svg>
         </button>
