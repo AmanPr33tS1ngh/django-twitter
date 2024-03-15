@@ -10,7 +10,7 @@ const Input = ({
 }) => {
   return (
     <input
-        id={'input'}
+      id={'input'}
       placeholder={placeholder}
       onChange={onChange}
       value={value}

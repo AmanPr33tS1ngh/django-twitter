@@ -22,7 +22,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['name'] = user.username
         return token
-    
+
     def validate(self, attrs):
         username = attrs.get('username')
         password = attrs.get('password')
@@ -68,7 +68,7 @@ class GetUsers(APIView):
             username = request.data.get('username')
             if not username:
                 return JsonResponse({'success': False, 'msg': "please provide username"})
-            
+
             users = User.objects.filter(username__icontains=username)
             return JsonResponse({'success': True, 'msg': "users", "users": UserSerializer(users, many=True).data})
         except Exception as e:
@@ -106,18 +106,18 @@ class SignUp(APIView):
             )
             print("created_user", user)
             authenticated_user = authenticate(request, username=username, password=password)
-            
+
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
-            
+
             token_serializer = MyTokenObtainPairSerializer(data={'username': user.username, 'password': password})
             token_serializer.is_valid(raise_exception=True)
-            
+
             if not authenticated_user:
                 return JsonResponse({'success': False, 'msg': "Failed to authenticate user."})
-        
+
             login(request, authenticated_user)
-            return JsonResponse({'success': True, 'msg': "User Created", "user": UserSerializer(user).data, 
+            return JsonResponse({'success': True, 'msg': "User Created", "user": UserSerializer(user).data,
                                     "token": {'access_token': access_token, 'refresh_token': str(refresh)}})
 
         except Exception as e:
@@ -158,7 +158,7 @@ class LogOut(APIView):
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
 
-class GetProfile(APIView):    
+class GetProfile(APIView):
     authentication_classes = [JWTAuthentication]
 
     def post(self, request, *args, **kwargs):
@@ -174,20 +174,9 @@ class GetProfile(APIView):
                 return JsonResponse({'success': False, 'msg': 'Please provide valid username'})
             not_private = not profile.is_private
             view_type = request.data.get('view_type')
-            posts = likes = replies = Tweet.objects.none()
-            serialized_bookmarks = serialized_likes = None
             bookmark = Interaction.objects.filter(user=profile, interaction_type="bookmark").first()
             likes = Interaction.objects.filter(user=profile, interaction_type="like").first()
-            
-            # if likes and not_private and view_type == 'likes':
-            #     serialized_likes = TweetSerializer(likes.tweets.all().order_by("timestamp"), context={'user': user}, many=True).data
-            # elif not_private  and view_type == 'replies':
-            #     replies = Tweet.objects.filter(parent__isnull=False, user=profile).order_by("timestamp")
-            # elif bookmark and not_private  and view_type == 'bookmarks':
-            #     serialized_bookmarks = TweetSerializer(bookmark.tweets.all().order_by("timestamp"), context={'user': user}, many=True).data
-            # else:
-            #     posts = Tweet.objects.filter(user=profile).order_by("timestamp")
-            print('view_type', view_type)
+
             if likes and not_private and view_type == 'likes':
                 posts = likes.tweets.all().order_by("timestamp")
             elif not_private  and view_type == 'replies':
@@ -196,15 +185,41 @@ class GetProfile(APIView):
                 posts = bookmark.tweets.all().order_by("timestamp")
             else:
                 posts = Tweet.objects.filter(user=profile).order_by("timestamp")
-                
+
             serialized_data = TweetSerializer(posts, many=True, context={'user': user}).data
-            
+
             return JsonResponse({'success': True, 'msg': "Got profile!", "user": UserProfileSerializer(profile).data,
                                  'posts': serialized_data,})
-            
-            # return JsonResponse({'success': True, 'msg': "Got profile!", "user": UserProfileSerializer(profile).data,
-            #                      'posts': TweetSerializer(posts, many=True, context={'user': user}).data, 'replies': TweetSerializer(replies, many=True, context={'user': user}).data, 
-            #                      'likes': serialized_likes, 'bookmarks': serialized_bookmarks})
+        except Exception as e:
+            print('err at get_profile', str(e))
+            return JsonResponse({'success': False, 'msg': "err: " + str(e)})
+
+
+class UploadImage(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            user = request.user
+            if user.is_anonymous:
+                return JsonResponse({'success': False, 'msg': 'Please Authenticate'})
+
+            image = None
+            upload_type = request.data.get('upload_type')
+
+            if 'image' in request.FILES:
+                image = request.FILES.get('image')
+                if image.size > 4194304:
+                    return JsonResponse({'success': False, 'msg': 'Image Size Too Big. Please upload an image with '
+                                                                  'size less than 4MB.'})
+
+            if upload_type == 'profile_picture':
+                user.profile_picture = image
+            elif upload_type == 'banner':
+                user.banner = image
+            else:
+                return JsonResponse({'success': False, 'msg': 'Provide valid type!'})
+            user.save()
+
+            return JsonResponse({'success': True, 'msg': "Updated Picture!"})
         except Exception as e:
             print('err at get_profile', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})

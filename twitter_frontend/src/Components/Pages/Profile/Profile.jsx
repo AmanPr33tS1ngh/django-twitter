@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "../../Redux/Axios/axios";
 import { useNavigate, useParams } from "react-router-dom";
 import Post from "../../ReUsableComponents/Post/Post";
+import ImageUploader from "../../ReUsableComponents/ImageUploader/ImageUploader";
+import ModalBackground from "../../ReUsableComponents/ModalBackground/ModalBackground";
 
 const Profile = () => {
   const { profile, view_type } = useParams();
@@ -21,9 +23,8 @@ const Profile = () => {
     canEditProfile: false,
   });
   const [posts, setPosts] = useState([]);
-  // const [replies, setReplies] = useState([]);
-  // const [likes, setLikes] = useState([]);
-  // const [bookmarks, setBookmarks] = useState([]);
+  const [uploadProfilePicture, setUploadProfilePicture] = useState(false);
+  const [uploadType, setUploadType] = useState(null);
 
   const buttons = useMemo(
     () => [
@@ -42,13 +43,10 @@ const Profile = () => {
     axios.post(endpoint, data).then((res) => {
       const responseData = res.data;
       console.log("responseData", responseData);
-      // const responseData = res.data;
-      // console.log("responseData", responseData);
+
       const user = responseData.user;
       const posts = responseData.posts;
-      // const replies = responseData.replies;
-      // const likes = responseData.likes;
-      // const bookmarks = responseData.bookmarks;
+
       if (user) {
         setUser({
           username: user.username,
@@ -62,29 +60,8 @@ const Profile = () => {
       }
       setPosts(
         posts ||
-          // || replies || likes ||bookmarks
           []
       );
-      // const user = responseData.user;
-      // const posts = responseData.posts;
-      // const replies = responseData.replies;
-      // const likes = responseData.likes;
-      // const bookmarks = responseData.bookmarks;
-      // if (user) {
-      //   setUser({
-      //     username: user.username,
-      //     banner: user.banner,
-      //     profilePicture: user.profile_picture,
-      //     fullName: user.full_name,
-      //     location: user.location,
-      //     bio: user.biography,
-      //     canEditProfile: user.can_edit_profile,
-      //   });
-      // }
-      // setPosts(posts || []);
-      // setReplies(replies || []);
-      // setLikes(likes || []);
-      // setBookmarks(bookmarks || []);
     });
   };
   const navigateTo = (type) => {
@@ -128,23 +105,40 @@ const Profile = () => {
           });
           setPosts(newPost);
         }
-        // setLikes();
-        // setPosts();
-        // const bookmarks = responseData.bookmarks;
-        // if (bookmarks) setBookmarks(bookmarks);
-        // setReplies();
-        // setTweets(responseData.tweets);
       });
   };
+  const imageUploader=(image)=>{
+    const formData = new FormData();
+    formData.append('image', image);
+    formData.append('upload_type', uploadType);
+
+    const endpoint = `http://127.0.0.1:8000/users/upload_image/`;
+    axios.post(endpoint, formData).then((res)=>{
+      const responseData = res.data;
+      console.log("ressss", responseData);
+    })
+  };
+  const uploadOpener = (type)=>{
+    if (type) setUploadType(type)
+    setUploadProfilePicture(!uploadProfilePicture);
+  }
+  console.log("user?.username === profile", user?.username === profile, user?.username , profile)
   return (
     <div>
-      <div className="h-32 bg-black relative overflow-hidden z-10">
+      {uploadProfilePicture ? <ModalBackground>
+            <ImageUploader onClose={()=>uploadOpener()} onImageUpload={imageUploader} isImageUpload={user?.username === profile}/>
+          </ModalBackground> : null}
+      <div onClick={()=> {
+            uploadOpener('banner')
+          }} className="h-32 bg-black relative overflow-hidden z-2 cursor-pointer">
         <img src={user.banner} alt="Banner" />
       </div>
-      <div className=" relative bg-white rounded-lg shadow-md mt-[-50px] p-6">
+      <div className=" relative bg-white shadow-md mt-[-50px] p-6">
         <div className="px-20 py-20">
-          <div className="w-32 h-32 z-20 relative bg-white overflow-hidden rounded-full border-4 border-white shadow-md mb-8">
-            <img src={user.profilePicture} alt="Profile" />
+          <div onClick={()=> {
+            uploadOpener('profile_picture')
+          }} className="cursor-pointer	w-32 h-32 z-2 relative bg-white overflow-hidden rounded-full border-4 border-white shadow-md mb-8">
+            <img src={user.profilePicture} alt="Profile picture" />
           </div>
           <div>
             <h1 className={"text-base text-gray-600 mb-4"}>{user.fullName}</h1>
@@ -174,30 +168,10 @@ const Profile = () => {
         </div>
         <div>
           {
-            // !view_type
-            // ?
             posts.length
               ? posts.map((post) => <Post post={post} actions={actions} />)
               : "No Posts"
-            // : null
           }
-          {/* {view_type === "likes"
-            ? likes.length
-              ? likes.map((like) => <Post post={like} actions={actions} />)
-              : "No Likes"
-            : null}
-          {view_type === "replies"
-            ? replies.length
-              ? replies.map((reply) => <Post post={reply} actions={actions} />)
-              : "No Replies"
-            : null}
-          {view_type === "bookmarks"
-            ? bookmarks.length
-              ? bookmarks.map((bookmark) => (
-                  <Post post={bookmark} actions={actions} />
-                ))
-              : "No Bookmarks"
-            : null} */}
         </div>
       </div>
     </div>

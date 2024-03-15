@@ -8,6 +8,7 @@ import {
 import Input from "../Input/Input";
 import { debounce } from "lodash";
 import axios from "../../Redux/Axios/axios";
+import ModalBackground from "../ModalBackground/ModalBackground";
 
 const CreateRoom = ({ handleClose, setRooms, username }) => {
   const [inputVal, setInputVal] = useState("");
@@ -68,12 +69,7 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
     setParticipants(filteredParticipants);
   };
   return (
-    <div
-      style={{
-        background: "rgb(0 0 0 / 28%)",
-      }}
-      className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-10"
-    >
+    <ModalBackground>
       <div className="bg-white rounded-lg w-1/2 absolute p-8 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <button className="absolute top-2 left-2" onClick={handleClose}>
           <FontAwesomeIcon icon={faCircleXmark} />
@@ -129,7 +125,7 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
           ))}
         </ul>
       </div>
-    </div>
+    </ModalBackground>
   );
 };
 

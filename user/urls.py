@@ -10,7 +10,8 @@ url_patterns = [
     path('sign_out/', LogOut.as_view(), name='users'),
     path('get_profile/', GetProfile.as_view(), name='users'),
     path('get_users/', GetUsers.as_view(), name='get_users'),
-    
+    path('upload_image/', UploadImage.as_view(), name='upload_image'),
+
     path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
