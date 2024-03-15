@@ -39,7 +39,12 @@ const Messages = () => {
     socket.onmessage = function (event) {
       try {
         let data = JSON.parse(event.data);
-        if (data.action_type === "chat_message" && data.new_room) {
+        console.log("datatatata", data);
+        if (
+          (data.action_type === "chat_message" ||
+            data.action_type === "delete_message") &&
+          data.new_room
+        ) {
           setRoom(data.new_room);
         }
       } catch (error) {
@@ -48,7 +53,7 @@ const Messages = () => {
     };
   };
 
-  const messageHandler = (e, message) => {
+  const messageHandler = (message) => {
     console.log("calling function");
     if (!socket) {
       console.error("WebSocket connection is not initialized.");
@@ -109,6 +114,25 @@ const Messages = () => {
   const openMessage = (room) => {
     navigate(`/messages/${room}`);
   };
+  const deleteMessage = (message) => {
+    console.log("calling function", message?.id);
+    if (!socket) {
+      console.error("WebSocket connection is not initialized.");
+      return;
+    }
+    const data = {
+      username: user?.name,
+      message_id: message?.id,
+      room_name: slug,
+      action_type: "delete_message",
+    };
+    console.log("WebSocket.OPEN", WebSocket.OPEN);
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify(data));
+    } else {
+      console.error("WebSocket connection is not open.");
+    }
+  };
   return (
     <div className="grid grid-cols-2">
       <div className={"col-span-1 border-r border-gray-300  relative"}>
@@ -135,7 +159,11 @@ const Messages = () => {
         </div>
       </div>
       <div className={"col-span-1 relative"}>
-        <ChatPanel room={room} messageHandler={messageHandler} />
+        <ChatPanel
+          room={room}
+          messageHandler={messageHandler}
+          deleteMessage={deleteMessage}
+        />
       </div>
     </div>
   );

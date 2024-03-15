@@ -9,7 +9,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_name = f"room_{self.scope['url_route']['kwargs']['slug']}"
         self.username = self.scope['url_route']['kwargs']['user']
-        print("connect", self.scope)
         await self.accept()
         await self.channel_layer.group_add(self.room_name, self.channel_name)
 
@@ -30,10 +29,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         action_type = text_data_json.get("action_type")
-        print("self.username", self.username, text_data_json.get('username'))
+        print('action_type', text_data_json)
         if action_type == 'connect':
             await self.create_chat_room(text_data_json)
-        elif action_type == 'chat_message' and self.username == text_data_json.get('username'):
+        elif (action_type == 'chat_message' or action_type == 'delete_message') and self.username == text_data_json.get('username'):
             await self.channel_layer.group_send(
                 self.room_name,
                 {
@@ -51,11 +50,30 @@ class ChatConsumer(AsyncWebsocketConsumer):
         user = await self.get_user_details(username)
         if not user:
             await self.send(text_data=json.dumps({"success": False, "msg": "Please authenticate first!"}))
-        print('calling create_message_and_return_room')
         room = await self.create_message_and_return_room(room_name, user, message)
         
         json_data = {
             "new_room": room, 'action_type': action_type
+        }
+        await self.send(text_data=json.dumps(json_data))
+        
+    async def delete_message(self, event):
+        data = event.get('data')
+        action_type = data.get('action_type')
+        message_id = data.get("message_id")
+        username = data.get("username")
+        room_name = data.get("room_name")
+        if not message_id:
+            await self.send(text_data=json.dumps({"success": False, "msg": "There was an error while deleting message!"}))
+
+        user = await self.get_user_details(username)
+        if not user:
+            await self.send(text_data=json.dumps({"success": False, "msg": "Please authenticate first!"}))
+        
+        new_room = await self.delete_msg(room_name, message_id, user)
+        
+        json_data = {
+            "new_room": new_room, 'action_type': action_type,
         }
         await self.send(text_data=json.dumps(json_data))
         
@@ -81,7 +99,24 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 sender=user,
                 content=message,
             )
-            print('created create_message_and_return_room')
+            return RoomSerializerWithMessage(room, context={'user': user}).data
+        except Exception as e:
+            print('Error creating message:', str(e))
+            return None
+        
+    @database_sync_to_async
+    def delete_msg(self, room_name, message_id, user):
+        try:
+            room = Room.objects.get(slug=room_name)
+            if not room:
+                return None
+
+            Message.objects.filter(
+                room=room,
+                sender=user,
+                id=message_id,
+            ).delete()
+            
             return RoomSerializerWithMessage(room, context={'user': user}).data
         except Room.DoesNotExist:
             print('Room does not exist:', room_name)

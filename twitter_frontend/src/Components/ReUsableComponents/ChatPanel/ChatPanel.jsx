@@ -1,10 +1,10 @@
 import React, { useContext, useState } from "react";
 import MessageHandler from "../MessageHandler/MessageHandler";
 import AuthContext from "../../Authentication/AuthProvider";
+import Message from "../Message/Message";
 
-const ChatPanel = ({ room, messageHandler }) => {
+const ChatPanel = ({ room, messageHandler, deleteMessage }) => {
   const { user } = useContext(AuthContext);
-
   return (
     <div className={"p-4"}>
       <div className={"text-xl font-semibold pb-5"}>
@@ -34,30 +34,13 @@ const ChatPanel = ({ room, messageHandler }) => {
           ) : null}
         </div> */}
         <div>
-          {room?.messages?.map((message) => {
-            const isUser = user?.name === message?.sender?.username;
-            const [showOptions, setShowOptions] = useState(false);
-            return (
-              <div
-                className={`flex ${
-                  isUser ?  "justify-end":"justify-start" 
-                } items-center mx-2 my-[1.2rem]`}
-              >
-                  {isUser ? <span className={'options'}>hello world</span>:null}
-                <span
-                  className={`
-                   px-4 py-3 rounded-full text-sm font-medium ${
-                    isUser
-                      ? " msg bg-blue-500  text-white"
-                      : "bg-gray-300 bg-opacity-40 "
-                  }
-                  `}
-                >
-                  {message.content}
-                </span>
-              </div>
-            );
-          })}
+          {room?.messages?.map((message) => (
+            <Message
+              message={message}
+              user={user}
+              deleteMessage={deleteMessage}
+            />
+          ))}
         </div>
       </div>
       <MessageHandler messageHandler={messageHandler} />
