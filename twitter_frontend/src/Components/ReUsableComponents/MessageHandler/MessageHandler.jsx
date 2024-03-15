@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import Input from "../Input/Input";
 
 const MessageHandler = ({ messageHandler }) => {

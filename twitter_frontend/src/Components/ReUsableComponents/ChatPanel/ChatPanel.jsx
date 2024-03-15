@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import MessageHandler from "../MessageHandler/MessageHandler";
 import AuthContext from "../../Authentication/AuthProvider";
 import Message from "../Message/Message";
