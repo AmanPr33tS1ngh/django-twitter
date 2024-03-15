@@ -58,10 +58,7 @@ const Profile = () => {
           canEditProfile: user.can_edit_profile,
         });
       }
-      setPosts(
-        posts ||
-          []
-      );
+      setPosts(posts || []);
     });
   };
   const navigateTo = (type) => {
@@ -107,38 +104,63 @@ const Profile = () => {
         }
       });
   };
-  const imageUploader=(image)=>{
+  const imageUploader = (image) => {
     const formData = new FormData();
-    formData.append('image', image);
-    formData.append('upload_type', uploadType);
+    formData.append("image", image);
+    formData.append("upload_type", uploadType);
 
     const endpoint = `http://127.0.0.1:8000/users/upload_image/`;
-    axios.post(endpoint, formData).then((res)=>{
+    axios.post(endpoint, formData).then((res) => {
       const responseData = res.data;
       console.log("ressss", responseData);
-    })
+    });
   };
-  const uploadOpener = (type)=>{
-    if (type) setUploadType(type)
+  const uploadOpener = (type) => {
+    if (type) setUploadType(type);
     setUploadProfilePicture(!uploadProfilePicture);
-  }
-  console.log("user?.username === profile", user?.username === profile, user?.username , profile)
+  };
+  console.log(
+    "user?.username === profile",
+    user?.username === profile,
+    user?.username,
+    profile
+  );
   return (
     <div>
-      {uploadProfilePicture ? <ModalBackground>
-            <ImageUploader onClose={()=>uploadOpener()} onImageUpload={imageUploader} isImageUpload={user?.username === profile}/>
-          </ModalBackground> : null}
-      <div onClick={()=> {
-            uploadOpener('banner')
-          }} className="h-32 bg-black relative overflow-hidden z-2 cursor-pointer">
-        <img src={user.banner} alt="Banner" />
+      {uploadProfilePicture ? (
+        <ModalBackground>
+          <ImageUploader
+            onClose={() => uploadOpener()}
+            onImageUpload={imageUploader}
+            isImageUpload={user?.username === profile}
+            savedImage={
+              uploadType === "banner"
+                ? profile?.banner
+                : profile?.profile_picture
+            }
+          />
+        </ModalBackground>
+      ) : null}
+      <div
+        onClick={() => {
+          uploadOpener("banner");
+        }}
+        className="h-32 bg-black relative overflow-hidden z-2 cursor-pointer"
+      >
+        <img src={`http://127.0.0.1:8000/media/${user.banner}`} alt="Banner" />
       </div>
       <div className=" relative bg-white shadow-md mt-[-50px] p-6">
         <div className="px-20 py-20">
-          <div onClick={()=> {
-            uploadOpener('profile_picture')
-          }} className="cursor-pointer	w-32 h-32 z-2 relative bg-white overflow-hidden rounded-full border-4 border-white shadow-md mb-8">
-            <img src={user.profilePicture} alt="Profile picture" />
+          <div
+            onClick={() => {
+              uploadOpener("profile_picture");
+            }}
+            className="cursor-pointer	w-32 h-32 z-2 relative bg-white overflow-hidden rounded-full border-4 border-white shadow-md mb-8"
+          >
+            <img
+              src={`http://127.0.0.1:8000/media/${user.profilePicture}`}
+              alt="Profile picture"
+            />
           </div>
           <div>
             <h1 className={"text-base text-gray-600 mb-4"}>{user.fullName}</h1>
@@ -167,11 +189,9 @@ const Profile = () => {
           ))}
         </div>
         <div>
-          {
-            posts.length
-              ? posts.map((post) => <Post post={post} actions={actions} />)
-              : "No Posts"
-          }
+          {posts.length
+            ? posts.map((post) => <Post post={post} actions={actions} />)
+            : "No Posts"}
         </div>
       </div>
     </div>

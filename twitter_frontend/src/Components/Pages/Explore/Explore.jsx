@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Input from "../../ReUsableComponents/Input/Input";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "../../Redux/Axios/axios";
@@ -33,9 +33,10 @@ const Explore = () => {
     setInputVal(val);
     debouncedHandleChange(val);
   };
-  const debouncedHandleChange = debounce((value) => {
-    getMatchingTweets(value);
-  }, 1000);
+  const debouncedHandleChange = useCallback(
+    debounce((value) => getMatchingTweets(value), 1000),
+    []
+  );
 
   const navigate = useNavigate();
   const getMatchingTweets = (inputVal) => {
@@ -125,7 +126,7 @@ const Explore = () => {
       <hr />
       <hr />
       <br />
-      <h2>Replies</h2>
+      {replies?.length ? <h2>Replies</h2> : null}
       {replies?.map((reply) => (
         <Post post={reply} actions={actions} />
       ))}

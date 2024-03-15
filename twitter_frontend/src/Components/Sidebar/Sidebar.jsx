@@ -42,8 +42,15 @@ const Sidebar = () => {
   return (
     <aside className="col-span-1 items-center p-2 my-2">
       <nav className="flex flex-col flex-1 space-y-6 ">
-        <Link to={"/"} className="grid grid-cols-7 gap-x-4 items-center p-2 my-2 mpt-0">
-          <svg
+        <Link to={"/"} className="items-center p-2 mpt-0">
+          <img
+            width={"100"}
+            height={"100"}
+            src="https://pbs.twimg.com/profile_images/1848491028/gray45logo_400x400.png"
+            alt="Twista Logo"
+            decoding="async"
+          />
+          {/* <svg
             viewBox="0 0 24 24"
             aria-hidden="true"
             className={'h-[30px]' }
@@ -51,20 +58,25 @@ const Sidebar = () => {
             <g>
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
             </g>
-          </svg>
+          </svg> */}
         </Link>
         {sidebar.map((item) => (
-          <Link className="grid grid-cols-7 gap-x-4 items-center p-2 my-2" to={item.to}>
+          <Link
+            className="grid grid-cols-5 gap-x-1 items-center p-2 my-2"
+            to={item.to}
+          >
             <svg
               viewBox="0 0 24 24"
               aria-hidden="true"
-              className="inline h-[25px]"
+              className="inline h-[25px] grid-cols-1"
             >
               <g>
-                <path d={item.path}/>
+                <path d={item.path} />
               </g>
             </svg>
-            <span className="flex-1 text-base font-medium">{item.name}</span>
+            <span className="flex-1 text-base font-medium grid-cols-4">
+              {item.name}
+            </span>
           </Link>
         ))}
       </nav>
