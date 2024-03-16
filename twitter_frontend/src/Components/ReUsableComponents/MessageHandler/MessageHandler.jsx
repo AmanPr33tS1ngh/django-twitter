@@ -10,7 +10,7 @@ const MessageHandler = ({ messageHandler }) => {
   return (
     <div>
       <form
-        className={"absolute w-full bottom-[16px] bg-white"}
+        className={"absolute w-[95%] bottom-[16px] bg-white"}
         onSubmit={sendMessage}
       >
         <Input

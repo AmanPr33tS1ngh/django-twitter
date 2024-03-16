@@ -1,10 +1,32 @@
-import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Input from "../../ReUsableComponents/Input/Input";
-import AuthContext from "../../Authentication/AuthProvider";
+import { LOGIN } from "../../Redux/ActionTypes/ActionTypes";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import { useDispatch } from "react-redux";
 
 const SignUp = () => {
-  const { signUp } = useContext(AuthContext);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const signUp = () => {
+    const endpoint = "http://127.0.0.1:8000/users/sign_up/";
+    axios.post(endpoint, credentials).then((res) => {
+      const responseData = res.data;
+      if (responseData.success) {
+        localStorage.setItem("authTokens", JSON.stringify(responseData.token));
+        dispatch({
+          type: LOGIN,
+          payload: {
+            authenticated: true,
+            user: jwtDecode(responseData.token.access_token),
+          },
+        });
+        navigate("/");
+      }
+    });
+  };
   const [credentials, setCredentials] = useState({
     username: "",
     first_name: "",
@@ -61,8 +83,10 @@ const SignUp = () => {
           placeholder={"Verify Password..."}
         />
         <div>
-          <button className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-md cursor-pointer text-base"
-                  onClick={() => signUp(credentials)}>
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-md cursor-pointer text-base"
+            onClick={() => signUp(credentials)}
+          >
             Sign Up
           </button>
         </div>

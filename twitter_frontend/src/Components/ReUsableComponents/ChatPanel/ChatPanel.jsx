@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
 import MessageHandler from "../MessageHandler/MessageHandler";
-import AuthContext from "../../Authentication/AuthProvider";
 import Message from "../Message/Message";
+import { useSelector } from "react-redux";
 
 const ChatPanel = ({ room, messageHandler, deleteMessage }) => {
-  const { user } = useContext(AuthContext);
+  const { user } = useSelector((state) => state.reducer.reducer);
   return (
     <div className={"p-4"}>
       <div className={"text-xl font-semibold pb-5"}>

@@ -20,7 +20,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        token['name'] = user.username
+        token['user'] = UserProfileSerializer(user).data
         return token
 
     def validate(self, attrs):

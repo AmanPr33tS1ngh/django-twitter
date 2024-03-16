@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 
 const Message = ({ message, user, deleteMessage }) => {
-  const isUser = user?.name === message?.sender?.username;
+  const isUser = user?.username === message?.sender?.username;
   const [showOptions, setShowOptions] = useState(false);
   const [showEllipsis, setShowEllipsis] = useState(false);
   const changeEllipsis = () => {

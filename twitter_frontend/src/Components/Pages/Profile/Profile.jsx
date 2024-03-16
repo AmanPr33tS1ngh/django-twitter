@@ -39,10 +39,10 @@ const Profile = () => {
   const getProfile = () => {
     const endpoint = "http://127.0.0.1:8000/users/get_profile/";
     const data = { profile: profile, view_type: view_type };
-
+    console.log("data getprofile", data);
     axios.post(endpoint, data).then((res) => {
       const responseData = res.data;
-      console.log("responseData", responseData);
+      console.log("responseData getprofile", responseData);
 
       const user = responseData.user;
       const posts = responseData.posts;
@@ -73,7 +73,6 @@ const Profile = () => {
       return;
     }
     let endpoint = `http://127.0.0.1:8000/tweets/take_action/`;
-    // console.log("use", user, user.username);
     if (!user.username) return;
     axios
       .post(endpoint, {
@@ -127,6 +126,7 @@ const Profile = () => {
   );
   return (
     <div>
+      {console.log("profile", user)}
       {uploadProfilePicture ? (
         <ModalBackground>
           <ImageUploader
@@ -134,9 +134,7 @@ const Profile = () => {
             onImageUpload={imageUploader}
             isImageUpload={user?.username === profile}
             savedImage={
-              uploadType === "banner"
-                ? profile?.banner
-                : profile?.profile_picture
+              uploadType === "banner" ? user?.banner : user?.profilePicture
             }
           />
         </ModalBackground>
@@ -150,7 +148,7 @@ const Profile = () => {
         <img src={`http://127.0.0.1:8000/media/${user.banner}`} alt="Banner" />
       </div>
       <div className=" relative bg-white shadow-md mt-[-50px] p-6">
-        <div className="px-20 py-20">
+        <div>
           <div
             onClick={() => {
               uploadOpener("profile_picture");

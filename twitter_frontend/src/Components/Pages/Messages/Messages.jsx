@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Input from "../../ReUsableComponents/Input/Input";
-import AuthContext from "../../Authentication/AuthProvider";
 import axios from "../../Redux/Axios/axios";
 import Room from "../../ReUsableComponents/Room/Room";
 import CreateRoom from "../../ReUsableComponents/CreateRoom/CreateRoom";
@@ -8,19 +7,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCommentMedical } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useParams } from "react-router-dom";
 import ChatPanel from "../../ReUsableComponents/ChatPanel/ChatPanel";
+import { useSelector } from "react-redux";
 
 let socket = null;
 const Messages = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user } = useSelector((state) => state.reducer.reducer);
   const [rooms, setRooms] = useState([]);
   const [room, setRoom] = useState(null);
   const [createRoom, setCreateRoom] = useState(false);
 
   const createConnection = () => {
     socket = new WebSocket(
-      `ws://127.0.0.1:8000/ws/${user?.name ? user?.name : "group"}/${slug}/`
+      `ws://127.0.0.1:8000/ws/${
+        user?.username ? user?.username : "group"
+      }/${slug}/`
     );
 
     socket.onopen = function (e) {
@@ -60,7 +62,7 @@ const Messages = () => {
       return;
     }
     const data = {
-      username: user?.name,
+      username: user?.username,
       message: message,
       room_name: slug,
       action_type: "chat_message",
@@ -86,7 +88,7 @@ const Messages = () => {
   const getRoom = () => {
     let endpoint = "http://127.0.0.1:8000/chat/get_room/";
     let data = {
-      username: user?.name,
+      username: user?.username,
       slug: slug,
     };
     axios.post(endpoint, data).then((res) => {
@@ -97,7 +99,7 @@ const Messages = () => {
   const getRooms = () => {
     let endpoint = "http://127.0.0.1:8000/chat/get_rooms/";
     let data = {
-      username: user?.name,
+      username: user?.username,
     };
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
@@ -121,7 +123,7 @@ const Messages = () => {
       return;
     }
     const data = {
-      username: user?.name,
+      username: user?.username,
       message_id: message?.id,
       room_name: slug,
       action_type: "delete_message",
@@ -149,7 +151,7 @@ const Messages = () => {
           <CreateRoom
             handleClose={handleClose}
             setRooms={setCreatedRoom}
-            username={user?.name}
+            username={user?.username}
           />
         ) : null}
         <div>

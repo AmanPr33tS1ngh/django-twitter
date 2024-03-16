@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     banner = models.ImageField(upload_to="user_banner/", default='user_banner.jpg')
-    profile_picture = models.ImageField(upload_to="user_banner/", default='user_banner.jpg')
+    profile_picture = models.ImageField(upload_to="user_profile_picture/", default='user_banner.jpg')
     joining_date = models.DateTimeField(auto_now_add=True, null=True)
     biography = models.TextField(max_length=100, default=None, blank=True, null=True)
     location = models.TextField(max_length=200, default=None, blank=True, null=True)

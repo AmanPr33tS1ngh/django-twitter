@@ -1,11 +1,11 @@
 import React, { useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "../../../Redux/Axios/axios";
-import AuthContext from "../../../Authentication/AuthProvider";
+import { useSelector } from "react-redux";
 
 const AddPost = ({ showClose }) => {
   const { username, id } = useParams();
-  const { user } = useContext(AuthContext);
+  const user = useSelector((state) => state.reducer);
   const navigate = useNavigate();
   const [content, setContent] = useState("");
 
@@ -17,7 +17,7 @@ const AddPost = ({ showClose }) => {
     let endpoint = "http://127.0.0.1:8000/tweets/tweet_api/";
     let data = {
       content: content,
-      username: username ? username : user?.name,
+      username: username ? username : user?.username,
       parent_username: username,
       id: id,
     };

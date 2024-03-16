@@ -1,21 +1,48 @@
-import React, {useContext, useState} from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Input from "../../ReUsableComponents/Input/Input";
-import AuthContext from "../../Authentication/AuthProvider";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { LOGIN } from "../../Redux/ActionTypes/ActionTypes";
+import { jwtDecode } from "jwt-decode";
 
 const SignIn = () => {
-  const {loginUser} = useContext(AuthContext);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [user, setUser] = useState({
     username: "",
     password: "",
   });
+
   const handleChange = (e) => {
     setUser({
       ...user,
       [e.target.name]: e.target.value,
     });
   };
+
+  const handleSignIn = () => {
+    const endpoint = "http://127.0.0.1:8000/users/api/token/";
+    axios.post(endpoint, user).then((res) => {
+      const responseData = res.data;
+
+      localStorage.setItem("authTokens", JSON.stringify(responseData));
+      const user = jwtDecode(responseData.access).user;
+
+      dispatch({
+        type: LOGIN,
+        payload: {
+          authenticated: true,
+          user: user,
+          accessToken: responseData.access,
+          refreshToken: responseData.refresh,
+        },
+      });
+      navigate("/");
+    });
+  };
+
   return (
     <div className="flex justify-center items-center h-screen">
       <div>
@@ -38,7 +65,7 @@ const SignIn = () => {
               disabled={!user.username || !user.password}
               className={`bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded 
               disabled:bg-gray-300 disabled:cursor-not-allowed button block m-auto	`}
-              onClick={()=>loginUser(user)}
+              onClick={handleSignIn} // Call handleSignIn function on button click
             >
               Sign In
             </button>
