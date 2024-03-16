@@ -22,7 +22,8 @@ const SignIn = () => {
     });
   };
 
-  const handleSignIn = () => {
+  const handleSignIn = (e) => {
+    e.preventDefault();
     const endpoint = "http://127.0.0.1:8000/users/api/token/";
     axios.post(endpoint, user).then((res) => {
       const responseData = res.data;
@@ -45,7 +46,7 @@ const SignIn = () => {
 
   return (
     <div className="flex justify-center items-center h-screen">
-      <div>
+      <form onSubmit={handleSignIn}>
         <div className="bg-white p-20 rounded-lg shadow-md max-w-md w-full text-center">
           <h1 className="">Join the community</h1>
           <Input
@@ -62,10 +63,10 @@ const SignIn = () => {
           />
           <div className="flex flex-1 justify-center items-center">
             <button
+              type={"submit"}
               disabled={!user.username || !user.password}
               className={`bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded 
               disabled:bg-gray-300 disabled:cursor-not-allowed button block m-auto	`}
-              onClick={handleSignIn} // Call handleSignIn function on button click
             >
               Sign In
             </button>
@@ -74,7 +75,7 @@ const SignIn = () => {
             Don't have an account? <Link to={"/sign_up"}>Sign up here</Link>.
           </p>
         </div>
-      </div>
+      </form>
     </div>
   );
 };

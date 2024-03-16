@@ -2,13 +2,26 @@ import React, { useContext } from "react";
 import MessageHandler from "../MessageHandler/MessageHandler";
 import Message from "../Message/Message";
 import { useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLocationArrow } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 const ChatPanel = ({ room, messageHandler, deleteMessage }) => {
   const { user } = useSelector((state) => state.reducer.reducer);
+  const navigate = useNavigate();
+  console.log("roooooom", room);
+  const navigateToProfile = () => {
+    if (room?.participant) navigate(`/${room.participant.username}`);
+  };
   return (
     <div className={"p-4"}>
-      <div className={"text-xl font-semibold pb-5"}>
-        {room?.participant ? room?.participant?.full_name : room?.name}
+      <div className={"text-xl font-semibold pb-5 flex justify-between"}>
+        <span>
+          {room?.participant ? room?.participant?.full_name : room?.name}
+        </span>
+        <button onClick={navigateToProfile}>
+          <FontAwesomeIcon icon={faLocationArrow} />
+        </button>
       </div>
       <div className={"h-[88vh] overflow-y-scroll pb-20"}>
         {/* <div

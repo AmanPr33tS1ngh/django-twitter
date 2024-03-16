@@ -17,6 +17,7 @@ const Messages = () => {
   const [rooms, setRooms] = useState([]);
   const [room, setRoom] = useState(null);
   const [createRoom, setCreateRoom] = useState(false);
+  const [sender, setSender] = useState(null);
 
   const createConnection = () => {
     socket = new WebSocket(
@@ -93,7 +94,10 @@ const Messages = () => {
     };
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
-      if (responseData.room) setRoom(responseData.room);
+      if (responseData.room) {
+        setRoom(responseData.room);
+        setSender(responseData.user);
+      }
     });
   };
   const getRooms = () => {
@@ -162,6 +166,7 @@ const Messages = () => {
       </div>
       <div className={"col-span-1 relative"}>
         <ChatPanel
+          sender={sender}
           room={room}
           messageHandler={messageHandler}
           deleteMessage={deleteMessage}

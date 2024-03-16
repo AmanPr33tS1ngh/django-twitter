@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleXmark,
@@ -50,9 +50,11 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
   const groupHandleChange = (e) => {
     setGroupName(e.target.value);
   };
-  const debouncedHandleChange = debounce((value) => {
-    getUsers(value);
-  }, 1000);
+
+  const debouncedHandleChange = useCallback(
+    debounce((value) => getUsers(value), 1000),
+    []
+  );
 
   const addParticipants = (user) => {
     if (!participants.includes(user?.username)) {
@@ -70,7 +72,7 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
   };
   return (
     <ModalBackground>
-      <div className="bg-white rounded-lg w-1/2 absolute p-8 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <div className="bg-white rounded-lg w-1/2 absolute p-8 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-[80vh]">
         <button className="absolute top-2 left-2" onClick={handleClose}>
           <FontAwesomeIcon icon={faCircleXmark} />
         </button>
@@ -105,25 +107,27 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
             </span>
           ))}
         </div>
-        <hr style={{ margin: "1rem" }} />
-        <ul className={"h-500 px-4 py-2 overflow-y-scroll"}>
-          {users.map((user, index) => (
-            <li
-              key={index}
-              className="mb-2"
-              onClick={() => addParticipants(user)}
-            >
-              <div
-                className={
-                  " items-center cursor-pointer grid grid-cols-1 md:grid-cols-10 pb-10" //flex
-                }
+        {inputVal ? <hr style={{ margin: "1rem" }} /> : null}
+        {inputVal ? (
+          <ul className={"h-500 px-4 py-2 overflow-y-scroll h-60vh"}>
+            {users.map((user, index) => (
+              <li
+                key={index}
+                className="mb-2"
+                onClick={() => addParticipants(user)}
               >
-                <FontAwesomeIcon icon={faUser} />
-                {user.username}
-              </div>
-            </li>
-          ))}
-        </ul>
+                <div
+                  className={
+                    " items-center cursor-pointer grid grid-cols-1 md:grid-cols-10 pb-10" //flex
+                  }
+                >
+                  <FontAwesomeIcon icon={faUser} />
+                  {user.username}
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </div>
     </ModalBackground>
   );

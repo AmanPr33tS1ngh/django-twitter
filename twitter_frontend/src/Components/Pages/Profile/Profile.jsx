@@ -147,13 +147,13 @@ const Profile = () => {
       >
         <img src={`http://127.0.0.1:8000/media/${user.banner}`} alt="Banner" />
       </div>
-      <div className=" relative bg-white shadow-md mt-[-50px] p-6">
+      <div className=" relative bg-white mt-[-50px] p-6">
         <div>
           <div
             onClick={() => {
               uploadOpener("profile_picture");
             }}
-            className="cursor-pointer	w-32 h-32 z-2 relative bg-white overflow-hidden rounded-full border-4 border-white shadow-md mb-8"
+            className="cursor-pointer	w-32 h-32 z-2 relative bg-white overflow-hidden rounded-full border-4 border-white mb-8"
           >
             <img
               src={`http://127.0.0.1:8000/media/${user.profilePicture}`}

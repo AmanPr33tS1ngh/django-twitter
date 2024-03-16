@@ -75,9 +75,7 @@ const AuthRoute = ({ element, isSign }) => {
 
   return (isAuthenticated && user?.username) || isSign ? (
     <div
-      className={`${
-        isAuthenticated ? "grid grid-cols-4 px-12 py-4" : ""
-      } h-screen`}
+      className={`${isAuthenticated ? "grid grid-cols-4 px-12" : ""} h-screen`}
     >
       {isAuthenticated ? <Sidebar /> : null}
       <div className={"col-span-3"}>{element}</div>
