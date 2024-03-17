@@ -52,6 +52,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
     joining_date = serializers.SerializerMethodField()
     biography = serializers.SerializerMethodField()
+    is_user_profile = serializers.SerializerMethodField()
     
     def get_profile_picture(self, obj):
         try:
@@ -87,7 +88,49 @@ class UserProfileSerializer(serializers.ModelSerializer):
         except Exception as e:
             print('err', str(e))
             return None
+        
+    def get_is_user_profile(self, obj):
+        try:
+            user = self.context.get('user')
+            print(self.context, obj.username)
+            if not user:
+                return False
+            return user.username == obj.username
+        except Exception as e:
+            return None
 
     class Meta:
         model = User
-        fields = ("banner", "full_name", "username", "location", "profile_picture", "biography", "joining_date")
+        fields = ("banner", "full_name", "first_name", "last_name", "username", "location", "profile_picture", "biography", "joining_date", 'is_user_profile')
+
+class ConnectionSerializer(serializers.ModelSerializer):
+    sender = serializers.SerializerMethodField()
+    receiver = serializers.SerializerMethodField()
+    timestamp = serializers.SerializerMethodField()
+    
+    def get_sender(self, obj):
+        return UserSerializer(obj.sender).data
+    
+    def get_receiver(self, obj):
+        return UserSerializer(obj.receiver).data
+    
+    def get_timestamp(self, obj):
+        return obj.timestamp.strftime('%d %b %Y')
+    
+    class Meta:
+        model = Connection
+        fields = ("sender", "receiver", "timestamp", )
+
+class ConnectionRequestSerializer(serializers.ModelSerializer):
+    sender = serializers.SerializerMethodField()
+    timestamp = serializers.SerializerMethodField()
+    
+    def get_sender(self, obj):
+        return UserSerializer(obj.sender).data
+    
+    def get_timestamp(self, obj):
+        return obj.timestamp.strftime('%d %b %Y')
+    
+    class Meta:
+        model = Connection
+        fields = ("sender", "timestamp", 'id')

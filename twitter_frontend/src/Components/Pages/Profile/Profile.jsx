@@ -4,6 +4,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import Post from "../../ReUsableComponents/Post/Post";
 import ImageUploader from "../../ReUsableComponents/ImageUploader/ImageUploader";
 import ModalBackground from "../../ReUsableComponents/ModalBackground/ModalBackground";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCalendarDays,
+  faLocationDot,
+  faUserPlus,
+} from "@fortawesome/free-solid-svg-icons";
+import EditProfile from "../../ReUsableComponents/EditProfile/EditProfile";
 
 const Profile = () => {
   const { profile, view_type } = useParams();
@@ -13,18 +20,11 @@ const Profile = () => {
     getProfile();
   }, [profile, view_type]);
 
-  const [user, setUser] = useState({
-    username: "",
-    banner: "",
-    profilePicture: "",
-    fullName: "",
-    location: "",
-    bio: "",
-    canEditProfile: false,
-  });
+  const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [uploadProfilePicture, setUploadProfilePicture] = useState(false);
   const [uploadType, setUploadType] = useState(null);
+  const [editModal, setEditModal] = useState(false);
 
   const buttons = useMemo(
     () => [
@@ -46,23 +46,12 @@ const Profile = () => {
 
       const user = responseData.user;
       const posts = responseData.posts;
-
-      if (user) {
-        setUser({
-          username: user.username,
-          banner: user.banner,
-          profilePicture: user.profile_picture,
-          fullName: user.full_name,
-          location: user.location,
-          bio: user.biography,
-          canEditProfile: user.can_edit_profile,
-        });
-      }
+      setUser(user);
       setPosts(posts || []);
     });
   };
   const navigateTo = (type) => {
-    navigate(`/${user.username}/${type}`);
+    navigate(`/${user?.username}/${type}`);
   };
 
   const actions = (e, post, action_type) => {
@@ -73,7 +62,7 @@ const Profile = () => {
       return;
     }
     let endpoint = `http://127.0.0.1:8000/tweets/take_action/`;
-    if (!user.username) return;
+    if (!user?.username) return;
     axios
       .post(endpoint, {
         tweet_id: post?.id,
@@ -118,12 +107,24 @@ const Profile = () => {
     if (type) setUploadType(type);
     setUploadProfilePicture(!uploadProfilePicture);
   };
-  console.log(
-    "user?.username === profile",
-    user?.username === profile,
-    user?.username,
-    profile
-  );
+  const createConnection = () => {
+    const endpoint = `http://127.0.0.1:8000/users/create_connection/`;
+    axios.post(endpoint, { receiver: profile }).then((res) => {
+      const responseData = res.data;
+      console.log("ressss", responseData);
+    });
+  };
+  const changeEditModal = () => {
+    setEditModal(!editModal);
+  };
+  const changeProfile = (user) => {
+    const endpoint = `http://127.0.0.1:8000/users/edit_profile/`;
+    axios.post(endpoint, { user: user }).then((res) => {
+      const responseData = res.data;
+      console.log("ressss", responseData);
+      if (responseData.success) setUser(responseData.user);
+    });
+  };
   return (
     <div>
       {console.log("profile", user)}
@@ -134,7 +135,7 @@ const Profile = () => {
             onImageUpload={imageUploader}
             isImageUpload={user?.username === profile}
             savedImage={
-              uploadType === "banner" ? user?.banner : user?.profilePicture
+              uploadType === "banner" ? user?.banner : user?.profile_picture
             }
           />
         </ModalBackground>
@@ -145,31 +146,60 @@ const Profile = () => {
         }}
         className="h-32 bg-black relative overflow-hidden z-2 cursor-pointer"
       >
-        <img src={`http://127.0.0.1:8000/media/${user.banner}`} alt="Banner" />
+        <img
+          className={"h-inherit"}
+          src={`http://127.0.0.1:8000/media/${user?.banner}`}
+          alt="Banner"
+        />
       </div>
       <div className=" relative bg-white mt-[-50px] p-6">
         <div>
-          <div
-            onClick={() => {
-              uploadOpener("profile_picture");
-            }}
-            className="cursor-pointer	w-32 h-32 z-2 relative bg-white overflow-hidden rounded-full border-4 border-white mb-8"
-          >
-            <img
-              src={`http://127.0.0.1:8000/media/${user.profilePicture}`}
-              alt="Profile picture"
-            />
+          <div className="flex justify-between">
+            <div
+              onClick={() => {
+                uploadOpener("profile_picture");
+              }}
+              className="cursor-pointer	w-32 h-32 z-2 relative bg-white overflow-hidden rounded-full border-4 border-white mb-8"
+            >
+              <img
+                className={"h-inherit"}
+                src={`http://127.0.0.1:8000/media/${user?.profile_picture}`}
+                alt="Profile picture"
+              />
+            </div>
+            <div className="mt-5">
+              {user?.is_user_profile ? (
+                <button
+                  className="text-sm border font-semibold border-gray-300 rounded-full px-4 py-1"
+                  onClick={changeEditModal}
+                >
+                  Edit profile
+                </button>
+              ) : (
+                <button onClick={createConnection}>
+                  <FontAwesomeIcon icon={faUserPlus} />
+                </button>
+              )}
+            </div>
           </div>
           <div>
-            <h1 className={"text-base text-gray-600 mb-4"}>{user.fullName}</h1>
-            <p className={"text-xl font-semibold mb-1"}>@{user.username}</p>
+            <h1 className={"text-xl font-semibold mb-1"}>{user?.fullName}</h1>
+            <p className={"text-base text-gray-600"}>@{user?.username}</p>
             <br />
-            <p className={"text-base text-gray-600 mb-2"}>
-              {user.bio || "bio"}
+            <p className={"text-sm text-gray-600 mb-2"}>
+              {user?.biography || "bio"}
             </p>
-            <p className={"text-base text-gray-600 mb-2"}>
-              {user.location || "location"}
-            </p>
+            <div className="flex items-center">
+              <p className={"text-sm text-gray-600 mb-2"}>
+                <FontAwesomeIcon className="mr-2" icon={faLocationDot} />
+                {user?.location || "location"}
+              </p>
+              <p className={"text-sm text-gray-600 mb-2 ml-3"}>
+                <FontAwesomeIcon className="mr-2" icon={faCalendarDays} />
+                {user?.joining_date || "joining_date"}
+              </p>
+            </div>
+            {console.log("UUUUUSSS", user)}
           </div>
         </div>
         <div className="grid grid-cols-4 items-center">
@@ -192,6 +222,13 @@ const Profile = () => {
             : "No Posts"}
         </div>
       </div>
+      {editModal ? (
+        <EditProfile
+          user={user}
+          changeProfile={changeProfile}
+          closeModal={changeEditModal}
+        />
+      ) : null}
     </div>
   );
 };

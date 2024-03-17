@@ -6,6 +6,7 @@ import {
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import ReactPlayer from "react-player";
 
 const Post = ({ post, actions }) => {
   const navigate = useNavigate();
@@ -20,13 +21,34 @@ const Post = ({ post, actions }) => {
           src="https://via.placeholder.com/50"
           alt="User Avatar"
         />
-        <div className="font-bold">
-          <p className="text-lg font-bold">{post?.user?.full_name}</p>
-          <p>@{post?.user?.username}</p>
-          <p className="text-sm text-gray-500">{post?.timestamp}</p>
-        </div>
+        {/* <div className="font-bold"> */}
+        <p className="text-base font-bold">{post?.user?.full_name}</p>
+        <p className="ml-1 text-sm text-gray-500">@{post?.user?.username}</p>
+        <span className="flex justify-center items-center ml-1 text-sm text-gray-500 pb-2">
+          .
+        </span>
+        <p className="text-sm text-gray-500 ml-1">{post?.post_duration}</p>
+        {/* </div> */}
       </div>
       <p className="mt-4 text-base text-gray-700">{post?.content}</p>
+      {post?.image ? (
+        <img
+          className="w-80 rounded-lg m-auto"
+          src={`http://localhost:8000/media/${post?.image}`}
+          alt="User Avatar"
+        />
+      ) : post?.video ? (
+        <div>
+          {console.log("post?.video", post?.video)}
+          <ReactPlayer
+            url={`http://localhost:8000${post?.video}`}
+            controls
+            width="100%"
+            height="25rem"
+            playing
+          />
+        </div>
+      ) : null}
       <div className="justify-around mt-4">
         <button
           className={`mr-4 text-center ${
@@ -52,9 +74,9 @@ const Post = ({ post, actions }) => {
           {/* {post?.bookmark_count} */}
         </button>
       </div>
-      <p className="mt-8 font-light text-gray-500 text-xs">
+      {/* <p className="mt-8 font-light text-gray-500 text-xs">
         {post?.post_duration}
-      </p>
+      </p> */}
     </div>
   );
 };

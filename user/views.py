@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from .models import *
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
-from .serializers import UserSerializer, UserProfileSerializer
+from .serializers import UserSerializer, UserProfileSerializer, ConnectionRequestSerializer
 # Create your views here.
 from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication
@@ -124,6 +124,7 @@ class SignUp(APIView):
             print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
+
 class SignIn(APIView):
     permission_classes = (permissions.AllowAny, )
     authentication_classes = (SessionAuthentication, )
@@ -188,7 +189,7 @@ class GetProfile(APIView):
 
             serialized_data = TweetSerializer(posts, many=True, context={'user': user}).data
 
-            return JsonResponse({'success': True, 'msg': "Got profile!", "user": UserProfileSerializer(profile).data,
+            return JsonResponse({'success': True, 'msg': "Got profile!", "user": UserProfileSerializer(profile, context={'user': user}).data,
                                  'posts': serialized_data,})
         except Exception as e:
             print('err at get_profile', str(e))
@@ -223,3 +224,154 @@ class UploadImage(APIView):
         except Exception as e:
             print('err at get_profile', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
+
+
+class CreateConnection(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            user = request.user
+            if user.is_anonymous:
+                return JsonResponse({'success': False, 'msg': 'Authenticate!'})
+            
+            receiver_username = request.data.get("receiver")
+            # if not receiver_username:
+            #     return JsonResponse({'success': False, 'msg': 'Wrong user!'})
+            
+            receiver = User.objects.filter(username=receiver_username).first()
+            if not receiver or receiver == user:
+                return JsonResponse({'success': False, 'msg': 'Wrong user!'})
+            
+            if Connection.objects.filter(sender=user, receiver=receiver).exists():
+                return JsonResponse({'success': False, 'msg': 'Connection already exists!'})
+            
+            is_accepted = not receiver.is_verified
+            
+            Connection.objects.create(
+                sender=user,
+                receiver=receiver,
+                is_accepted=is_accepted,
+            )
+            
+            return JsonResponse({'success': True, 'msg': 'Connection created!'})
+        
+        except Exception as e:
+            print("err CreateConnection", str(e))
+            return JsonResponse({'success': False, 'msg': str(e)})
+        
+        
+class GetRequests(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            user = request.user
+            if user.is_anonymous:
+                return JsonResponse({'success': False, 'msg': 'Authenticate!', 'requests': list()})
+            
+            connections = Connection.objects.filter(
+                receiver=user,
+                is_accepted=False,
+            )
+            return JsonResponse({'success': True, 'msg': "requests received", 'requests': ConnectionRequestSerializer(connections, many=True).data})
+        
+        except Exception as e:
+            print('err GetRequests', str(e))
+            return JsonResponse({'success': False, 'msg': str(e), 'requests': list()})
+
+
+class GetRequests(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            user = request.user
+            if user.is_anonymous:
+                return JsonResponse({'success': False, 'msg': 'Authenticate!', 'requests': list()})
+            
+            connections = Connection.objects.filter(
+                receiver=user,
+                is_accepted=False,
+            )
+            return JsonResponse({'success': True, 'msg': "requests received", 'requests': ConnectionRequestSerializer(connections, many=True).data})
+        
+        except Exception as e:
+            print('err GetRequests', str(e))
+            return JsonResponse({'success': False, 'msg': str(e), 'requests': list()})
+
+
+class RequestApi(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            user = request.user
+            if user.is_anonymous:
+                return JsonResponse({'success': False, 'msg': 'Authenticate!'})
+            
+            id = request.data.get('id')
+            connection = Connection.objects.filter(
+                id=id,
+            ).first()
+            if not connection:
+                return JsonResponse({'success': False, 'msg': 'Connection not found!'})
+            
+            request_action_type = request.data.get('type')
+            if request_action_type == 'delete':
+                connection.delete()
+            elif request_action_type == 'accept':
+                connection.is_accepted = True
+                connection.save()
+                request_action_type = 'accepted'
+            else:
+                return JsonResponse({'success': False, 'msg': 'Wrong connection type!'})
+            
+            return JsonResponse({'success': True, 'msg': f'Request {request_action_type} successfully!'})
+        
+        except Exception as e:
+            print('err GetRequests', str(e))
+            return JsonResponse({'success': False, 'msg': str(e)})
+
+
+class EditProfile(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            user = request.user
+            if user.is_anonymous:
+                return JsonResponse({'success': False, 'msg': 'Authenticate!'})
+            
+            edited_profile = request.data.get('user')
+            if not edited_profile:
+                return JsonResponse({'success': False, 'msg': 'Authenticate!'})
+            
+            is_updated = False
+            username = edited_profile.get('username')
+            if username:
+                user.username = username
+                is_updated = True
+                
+            first_name = edited_profile.get('firstName')
+            if first_name:
+                user.first_name = first_name
+                is_updated = True
+                
+            last_name = edited_profile.get('lastName')
+            if last_name:
+                user.last_name = last_name
+                is_updated = True
+                
+            location = edited_profile.get('location')
+            if location:
+                user.location = location
+                is_updated = True
+                
+            bio = edited_profile.get('bio')
+            if bio:
+                user.biography = bio
+                is_updated = True
+                
+            # is_private = request.data.get('is_private')
+            # if is_private:
+            #     user.is_private = is_private
+            
+            if is_updated:
+                user.save()
+                
+            return JsonResponse({'success': True, 'msg': f'Profile updated!', 'user': UserProfileSerializer(user, context={'user': user}).data})
+        
+        except Exception as e:
+            print('err GetRequests', str(e))
+            return JsonResponse({'success': False, 'msg': str(e)})

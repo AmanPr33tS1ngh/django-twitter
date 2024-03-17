@@ -24,27 +24,34 @@ class GetTweets(APIView):
         
     def post(self, request, *args, **kwargs):
         try:
+            file = None
             user = request.user
             if user.is_anonymous:
                 return JsonResponse({'success': False, 'msg': 'Authenticate!'})
-
-            username = request.data.get("username")
-            user = User.objects.filter(username=username).first()
-
-            if not user:
-                return JsonResponse({'success': False, 'msg': 'user not found!'})
+            
             content = request.data.get('content')
             if not content:
                 return JsonResponse({'success': False, 'msg': 'Please add content!'})
             parent_id = request.data.get('id')
             parent_username = request.data.get("parent_username")
 
+            print('parent_id', parent_id)
+            if parent_id == 'null' or parent_id == 'undefined':
+                parent_id = None
+                
             parent = Tweet.objects.filter(id=parent_id, user__username=parent_username).first()
-            
+            print('requuue', request.FILES, request.FILES.get('file'))
+            if 'file' in request.FILES:
+                file = request.FILES.get('file')
+                if file.size > 4194304:
+                    return JsonResponse({'success': False, 'msg': 'File Size Too Big. Please upload an image with '
+                                                                  'size less than 4MB.'})
+            print('file', file)
             tweet = Tweet.objects.create(
                 user=user,
                 content=content,
                 parent=parent,
+                file=file,
             )
             
             return JsonResponse({'success': True, 'msg': 'new tweet', 'tweet': TweetSerializer(tweet).data})

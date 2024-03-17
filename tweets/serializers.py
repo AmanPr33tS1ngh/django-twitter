@@ -2,7 +2,10 @@
 from rest_framework import serializers
 from .models import *
 from user.serializers import UserSerializer
-from django.utils import timezone
+import mimetypes
+from django.conf import settings
+import os
+from twitter.utils import get_timestamp_difference
 
 class TweetSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
@@ -11,6 +14,8 @@ class TweetSerializer(serializers.ModelSerializer):
     replies_count = serializers.SerializerMethodField()
     is_bookmarked = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+    video = serializers.SerializerMethodField()
     
     def get_user(self, obj):
         return UserSerializer(obj.user).data
@@ -48,30 +53,35 @@ class TweetSerializer(serializers.ModelSerializer):
             return False
         
     def get_post_duration(self, obj):
+        return get_timestamp_difference(obj.timestamp)
+            
+    def get_image(self, obj):
         try:
-            time_difference = timezone.now() - obj.timestamp
-
-            # Convert the time difference to a readable format
-            days = time_difference.days
-            hours, remainder = divmod(time_difference.seconds, 3600)
-            minutes, _ = divmod(remainder, 60)
-
-            if days > 0:
-                return f"{days}d ago"
-            elif hours > 0:
-                return f"{hours}h ago"
-            elif minutes > 0:
-                return f"{minutes}m ago"
-            # elif seconds > 0:
-            #     return f"{seconds}s ago"
-            else:
-                return "Just now"
+            file = str(obj.file)
+            content_type, _ = mimetypes.guess_type(file)
+            print('image', content_type)
+            if content_type.startswith('image/'):
+                return file
+            return None
         except Exception as e:
             print("err", str(e))
-            
+            return None
+    
+    def get_video(self, obj):
+        try:
+            file = str(obj.file)
+            content_type, _ = mimetypes.guess_type(file)
+            print('video', content_type)
+            if content_type.startswith('video/'):
+                return os.path.join(settings.MEDIA_URL, file)
+            return None
+        except Exception as e:
+            print("video err", str(e))
+            return None
+        
     class Meta:
         model = Tweet
-        fields = ("id", "content", "user", "post_duration", "like_count", "replies_count", "is_bookmarked", "is_liked")
+        fields = ("id", "content", "user", "post_duration", "like_count", "replies_count", "is_bookmarked", "is_liked", 'image', 'video')
 
 
 class TweetLabelValueSerializer(serializers.ModelSerializer):

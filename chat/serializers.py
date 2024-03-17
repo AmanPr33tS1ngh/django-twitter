@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import *
 from django.utils import timezone
 from user.serializers import UserSerializer, UserProfileSerializer
+from twitter.utils import get_timestamp_difference
 
 class MessageSerializer(serializers.ModelSerializer):
     sender = serializers.SerializerMethodField()
@@ -58,23 +59,7 @@ class RoomSerializer(serializers.ModelSerializer):
         return MessageSerializer(last_message).data
     
     def get_timestamp(self, obj):
-        time_difference = timezone.now() - obj.room_creation_timestamp
-
-        # Convert the time difference to a readable format
-        days = time_difference.days
-        hours, remainder = divmod(time_difference.seconds, 3600)
-        minutes, _ = divmod(remainder, 60)
-
-        if days > 0:
-            return f"{days}d ago"
-        elif hours > 0:
-            return f"{hours}h ago"
-        elif minutes > 0:
-            return f"{minutes}m ago"
-        # elif seconds > 0:
-        #     return f"{seconds}s ago"
-        else:
-            return "Just now"
+        return get_timestamp_difference(obj.room_creation_timestamp)
     
     class Meta:
         model = Room
@@ -120,23 +105,7 @@ class RoomSerializerWithMessage(serializers.ModelSerializer):
         return MessageSerializer(last_message, many=True).data
     
     def get_timestamp(self, obj):
-        time_difference = timezone.now() - obj.room_creation_timestamp
-
-        # Convert the time difference to a readable format
-        days = time_difference.days
-        hours, remainder = divmod(time_difference.seconds, 3600)
-        minutes, _ = divmod(remainder, 60)
-
-        if days > 0:
-            return f"{days}d ago"
-        elif hours > 0:
-            return f"{hours}h ago"
-        elif minutes > 0:
-            return f"{minutes}m ago"
-        # elif seconds > 0:
-        #     return f"{seconds}s ago"
-        else:
-            return "Just now"
+        return get_timestamp_difference(obj.timestamp)
     
     class Meta:
         model = Room

@@ -8,6 +8,7 @@ class Tweet(models.Model):
     content = models.TextField(blank=True, null=True, default=None)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
     timestamp = models.DateTimeField(auto_now_add=True)
+    file = models.FileField(upload_to='uploads/%Y/%m/%d/', null=True, blank=True, default=None)
     
     def __str__(self) -> str:
         return super().__str__() + " -> " + self.content

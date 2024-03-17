@@ -5,7 +5,7 @@ import SignUp from "./Components/Pages/SignUp/SignUp";
 import SignIn from "./Components/Pages/SignIn/SignIn";
 import Profile from "./Components/Pages/Profile/Profile";
 import Explore from "./Components/Pages/Explore/Explore";
-import Notifications from "./Components/Pages/Notifications/Notifications";
+import Requests from "./Components/Pages/Requests/Requests";
 import Messages from "./Components/Pages/Messages/Messages";
 import AuthRoute from "./Components/Authentication/AuthRoute";
 import AddPost from "./Components/ReUsableComponents/Post/AddPost/AddPost";
@@ -55,8 +55,8 @@ function App() {
           />
           <Route
             exact
-            path="/notification"
-            element={<AuthRoute element={<Notifications />} />}
+            path="/requests"
+            element={<AuthRoute element={<Requests />} />}
           />
           <Route
             exact

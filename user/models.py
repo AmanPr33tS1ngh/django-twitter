@@ -14,3 +14,14 @@ class User(AbstractUser):
     
     def __str__(self) -> str:
         return super().__str__() + " -> " + self.username
+
+
+class Connection(models.Model):
+    sender = models.ForeignKey(User, related_name='conn_sender', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='conn_receiver', on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_accepted = models.BooleanField(default=False)
+    
+    def __str__(self) -> str:
+        return str(self.sender) + ' -> ' + str(self.receiver) + ' : ' + str(self.is_accepted)
+    
