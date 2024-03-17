@@ -175,14 +175,14 @@ class GetProfile(APIView):
                 return JsonResponse({'success': False, 'msg': 'Please provide valid username'})
             not_private = not profile.is_private
             view_type = request.data.get('view_type')
-            bookmark = Interaction.objects.filter(user=profile, interaction_type="bookmark").first()
-            likes = Interaction.objects.filter(user=profile, interaction_type="like").first()
 
-            if likes and not_private and view_type == 'likes':
+            if not_private and view_type == 'likes':
+                likes = Interaction.objects.filter(user=profile, interaction_type="like").first()
                 posts = likes.tweets.all().order_by("timestamp")
             elif not_private  and view_type == 'replies':
                 posts = Tweet.objects.filter(parent__isnull=False, user=profile).order_by("timestamp")
-            elif bookmark and not_private  and view_type == 'bookmarks':
+            elif not_private  and view_type == 'bookmarks':
+                bookmark = Interaction.objects.filter(user=profile, interaction_type="bookmark").first()
                 posts = bookmark.tweets.all().order_by("timestamp")
             else:
                 posts = Tweet.objects.filter(user=profile).order_by("timestamp")
@@ -226,7 +226,7 @@ class UploadImage(APIView):
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
 
-class CreateConnection(APIView):
+class ConnectionAPI(APIView):
     def post(self, request, *args, **kwargs):
         try:
             user = request.user
@@ -241,21 +241,29 @@ class CreateConnection(APIView):
             if not receiver or receiver == user:
                 return JsonResponse({'success': False, 'msg': 'Wrong user!'})
             
-            if Connection.objects.filter(sender=user, receiver=receiver).exists():
+            connection_type = request.data.get("type")
+            if Connection.objects.filter(sender=user, receiver=receiver).exists() and connection_type == 'create':
                 return JsonResponse({'success': False, 'msg': 'Connection already exists!'})
             
-            is_accepted = not receiver.is_verified
-            
-            Connection.objects.create(
-                sender=user,
-                receiver=receiver,
-                is_accepted=is_accepted,
-            )
-            
-            return JsonResponse({'success': True, 'msg': 'Connection created!'})
+            is_accepted = not receiver.is_private
+            if connection_type == 'create':
+                Connection.objects.create(
+                    sender=user,
+                    receiver=receiver,
+                    is_accepted=is_accepted,
+                )
+            elif connection_type == 'delete':
+                Connection.objects.filter(
+                    sender=user,
+                    receiver=receiver,
+                ).delete()
+            else:
+                return JsonResponse({'success': False, 'msg': 'Wrong connection type!'})
+                
+            return JsonResponse({'success': True, 'msg': f'Connection {connection_type}d!'})
         
         except Exception as e:
-            print("err CreateConnection", str(e))
+            print("err ConnectionAPI", str(e))
             return JsonResponse({'success': False, 'msg': str(e)})
         
         
@@ -337,39 +345,30 @@ class EditProfile(APIView):
             if not edited_profile:
                 return JsonResponse({'success': False, 'msg': 'Authenticate!'})
             
-            is_updated = False
             username = edited_profile.get('username')
             if username:
                 user.username = username
-                is_updated = True
                 
             first_name = edited_profile.get('firstName')
             if first_name:
                 user.first_name = first_name
-                is_updated = True
                 
             last_name = edited_profile.get('lastName')
             if last_name:
                 user.last_name = last_name
-                is_updated = True
                 
             location = edited_profile.get('location')
             if location:
                 user.location = location
-                is_updated = True
                 
             bio = edited_profile.get('bio')
             if bio:
                 user.biography = bio
-                is_updated = True
                 
-            # is_private = request.data.get('is_private')
-            # if is_private:
-            #     user.is_private = is_private
+            is_private = edited_profile.get('isPrivate')
+            user.is_private = is_private
+            user.save()
             
-            if is_updated:
-                user.save()
-                
             return JsonResponse({'success': True, 'msg': f'Profile updated!', 'user': UserProfileSerializer(user, context={'user': user}).data})
         
         except Exception as e:

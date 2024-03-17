@@ -9,8 +9,10 @@ import {
   faCalendarDays,
   faLocationDot,
   faUserPlus,
+  faUserSlash,
 } from "@fortawesome/free-solid-svg-icons";
 import EditProfile from "../../ReUsableComponents/EditProfile/EditProfile";
+import PrivateProfile from "../../ReUsableComponents/PrivateProfile/PrivateProfile";
 
 const Profile = () => {
   const { profile, view_type } = useParams();
@@ -107,9 +109,9 @@ const Profile = () => {
     if (type) setUploadType(type);
     setUploadProfilePicture(!uploadProfilePicture);
   };
-  const createConnection = () => {
-    const endpoint = `http://127.0.0.1:8000/users/create_connection/`;
-    axios.post(endpoint, { receiver: profile }).then((res) => {
+  const createOrDeleteConnection = (type) => {
+    const endpoint = `http://127.0.0.1:8000/users/connection_api/`;
+    axios.post(endpoint, { receiver: profile, type: type }).then((res) => {
       const responseData = res.data;
       console.log("ressss", responseData);
     });
@@ -125,6 +127,9 @@ const Profile = () => {
       if (responseData.success) setUser(responseData.user);
     });
   };
+  const hasProfileViewAccess =
+    user?.is_user_profile || !user?.is_private || user?.has_connection;
+
   return (
     <div>
       {console.log("profile", user)}
@@ -133,7 +138,7 @@ const Profile = () => {
           <ImageUploader
             onClose={() => uploadOpener()}
             onImageUpload={imageUploader}
-            isImageUpload={user?.username === profile}
+            isImageUpload={user?.username === profile && user?.is_user_profile}
             savedImage={
               uploadType === "banner" ? user?.banner : user?.profile_picture
             }
@@ -175,9 +180,13 @@ const Profile = () => {
                 >
                   Edit profile
                 </button>
-              ) : (
-                <button onClick={createConnection}>
+              ) : !user?.has_connection ? (
+                <button onClick={() => createOrDeleteConnection("create")}>
                   <FontAwesomeIcon icon={faUserPlus} />
+                </button>
+              ) : (
+                <button onClick={() => createOrDeleteConnection("delete")}>
+                  <FontAwesomeIcon icon={faUserSlash} />
                 </button>
               )}
             </div>
@@ -185,41 +194,49 @@ const Profile = () => {
           <div>
             <h1 className={"text-xl font-semibold mb-1"}>{user?.fullName}</h1>
             <p className={"text-base text-gray-600"}>@{user?.username}</p>
-            <br />
             <p className={"text-sm text-gray-600 mb-2"}>
               {user?.biography || "bio"}
             </p>
-            <div className="flex items-center">
-              <p className={"text-sm text-gray-600 mb-2"}>
-                <FontAwesomeIcon className="mr-2" icon={faLocationDot} />
-                {user?.location || "location"}
-              </p>
-              <p className={"text-sm text-gray-600 mb-2 ml-3"}>
-                <FontAwesomeIcon className="mr-2" icon={faCalendarDays} />
-                {user?.joining_date || "joining_date"}
-              </p>
-            </div>
-            {console.log("UUUUUSSS", user)}
+            {hasProfileViewAccess ? (
+              <div className="flex items-center">
+                <p className={"text-sm text-gray-600 mb-2"}>
+                  <FontAwesomeIcon className="mr-2" icon={faLocationDot} />
+                  {user?.location || "location"}
+                </p>
+                <p className={"text-sm text-gray-600 mb-2 ml-3"}>
+                  <FontAwesomeIcon className="mr-2" icon={faCalendarDays} />
+                  {user?.joining_date || "joining_date"}
+                </p>
+              </div>
+            ) : null}
           </div>
         </div>
-        <div className="grid grid-cols-4 items-center">
-          {buttons.map((button) => (
-            <button
-              onClick={() => navigateTo(button.to)}
-              className={
-                view_type === button.to || (!view_type && button.to === "")
-                  ? "font-bold text-black"
-                  : "font-bold text-gray-500 py-1 px-2 transition-colors duration-300 ease-in-out hover:bg-gray-200"
-              }
-            >
-              {button.name}
-            </button>
-          ))}
-        </div>
+        {hasProfileViewAccess ? (
+          <div className="grid grid-cols-4 items-center">
+            {buttons.map((button) => (
+              <button
+                onClick={() => navigateTo(button.to)}
+                className={
+                  view_type === button.to || (!view_type && button.to === "")
+                    ? "font-bold text-black"
+                    : "font-bold text-gray-500 py-1 px-2 transition-colors duration-300 ease-in-out hover:bg-gray-200"
+                }
+              >
+                {button.name}
+              </button>
+            ))}
+          </div>
+        ) : null}
         <div>
-          {posts.length
-            ? posts.map((post) => <Post post={post} actions={actions} />)
-            : "No Posts"}
+          {hasProfileViewAccess ? (
+            posts.length ? (
+              posts.map((post) => <Post post={post} actions={actions} />)
+            ) : (
+              "No Posts"
+            )
+          ) : (
+            <PrivateProfile follow={() => createOrDeleteConnection("create")} />
+          )}
         </div>
       </div>
       {editModal ? (

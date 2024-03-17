@@ -53,6 +53,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     joining_date = serializers.SerializerMethodField()
     biography = serializers.SerializerMethodField()
     is_user_profile = serializers.SerializerMethodField()
+    has_connection = serializers.SerializerMethodField()
     
     def get_profile_picture(self, obj):
         try:
@@ -98,10 +99,19 @@ class UserProfileSerializer(serializers.ModelSerializer):
             return user.username == obj.username
         except Exception as e:
             return None
+        
+    def get_has_connection(self, obj):
+        try:
+            user = self.context.get('user')
+            print('eeeeee', user, obj.user, obj)
+            return Connection.objects.filter(sender=self.context.get('user'), receiver=obj, is_accepted=True).exists()
+        except Exception as e:
+            print('str((()))', str(e))
+            return None
 
     class Meta:
         model = User
-        fields = ("banner", "full_name", "first_name", "last_name", "username", "location", "profile_picture", "biography", "joining_date", 'is_user_profile')
+        fields = ("banner", "full_name", "first_name", "last_name", "username", "location", "profile_picture", "biography", "joining_date", 'is_user_profile', 'is_private', 'has_connection')
 
 class ConnectionSerializer(serializers.ModelSerializer):
     sender = serializers.SerializerMethodField()

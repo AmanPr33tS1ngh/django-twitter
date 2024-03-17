@@ -51,7 +51,7 @@ const Sidebar = () => {
           <img
             width={"100"}
             height={"100"}
-            src="http://localhost:8000/media/twista.jpeg"
+            src="http://localhost:8000/media/twista.png"
             alt="Twista Logo"
             decoding="async"
           />
