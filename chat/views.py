@@ -14,9 +14,11 @@ def generate_room_id():
 class CreateRoom(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            user = User.objects.filter(username=request.data.get('username')).first()
-            participant_usernames = request.data.get("participant_usernames")
+            user = request.user
+            if user.is_anonymous:
+                return JsonResponse({'success': False, 'msg': 'Authenticate!'})
 
+            participant_usernames = request.data.get("participant_usernames")
             if not participant_usernames:
                 participant_usernames = list()
 
@@ -30,29 +32,29 @@ class CreateRoom(APIView):
             room = Room.objects.create(slug=slug, name=group_name)
             room.participants.add(*participants)
             room.participants.add(user)
-            
+
             return JsonResponse({'success': True, 'msg': 'room created', "room": RoomSerializer(room).data})
-            
+
         except Exception as e:
             print(str(e))
             return JsonResponse({'succcess': False, 'msg': f"There was an error while creating room {e}"})
-        
-        
+
+
 class GetRooms(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            
+
             user = User.objects.filter(username=request.data.get("username")).first()
             if not user:
                 return JsonResponse({'success': False, 'msg': "Authenticate first"})
-                
+
             rooms = Room.objects.filter(participants=user)
             return JsonResponse({'success': True, 'msg': 'got rooms', "rooms": RoomSerializer(rooms, many=True, context={"user": user}).data})
-        
+
         except Exception as e:
             print(str(e))
             return JsonResponse({'succcess': False, 'msg': f"There was an error while getting rooms {str(e)}"})
-              
+
 class GetRoom(APIView):
     def post(self, request, *args, **kwargs):
         try:
@@ -60,18 +62,18 @@ class GetRoom(APIView):
             if not user:
                 return JsonResponse({'success': False, 'msg': "Authenticate first"})
             slug = request.data.get('slug')
-            
+
             room = Room.objects.filter(participants=user, slug=slug).first()
             if not room:
                 return JsonResponse({'success': False, 'msg': "Wrong slug!"})
 
             return JsonResponse({'success': True, 'msg': 'got rooms', "room": RoomSerializerWithMessage(room, context={"user": user}).data})
-        
+
         except Exception as e:
             print(str(e))
             return JsonResponse({'succcess': False, 'msg': f"There was an error while getting rooms {str(e)}"})
-        
-        
+
+
 class SendMessage(APIView):
     def post(self, request, *args, **kwargs):
         try:
@@ -80,7 +82,7 @@ class SendMessage(APIView):
             if not user:
                 return JsonResponse({'success': False, 'msg': "Authenticate first"})
             slug = request.data.get('slug')
-            
+
             room = Room.objects.filter(participants=user, slug=slug).first()
             if not room:
                 return JsonResponse({'success': False, 'msg': "Wrong slug!"})
@@ -93,9 +95,9 @@ class SendMessage(APIView):
                 sender=user,
                 content=content,
             )
-            
+
             return JsonResponse({'success': True, 'msg': 'got rooms', "message": MessageSerializer(message).data})
-        
+
         except Exception as e:
             print(str(e))
             return JsonResponse({'succcess': False, 'msg': f"There was an error SendMessage {str(e)}"})

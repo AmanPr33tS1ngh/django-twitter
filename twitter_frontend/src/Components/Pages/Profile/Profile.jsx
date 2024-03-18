@@ -128,6 +128,23 @@ const Profile = () => {
       if (responseData.success) setUser(responseData.user);
     });
   };
+  const navigateToMessage = ()=>{
+    if (user?.room_slug){
+      navigate(`/messages/${user?.room_slug}/`)
+      return;
+    }
+    createRoom();
+  }
+  const createRoom = ()=>{
+    let endpoint = "http://127.0.0.1:8000/chat/create_room/";
+    let data = {
+      participant_usernames: [user?.username],
+    };
+    axios.post(endpoint, data).then((res) => {
+      let responseData = res.data;
+      if(responseData.success)navigate()
+    });
+  }
   const hasProfileViewAccess =
     user?.is_user_profile || !user?.is_private || user?.has_connection;
 
@@ -174,10 +191,10 @@ const Profile = () => {
               />
             </div>
             <div className={'flex justify-center mt-5'}>
-              {user?.has_connection && user?.room_slug ? <div className={'mr-5'}>
-                <Link to={`/messages/${user?.room_slug}/`}>
-                  <FontAwesomeIcon icon={faMessage} />
-                </Link>
+              {user?.has_connection ? <div className={'mr-5'}>
+                <button onClick={navigateToMessage}>
+                  <FontAwesomeIcon icon={faMessage}/>
+                </button>
               </div>:null}
               <div>
                 {user?.is_user_profile ? (

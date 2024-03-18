@@ -143,6 +143,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
             print('str((()))', str(e))
             return None
 
+    def get_can_message(self, obj):
+        try:
+            user = self.context.get('user')
+            print('eeeeee', user, obj.user, obj)
+            return Connection.objects.filter(sender=self.context.get('user'), receiver=obj, is_accepted=True).exists() or not obj.is_private
+        except Exception as e:
+            print('str((()))', str(e))
+            return None
+
     def get_room_slug(self, obj):
         try:
             user = self.context.get('user')
