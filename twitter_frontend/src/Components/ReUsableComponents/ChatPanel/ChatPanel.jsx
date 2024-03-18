@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 const ChatPanel = ({ room, messageHandler, deleteMessage }) => {
   const { user } = useSelector((state) => state.reducer.reducer);
   const navigate = useNavigate();
-  console.log("roooooom", room);
   const navigateToProfile = () => {
     if (room?.participant) navigate(`/${room.participant.username}`);
   };

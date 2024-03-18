@@ -1,27 +1,40 @@
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from .models import *
-from user.models import User
+from user.models import User, Connection
 from .serializers import *
 from user.serializers import UserLabelValueSerializer
+from django.contrib.contenttypes.models import ContentType
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 
 # Views
-class GetTweets(APIView):
-    def get(self, request, *args, **kwargs):
+
+class GetHomeTweets(APIView):
+    def post(self, request, *args, **kwargs):
         try:
             user = request.user
             if user.is_anonymous:
                 return JsonResponse({'success': False, 'tweets': list(), 'msg': 'Authenticate!'})
             
-            tweets = Tweet.objects.filter(parent__isnull=True)
+            view_type = request.data.get('type')
+            print('view_type', view_type)
+            if view_type == 'Following':
+                print('followowo')
+                connections = list(Connection.objects.filter(sender=user).values_list('receiver'))
+                print('connections', connections)
+                tweets = Tweet.objects.filter(user__in=connections)
+            else:
+                tweets = Tweet.objects.filter(parent__isnull=True)
+                
             return JsonResponse({'success': True, 'tweets': TweetSerializer(tweets, many=True,context={'user':user} ).data})
         except Exception as e:
             print('error while getting tweets', str(e))
             return JsonResponse({'success': False, "msg": str(e)})
         
+        
+class GetTweets(APIView):
     def post(self, request, *args, **kwargs):
         try:
             file = None
@@ -156,3 +169,24 @@ class GetBookmarks(APIView):
         except Exception as e:
             print('err', str(e))
             return JsonResponse({'success': False, 'msg': str(e)})
+        
+
+class GetFeed(APIView):
+    def post(self, request,  *args, **kwargs):
+        try:
+            print('inside get feed')
+            user = request.user
+            if not user:
+                return JsonResponse({'success': False, 'msg': "User not found"})
+            image_content_type = ContentType.objects.get_for_model(Tweet)
+            print('image_content_type', image_content_type)
+
+            images = Tweet.objects.filter()
+            # bookmark = Interaction.objects.filter(user=user, interaction_type="bookmark", ).first()
+            # if not bookmark:
+            #     return JsonResponse({'success': False, 'msg': "No bookmarks found"})
+            return JsonResponse({'success': True,}) # 'bookmarks': TweetSerializer(bookmark.tweets.all(), many=True).data})
+        except Exception as e:
+            print('err', str(e))
+            return JsonResponse({'success': False, 'msg': str(e)})
+        

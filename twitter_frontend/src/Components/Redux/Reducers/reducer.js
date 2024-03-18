@@ -10,7 +10,6 @@ const initialState = {
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.LOGIN:
-      console.log("reducer", action.payload, action.payload.user);
       return {
         ...state,
         isAuthenticated: true,

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "../../Redux/Axios/axios";
-import {Link, useNavigate, useParams} from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Post from "../../ReUsableComponents/Post/Post";
 import ImageUploader from "../../ReUsableComponents/ImageUploader/ImageUploader";
 import ModalBackground from "../../ReUsableComponents/ModalBackground/ModalBackground";
@@ -10,7 +10,7 @@ import {
   faLocationDot,
   faUserPlus,
   faUserSlash,
-    faMessage,
+  faMessage,
 } from "@fortawesome/free-solid-svg-icons";
 import EditProfile from "../../ReUsableComponents/EditProfile/EditProfile";
 import PrivateProfile from "../../ReUsableComponents/PrivateProfile/PrivateProfile";
@@ -42,10 +42,8 @@ const Profile = () => {
   const getProfile = () => {
     const endpoint = "http://127.0.0.1:8000/users/get_profile/";
     const data = { profile: profile, view_type: view_type };
-    console.log("data getprofile", data);
     axios.post(endpoint, data).then((res) => {
       const responseData = res.data;
-      console.log("responseData getprofile", responseData);
 
       const user = responseData.user;
       const posts = responseData.posts;
@@ -58,7 +56,6 @@ const Profile = () => {
   };
 
   const actions = (e, post, action_type) => {
-    console.log("post, action_type", post, action_type);
     e.stopPropagation();
     if (action_type === "comment") {
       navigate(`/post/${post?.user?.username}/${post?.id}`);
@@ -74,7 +71,6 @@ const Profile = () => {
       })
       .then((res) => {
         let responseData = res.data;
-        console.log("acionts", responseData);
         if (responseData.success) {
           const newPost = posts?.filter((p) => {
             if (p.id === post?.id) {
@@ -103,7 +99,6 @@ const Profile = () => {
     const endpoint = `http://127.0.0.1:8000/users/upload_image/`;
     axios.post(endpoint, formData).then((res) => {
       const responseData = res.data;
-      console.log("ressss", responseData);
     });
   };
   const uploadOpener = (type) => {
@@ -114,7 +109,6 @@ const Profile = () => {
     const endpoint = `http://127.0.0.1:8000/users/connection_api/`;
     axios.post(endpoint, { receiver: profile, type: type }).then((res) => {
       const responseData = res.data;
-      console.log("ressss", responseData);
     });
   };
   const changeEditModal = () => {
@@ -124,33 +118,31 @@ const Profile = () => {
     const endpoint = `http://127.0.0.1:8000/users/edit_profile/`;
     axios.post(endpoint, { user: user }).then((res) => {
       const responseData = res.data;
-      console.log("ressss", responseData);
       if (responseData.success) setUser(responseData.user);
     });
   };
-  const navigateToMessage = ()=>{
-    if (user?.room_slug){
-      navigate(`/messages/${user?.room_slug}/`)
+  const navigateToMessage = () => {
+    if (user?.room_slug) {
+      navigate(`/messages/${user?.room_slug}/`);
       return;
     }
     createRoom();
-  }
-  const createRoom = ()=>{
+  };
+  const createRoom = () => {
     let endpoint = "http://127.0.0.1:8000/chat/create_room/";
     let data = {
       participant_usernames: [user?.username],
     };
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
-      if(responseData.success)navigate()
+      if (responseData.success) navigate();
     });
-  }
+  };
   const hasProfileViewAccess =
     user?.is_user_profile || !user?.is_private || user?.has_connection;
 
   return (
     <div>
-      {console.log("profile", user)}
       {uploadProfilePicture ? (
         <ModalBackground>
           <ImageUploader
@@ -190,12 +182,14 @@ const Profile = () => {
                 alt="Profile picture"
               />
             </div>
-            <div className={'flex justify-center mt-5'}>
-              {user?.has_connection ? <div className={'mr-5'}>
-                <button onClick={navigateToMessage}>
-                  <FontAwesomeIcon icon={faMessage}/>
-                </button>
-              </div>:null}
+            <div className={"flex justify-center mt-5"}>
+              {user?.has_connection ? (
+                <div className={"mr-5"}>
+                  <button onClick={navigateToMessage}>
+                    <FontAwesomeIcon icon={faMessage} />
+                  </button>
+                </div>
+              ) : null}
               <div>
                 {user?.is_user_profile ? (
                   <button
@@ -237,17 +231,21 @@ const Profile = () => {
           </div>
         </div>
         {hasProfileViewAccess ? (
-          <div className="grid grid-cols-4 items-center">
+          <div className="grid grid-cols-4 items-center mt-4">
             {buttons.map((button) => (
               <button
                 onClick={() => navigateTo(button.to)}
-                className={
-                  view_type === button.to || (!view_type && button.to === "")
-                    ? "font-bold text-black"
-                    : "font-bold text-gray-500 py-1 px-2 transition-colors duration-300 ease-in-out hover:bg-gray-200"
-                }
+                className="flex px-2 grid-cols-1 justify-center hover:bg-gray-200"
               >
-                {button.name}
+                <div
+                  className={
+                    view_type === button.to || (!view_type && button.to === "")
+                      ? "flex justify-center font-bold text-black border-b-4 border-blue-300 py-1"
+                      : "flex justify-center font-bold text-gray-500 transition-colors duration-300 ease-in-out  py-1"
+                  }
+                >
+                  {button.name}
+                </div>
               </button>
             ))}
           </div>

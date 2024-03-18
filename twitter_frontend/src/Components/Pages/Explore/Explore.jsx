@@ -17,6 +17,18 @@ const Explore = () => {
   useEffect(() => {
     getTweet();
   }, [id]);
+
+  useEffect(() => {
+    getFeed();
+  }, []);
+
+  const getFeed = () => {
+    const endpoint = "http://127.0.0.1:8000/tweets/get_feed/";
+    axios.post(endpoint).then((res) => {
+      const responseData = res.data;
+      console.log("responseData ", responseData);
+    });
+  };
   const getTweet = () => {
     const endpoint = "http://127.0.0.1:8000/tweets/get_tweet/";
     const data = {
@@ -57,7 +69,6 @@ const Explore = () => {
 
   const actions = (e, post, action_type) => {
     e.stopPropagation();
-    console.log("id", post?.id);
     if (action_type === "comment") {
       navigate(`/post/${post?.user?.username}/${post?.id}`);
       return;
@@ -72,7 +83,6 @@ const Explore = () => {
       })
       .then((res) => {
         let responseData = res.data;
-        console.log("responsfaseData", responseData);
         if (responseData.success) {
           if (tweet?.id === post?.id) {
             const newTweet = tweet;

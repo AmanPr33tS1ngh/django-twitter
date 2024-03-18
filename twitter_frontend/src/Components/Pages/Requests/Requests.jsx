@@ -12,7 +12,6 @@ const Requests = () => {
     axios.post(endpoint).then((res) => {
       const responseData = res.data;
       setRequests(responseData.requests);
-      console.log("getRequests", responseData);
     });
   };
   const requestApi = (id, type) => {

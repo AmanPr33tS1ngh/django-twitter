@@ -178,12 +178,14 @@ class GetProfile(APIView):
             not_private = not profile.is_private
             view_type = request.data.get('view_type')
 
-            if not_private and view_type == 'likes':
+            access_for_profile = Connection.objects.filter(sender=user, receiver=profile).exists() or not_private or user == profile
+            
+            if access_for_profile and view_type == 'likes':
                 likes = Interaction.objects.filter(user=profile, interaction_type="like").first()
                 posts = likes.tweets.all().order_by("timestamp")
-            elif not_private  and view_type == 'replies':
+            elif access_for_profile  and view_type == 'replies':
                 posts = Tweet.objects.filter(parent__isnull=False, user=profile).order_by("timestamp")
-            elif not_private  and view_type == 'bookmarks':
+            elif access_for_profile  and view_type == 'bookmarks':
                 bookmark = Interaction.objects.filter(user=profile, interaction_type="bookmark").first()
                 posts = bookmark.tweets.all().order_by("timestamp")
             else:

@@ -6,9 +6,9 @@ from chat.serializers import *
 from channels.db import database_sync_to_async
 
 class ChatConsumer(AsyncWebsocketConsumer):
-    def __init__(self):
-        self.room_name = None
-        self.username = None
+    # def __init__(self):
+    #     self.room_name = None
+    #     self.username = None
 
     async def connect(self):
         self.room_name = f"room_{self.scope['url_route']['kwargs']['slug']}"

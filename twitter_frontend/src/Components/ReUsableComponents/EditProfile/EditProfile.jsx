@@ -30,7 +30,6 @@ const EditProfile = ({ user, changeProfile, closeModal }) => {
   return (
     <ModalBackground>
       <div className=" bg-white p-5 w-1/2 rounded relative">
-        {console.log("user.isPrivate", editProfile.isPrivate)}
         <button className="absolute right-0 mr-5" onClick={closeModal}>
           <FontAwesomeIcon icon={faClose} />
         </button>

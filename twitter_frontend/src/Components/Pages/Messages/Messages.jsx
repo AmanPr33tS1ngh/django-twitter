@@ -58,7 +58,6 @@ const Messages = () => {
   };
 
   const messageHandler = (message) => {
-    console.log("calling function");
     if (!socket) {
       console.error("WebSocket connection is not initialized.");
       return;
@@ -122,7 +121,6 @@ const Messages = () => {
     navigate(`/messages/${room}`);
   };
   const deleteMessage = (message) => {
-    console.log("calling function", message?.id);
     if (!socket) {
       console.error("WebSocket connection is not initialized.");
       return;
@@ -142,7 +140,6 @@ const Messages = () => {
   };
   return (
     <div className="grid grid-cols-2">
-      {console.log("nottttnotAcceptedRooms", notAcceptedRooms)}
       <div className={"col-span-1 border-r border-gray-300  relative"}>
         <h1 className={"text-lg font-medium ml-4"}>Messages</h1>
         <button

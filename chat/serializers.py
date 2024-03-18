@@ -105,9 +105,7 @@ class RoomSerializerWithMessage(serializers.ModelSerializer):
         return MessageSerializer(last_message, many=True).data
 
     def get_timestamp(self, obj):
-        if not obj:
-            return None
-        return get_timestamp_difference(obj.timestamp)
+        return get_timestamp_difference(obj.room_creation_timestamp)
 
     class Meta:
         model = Room

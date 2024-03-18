@@ -11,6 +11,7 @@ const Home = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.reducer.reducer);
   const [tweets, setTweets] = useState([]);
+  const [activeTab, setActiveTab] = useState("For you");
   const logoutUser = () => {
     const endpoint = "http://127.0.0.1:8000/users/sign_out/";
     axios.post(endpoint).then((res) => {
@@ -30,11 +31,14 @@ const Home = () => {
 
   useEffect(() => {
     getTweets();
-  }, []);
+  }, [activeTab]);
 
   const getTweets = () => {
-    let endpoint = "http://127.0.0.1:8000/tweets/tweet_api/";
-    axios.get(endpoint).then((res) => {
+    let endpoint = "http://127.0.0.1:8000/tweets/get_home_tweets/";
+    const data = {
+      type: activeTab,
+    };
+    axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
       console.log("HOme resss", responseData);
       setTweets(responseData.tweets);
@@ -46,7 +50,6 @@ const Home = () => {
     e.stopPropagation();
     if (action_type === "bookmark" || action_type === "like") {
       let endpoint = `http://127.0.0.1:8000/tweets/take_action/`;
-      console.log("actions", user, user?.username);
       if (!user?.username) return;
       axios
         .post(endpoint, {
@@ -65,7 +68,7 @@ const Home = () => {
   };
   return (
     <div>
-      <Navbar />
+      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
       <button onClick={logoutUser}>LOG OUT</button>
       {/* {console.log("tweets", tweets)} */}
       {tweets.map((tweet) => (

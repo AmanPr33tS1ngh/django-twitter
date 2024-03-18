@@ -113,11 +113,10 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
             {users.map((user, index) => (
               <button
                 key={index}
-                className={`mb-2 ${!user.can_message ? "text-gray-300": ''}`}
+                className={`mb-2 ${!user.can_message ? "text-gray-300" : ""}`}
                 disabled={!user.can_message}
                 onClick={() => addParticipants(user)}
               >
-                {console.log("participant", user, user.can_message)}
                 <div
                   className={
                     " items-center cursor-pointer grid grid-cols-1 md:grid-cols-10 pb-10" //flex

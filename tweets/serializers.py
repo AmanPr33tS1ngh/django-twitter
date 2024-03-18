@@ -29,27 +29,20 @@ class TweetSerializer(serializers.ModelSerializer):
     def get_is_bookmarked(self, obj):
         try:
             user = self.context.get('user')
-            
-            print('get_is_bookmarked11', self.context)
             if not user:
                 return False
-            print('get_is_bookmarked', user)
             return Interaction.objects.filter(tweets__id=obj.id, user=user, interaction_type="bookmark").exists()
         except Exception as e:
-            print('ksksk', str(e))
             return False
         
     def get_is_liked(self, obj):
         try:
             user = self.context.get('user')
             
-            print('get_is_liked11', self.context)
             if not user:
                 return False
-            print('get_is_liked', user)
             return Interaction.objects.filter(tweets__id=obj.id, user=user, interaction_type="like").exists()
         except Exception as e:
-            print('ksksk', str(e))
             return False
         
     def get_post_duration(self, obj):
@@ -59,24 +52,20 @@ class TweetSerializer(serializers.ModelSerializer):
         try:
             file = str(obj.file)
             content_type, _ = mimetypes.guess_type(file)
-            print('image', content_type)
             if content_type.startswith('image/'):
                 return file
             return None
         except Exception as e:
-            print("err", str(e))
             return None
     
     def get_video(self, obj):
         try:
             file = str(obj.file)
             content_type, _ = mimetypes.guess_type(file)
-            print('video', content_type)
             if content_type.startswith('video/'):
                 return os.path.join(settings.MEDIA_URL, file)
             return None
         except Exception as e:
-            print("video err", str(e))
             return None
         
     class Meta:

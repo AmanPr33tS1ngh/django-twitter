@@ -39,7 +39,6 @@ const Post = ({ post, actions }) => {
         />
       ) : post?.video ? (
         <div>
-          {console.log("post?.video", post?.video)}
           <ReactPlayer
             url={`http://localhost:8000${post?.video}`}
             controls
