@@ -95,7 +95,7 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
           />
         ) : null}
         <div className={"m-2"}>
-          {participants.map((participant) => (
+          {participants?.map((participant) => (
             <span className={"bg-black px-2 py-1 text-white rounded-full mr-2"}>
               {participant}
               <button
@@ -111,11 +111,13 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
         {inputVal ? (
           <ul className={"h-500 px-4 py-2 overflow-y-scroll h-60vh"}>
             {users.map((user, index) => (
-              <li
+              <button
                 key={index}
-                className="mb-2"
+                className={`mb-2 ${!user.can_message ? "text-gray-300": ''}`}
+                disabled={!user.can_message}
                 onClick={() => addParticipants(user)}
               >
+                {console.log("participant", user, user.can_message)}
                 <div
                   className={
                     " items-center cursor-pointer grid grid-cols-1 md:grid-cols-10 pb-10" //flex
@@ -124,7 +126,7 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
                   <FontAwesomeIcon icon={faUser} />
                   {user.username}
                 </div>
-              </li>
+              </button>
             ))}
           </ul>
         ) : null}

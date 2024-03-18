@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "../../Redux/Axios/axios";
-import { useNavigate, useParams } from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import Post from "../../ReUsableComponents/Post/Post";
 import ImageUploader from "../../ReUsableComponents/ImageUploader/ImageUploader";
 import ModalBackground from "../../ReUsableComponents/ModalBackground/ModalBackground";
@@ -10,6 +10,7 @@ import {
   faLocationDot,
   faUserPlus,
   faUserSlash,
+    faMessage,
 } from "@fortawesome/free-solid-svg-icons";
 import EditProfile from "../../ReUsableComponents/EditProfile/EditProfile";
 import PrivateProfile from "../../ReUsableComponents/PrivateProfile/PrivateProfile";
@@ -172,23 +173,30 @@ const Profile = () => {
                 alt="Profile picture"
               />
             </div>
-            <div className="mt-5">
-              {user?.is_user_profile ? (
-                <button
-                  className="text-sm border font-semibold border-gray-300 rounded-full px-4 py-1"
-                  onClick={changeEditModal}
-                >
-                  Edit profile
-                </button>
-              ) : !user?.has_connection ? (
-                <button onClick={() => createOrDeleteConnection("create")}>
-                  <FontAwesomeIcon icon={faUserPlus} />
-                </button>
-              ) : (
-                <button onClick={() => createOrDeleteConnection("delete")}>
-                  <FontAwesomeIcon icon={faUserSlash} />
-                </button>
-              )}
+            <div className={'flex justify-center mt-5'}>
+              {user?.has_connection && user?.room_slug ? <div className={'mr-5'}>
+                <Link to={`/messages/${user?.room_slug}/`}>
+                  <FontAwesomeIcon icon={faMessage} />
+                </Link>
+              </div>:null}
+              <div>
+                {user?.is_user_profile ? (
+                  <button
+                    className="text-sm border font-semibold border-gray-300 rounded-full px-4 py-1"
+                    onClick={changeEditModal}
+                  >
+                    Edit profile
+                  </button>
+                ) : !user?.has_connection ? (
+                  <button onClick={() => createOrDeleteConnection("create")}>
+                    <FontAwesomeIcon icon={faUserPlus} />
+                  </button>
+                ) : (
+                  <button onClick={() => createOrDeleteConnection("delete")}>
+                    <FontAwesomeIcon icon={faUserSlash} />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
           <div>

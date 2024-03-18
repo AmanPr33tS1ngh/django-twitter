@@ -15,6 +15,7 @@ const Messages = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.reducer.reducer);
   const [rooms, setRooms] = useState([]);
+  const [notAcceptedRooms, setNotAcceptedRooms] = useState([]);
   const [room, setRoom] = useState(null);
   const [createRoom, setCreateRoom] = useState(false);
   const [sender, setSender] = useState(null);
@@ -141,6 +142,7 @@ const Messages = () => {
   };
   return (
     <div className="grid grid-cols-2">
+      {console.log("nottttnotAcceptedRooms", notAcceptedRooms)}
       <div className={"col-span-1 border-r border-gray-300  relative"}>
         <h1 className={"text-lg font-medium ml-4"}>Messages</h1>
         <button

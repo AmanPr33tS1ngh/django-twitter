@@ -99,4 +99,3 @@ class SendMessage(APIView):
         except Exception as e:
             print(str(e))
             return JsonResponse({'succcess': False, 'msg': f"There was an error SendMessage {str(e)}"})
-        
