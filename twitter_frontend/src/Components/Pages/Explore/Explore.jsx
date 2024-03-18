@@ -12,6 +12,8 @@ const Explore = () => {
   const [matchingUsers, setMatchingUsers] = useState([]);
   const [tweet, setTweet] = useState(null);
   const [replies, setReplies] = useState([]);
+  const [feedVideos, setFeedVideos] = useState([]);
+  const [feedImages, setFeedImages] = useState([]);
   const { id } = useParams();
 
   useEffect(() => {
@@ -26,7 +28,9 @@ const Explore = () => {
     const endpoint = "http://127.0.0.1:8000/tweets/get_feed/";
     axios.post(endpoint).then((res) => {
       const responseData = res.data;
-      console.log("responseData ", responseData);
+      console.log("feed datakksk ", responseData);
+      setFeedImages(responseData.images);
+      setFeedVideos(responseData.videos);
     });
   };
   const getTweet = () => {

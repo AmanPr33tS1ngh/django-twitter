@@ -5,6 +5,7 @@ from user.models import User, Connection
 from .serializers import *
 from user.serializers import UserLabelValueSerializer
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
@@ -181,11 +182,14 @@ class GetFeed(APIView):
             image_content_type = ContentType.objects.get_for_model(Tweet)
             print('image_content_type', image_content_type)
 
-            images = Tweet.objects.filter()
-            # bookmark = Interaction.objects.filter(user=user, interaction_type="bookmark", ).first()
-            # if not bookmark:
-            #     return JsonResponse({'success': False, 'msg': "No bookmarks found"})
-            return JsonResponse({'success': True,}) # 'bookmarks': TweetSerializer(bookmark.tweets.all(), many=True).data})
+            images = Tweet.objects.filter(Q(file__icontains='.jpg') | Q(file__icontains='.jpeg') | Q(file__icontains='.png') |
+                                          Q(file__icontains='.gif') | Q(file__icontains='.bmp')).order_by('?')
+            
+            videos = Tweet.objects.filter(
+                    Q(file__icontains='.mp4') | Q(file__icontains='.mov') | Q(file__icontains='.avi') |
+                    Q(file__icontains='.mkv')).order_by('?')
+            
+            return JsonResponse({'success': True, 'images': TweetSerializer(images, many=True).data, 'videos': TweetSerializer(videos, many=True).data})
         except Exception as e:
             print('err', str(e))
             return JsonResponse({'success': False, 'msg': str(e)})
