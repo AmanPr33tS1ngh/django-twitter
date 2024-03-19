@@ -5,6 +5,7 @@ import axios from "../../Redux/Axios/axios";
 import SearchResults from "../../ReUsableComponents/SearchResults/SearchResults";
 import { debounce } from "lodash";
 import Post from "../../ReUsableComponents/Post/Post";
+import FeedPost from "../../ReUsableComponents/Post/FeedPost/FeedPost";
 
 const Explore = () => {
   const [inputVal, setInputVal] = useState("");
@@ -12,8 +13,7 @@ const Explore = () => {
   const [matchingUsers, setMatchingUsers] = useState([]);
   const [tweet, setTweet] = useState(null);
   const [replies, setReplies] = useState([]);
-  const [feedVideos, setFeedVideos] = useState([]);
-  const [feedImages, setFeedImages] = useState([]);
+  const [feedPosts, setFeedPosts] = useState([]);
   const { id } = useParams();
 
   useEffect(() => {
@@ -29,8 +29,7 @@ const Explore = () => {
     axios.post(endpoint).then((res) => {
       const responseData = res.data;
       console.log("feed datakksk ", responseData);
-      setFeedImages(responseData.images);
-      setFeedVideos(responseData.videos);
+      setFeedPosts(responseData.posts);
     });
   };
   const getTweet = () => {
@@ -132,11 +131,8 @@ const Explore = () => {
         users={matchingUsers}
         showResults={!!inputVal}
       />
-      {console.log("TWEET", tweet)}
       {tweet ? <Post post={tweet} actions={actions} /> : null}
       <br />
-      <hr />
-      <hr />
       <hr />
       <hr />
       <br />
@@ -144,6 +140,7 @@ const Explore = () => {
       {replies?.map((reply) => (
         <Post post={reply} actions={actions} />
       ))}
+      <FeedPost feedPosts={feedPosts} />
     </div>
   );
 };

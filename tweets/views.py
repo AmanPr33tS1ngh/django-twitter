@@ -6,6 +6,7 @@ from .serializers import *
 from user.serializers import UserLabelValueSerializer
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from django.db.models import F, Count
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
@@ -18,7 +19,7 @@ class GetHomeTweets(APIView):
             user = request.user
             if user.is_anonymous:
                 return JsonResponse({'success': False, 'tweets': list(), 'msg': 'Authenticate!'})
-            
+
             view_type = request.data.get('type')
             print('view_type', view_type)
             if view_type == 'Following':
@@ -28,13 +29,13 @@ class GetHomeTweets(APIView):
                 tweets = Tweet.objects.filter(user__in=connections)
             else:
                 tweets = Tweet.objects.filter(parent__isnull=True)
-                
+
             return JsonResponse({'success': True, 'tweets': TweetSerializer(tweets, many=True,context={'user':user} ).data})
         except Exception as e:
             print('error while getting tweets', str(e))
             return JsonResponse({'success': False, "msg": str(e)})
-        
-        
+
+
 class GetTweets(APIView):
     def post(self, request, *args, **kwargs):
         try:
@@ -42,7 +43,7 @@ class GetTweets(APIView):
             user = request.user
             if user.is_anonymous:
                 return JsonResponse({'success': False, 'msg': 'Authenticate!'})
-            
+
             content = request.data.get('content')
             if not content:
                 return JsonResponse({'success': False, 'msg': 'Please add content!'})
@@ -52,7 +53,7 @@ class GetTweets(APIView):
             print('parent_id', parent_id)
             if parent_id == 'null' or parent_id == 'undefined':
                 parent_id = None
-                
+
             parent = Tweet.objects.filter(id=parent_id, user__username=parent_username).first()
             print('requuue', request.FILES, request.FILES.get('file'))
             if 'file' in request.FILES:
@@ -67,12 +68,12 @@ class GetTweets(APIView):
                 parent=parent,
                 file=file,
             )
-            
+
             return JsonResponse({'success': True, 'msg': 'new tweet', 'tweet': TweetSerializer(tweet).data})
         except Exception as e:
             print('error while creating tweet', str(e))
             return JsonResponse({'success': False, "msg": str(e)})
-        
+
 
 class GetMatchingTweets(APIView):
     def post(self, request, *args, **kwargs):
@@ -86,22 +87,22 @@ class GetMatchingTweets(APIView):
 
             tweets = Tweet.objects.filter(content__icontains=input_val)[:5]
             result = TweetLabelValueSerializer(tweets, many=True).data
-            
+
             users = User.objects.filter(username__icontains=input_val)[:5]
             matching_users = UserLabelValueSerializer(users, many=True).data
             return JsonResponse({'success': True, 'msg': 'new tweet', 'results': result, "users": matching_users})
         except Exception as e:
             print('error while creating tweet', str(e))
             return JsonResponse({'success': False, "msg": str(e)})
-        
+
 
 class GetTweet(APIView):
     def post(self, request, *args, **kwargs):
-        try:            
+        try:
             user = request.user
             if user.is_anonymous:
                 return JsonResponse({'success': False, 'tweets': list(), 'msg': 'Authenticate!'})
-            
+
             tweet_id = request.data.get('tweet_id')
             if not tweet_id:
                 return JsonResponse({'success': False, 'msg': 'Wrong url'})
@@ -111,11 +112,11 @@ class GetTweet(APIView):
             replies = Tweet.objects.filter(parent=tweet).order_by('timestamp')
             return JsonResponse({'success': True, 'msg': 'new tweet', "replies":TweetSerializer(replies, many=True, context={'user': user}).data,
                                  'tweet': TweetSerializer(tweet, context={'user': user}).data})
-        
+
         except Exception as e:
             print('error while creating tweet', str(e))
             return JsonResponse({'success': False, "msg": str(e)})
-        
+
 
 
 class TakeAction(APIView):
@@ -126,7 +127,7 @@ class TakeAction(APIView):
             print('usercheck', user)
             if user.is_anonymous:
                 return JsonResponse({'success': False, 'msg': 'Please login to bookmark tweets'})
-        
+
             tweet_id = request.data.get("tweet_id")
 
             if not tweet_id:
@@ -136,9 +137,9 @@ class TakeAction(APIView):
                 return JsonResponse({'success': False, 'msg': 'There was an error while saving this bookmark. Please try again later'})
 
             interaction_type = request.data.get("action_type")
-            
+
             interactions = Interaction.objects.filter(user=user, interaction_type=interaction_type).first()
-            
+
             if not interactions:
                 interactions = Interaction.objects.create(
                     user=user,
@@ -149,9 +150,9 @@ class TakeAction(APIView):
                 interactions.tweets.remove(tweet)
             else:
                 interactions.tweets.add(tweet)
-            
+
             return JsonResponse({'success': True, 'msg': "Got profile!",})
-        
+
         except Exception as e:
             print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
@@ -170,7 +171,7 @@ class GetBookmarks(APIView):
         except Exception as e:
             print('err', str(e))
             return JsonResponse({'success': False, 'msg': str(e)})
-        
+
 
 class GetFeed(APIView):
     def post(self, request,  *args, **kwargs):
@@ -184,13 +185,17 @@ class GetFeed(APIView):
 
             images = Tweet.objects.filter(Q(file__icontains='.jpg') | Q(file__icontains='.jpeg') | Q(file__icontains='.png') |
                                           Q(file__icontains='.gif') | Q(file__icontains='.bmp')).order_by('?')
-            
+
             videos = Tweet.objects.filter(
                     Q(file__icontains='.mp4') | Q(file__icontains='.mov') | Q(file__icontains='.avi') |
                     Q(file__icontains='.mkv')).order_by('?')
-            
-            return JsonResponse({'success': True, 'images': TweetSerializer(images, many=True).data, 'videos': TweetSerializer(videos, many=True).data})
+
+            items_with_images = images.annotate(group_value=Count('id'))
+            items_with_videos = videos.annotate(group_value=F('id'))
+
+            posts = (items_with_images | items_with_videos).order_by('group_value')
+
+            return JsonResponse({'success': True, 'posts': TweetSerializer(posts, many=True).data})
         except Exception as e:
             print('err', str(e))
             return JsonResponse({'success': False, 'msg': str(e)})
-        
