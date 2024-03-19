@@ -148,7 +148,9 @@ const Messages = () => {
         >
           <FontAwesomeIcon icon={faCommentMedical} />
         </button>
-        <Input placeholder={"Search..."} />
+        <div className="flex justify-center">
+          <Input className="w-[92%]" placeholder={"Search..."} />
+        </div>
 
         {createRoom ? (
           <CreateRoom

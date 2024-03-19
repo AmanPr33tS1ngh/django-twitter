@@ -9,6 +9,7 @@ import Requests from "./Components/Pages/Requests/Requests";
 import Messages from "./Components/Pages/Messages/Messages";
 import AuthRoute from "./Components/Authentication/AuthRoute";
 import AddPost from "./Components/ReUsableComponents/Post/AddPost/AddPost";
+import Posts from "./Components/Pages/Posts/Posts";
 
 function App() {
   return (
@@ -51,7 +52,7 @@ function App() {
           <Route
             exact
             path="/status/:id"
-            element={<AuthRoute element={<Explore />} />}
+            element={<AuthRoute element={<Posts />} />}
           />
           <Route
             exact

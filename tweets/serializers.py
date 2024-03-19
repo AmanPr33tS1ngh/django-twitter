@@ -21,7 +21,7 @@ class TweetSerializer(serializers.ModelSerializer):
         return UserSerializer(obj.user).data
     
     def get_like_count(self, obj):
-        return Interaction.objects.filter(user=obj.user, interaction_type="like").count()
+        return Interaction.objects.filter(interaction_type="like").count()
     
     def get_replies_count(self, obj):
         return Tweet.objects.filter(parent=obj).count()

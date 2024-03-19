@@ -11,6 +11,8 @@ from django.db.models import F, Count
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 
+from django.db.models import Case, Value, When
+from django.db.models.functions import Mod
 # Views
 
 class GetHomeTweets(APIView):
@@ -183,18 +185,15 @@ class GetFeed(APIView):
             image_content_type = ContentType.objects.get_for_model(Tweet)
             print('image_content_type', image_content_type)
 
-            images = Tweet.objects.filter(Q(file__icontains='.jpg') | Q(file__icontains='.jpeg') | Q(file__icontains='.png') |
-                                          Q(file__icontains='.gif') | Q(file__icontains='.bmp')).order_by('?')
-
-            videos = Tweet.objects.filter(
-                    Q(file__icontains='.mp4') | Q(file__icontains='.mov') | Q(file__icontains='.avi') |
-                    Q(file__icontains='.mkv')).order_by('?')
-
-            items_with_images = images.annotate(group_value=Count('id'))
-            items_with_videos = videos.annotate(group_value=F('id'))
-
-            posts = (items_with_images | items_with_videos).order_by('group_value')
-
+            posts = Tweet.objects.filter(file__isnull=False).annotate(
+                    file_type_order=Case(
+                        When(file__endswith='.mp4', then=Value(1)),
+                        default=Value(2),
+                        output_field=models.IntegerField(),
+                    ),
+                    sequence_order=Mod(models.F('id'), 5),
+                ).order_by('file_type_order', 'sequence_order', 'id')
+            
             return JsonResponse({'success': True, 'posts': TweetSerializer(posts, many=True).data})
         except Exception as e:
             print('err', str(e))
