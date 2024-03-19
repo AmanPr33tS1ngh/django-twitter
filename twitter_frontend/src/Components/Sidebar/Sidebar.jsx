@@ -1,8 +1,29 @@
-import React, { useContext, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import React, { useContext, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { LOGOUT } from "../Redux/ActionTypes/ActionTypes";
+import axios from "axios";
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [openProfile, setOpenProfile] = useState(false);
+  const logoutUser = () => {
+    const endpoint = "http://127.0.0.1:8000/users/sign_out/";
+    axios.post(endpoint).then((res) => {
+      const responseData = res.data;
+      if (responseData.success) {
+        localStorage.removeItem("authTokens");
+        dispatch({
+          type: LOGOUT,
+          payload: {
+            authenticated: false,
+          },
+        });
+        navigate("/sign_in");
+      }
+    });
+  };
   const { user } = useSelector((state) => state.reducer.reducer);
   const sidebar = useMemo(
     () => [
@@ -31,11 +52,11 @@ const Sidebar = () => {
         to: "/messages",
         path: "M1.998 5.5c0-1.381 1.119-2.5 2.5-2.5h15c1.381 0 2.5 1.119 2.5 2.5v13c0 1.381-1.119 2.5-2.5 2.5h-15c-1.381 0-2.5-1.119-2.5-2.5v-13zm2.5-.5c-.276 0-.5.224-.5.5v2.764l8 3.638 8-3.636V5.5c0-.276-.224-.5-.5-.5h-15zm15.5 5.463l-8 3.636-8-3.638V18.5c0 .276.224.5.5.5h15c.276 0 .5-.224.5-.5v-8.037z",
       },
-      {
-        name: "Profile",
-        to: `/${user?.username}`,
-        path: "M17.863 13.44c1.477 1.58 2.366 3.8 2.632 6.46l.11 1.1H3.395l.11-1.1c.266-2.66 1.155-4.88 2.632-6.46C7.627 11.85 9.648 11 12 11s4.373.85 5.863 2.44zM12 2C9.791 2 8 3.79 8 6s1.791 4 4 4 4-1.79 4-4-1.791-4-4-4z",
-      },
+      // {
+      //   name: "Profile",
+      //   to: `/${user?.username}`,
+      //   path: "M17.863 13.44c1.477 1.58 2.366 3.8 2.632 6.46l.11 1.1H3.395l.11-1.1c.266-2.66 1.155-4.88 2.632-6.46C7.627 11.85 9.648 11 12 11s4.373.85 5.863 2.44zM12 2C9.791 2 8 3.79 8 6s1.791 4 4 4 4-1.79 4-4-1.791-4-4-4z",
+      // },
       {
         name: "Post",
         to: `/post`,
@@ -46,7 +67,7 @@ const Sidebar = () => {
   );
   return (
     <aside className="col-span-1 items-center p-2  border-r border-gray-300">
-      <nav className="flex flex-col flex-1 space-y-6 ">
+      <nav className="relative h-[100vh] flex flex-col flex-1 space-y-6 ">
         <Link to={"/"} className="items-center p-2 mpt-0">
           <img
             width={"100"}
@@ -84,6 +105,78 @@ const Sidebar = () => {
             </span>
           </Link>
         ))}
+        <div className=" absolute bottom-1">
+          {openProfile ? (
+            <ul>
+              <Link
+                to={`/${user?.username}`}
+                // className="flex-1 text-base font-medium grid-cols-4"
+                className="grid grid-cols-5 gap-x-1 items-center p-2 my-2 cursor-pointer hover:bg-gray-200"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  className="inline h-[25px] grid-cols-1"
+                >
+                  <g>
+                    <path
+                      d={
+                        "M17.863 13.44c1.477 1.58 2.366 3.8 2.632 6.46l.11 1.1H3.395l.11-1.1c.266-2.66 1.155-4.88 2.632-6.46C7.627 11.85 9.648 11 12 11s4.373.85 5.863 2.44zM12 2C9.791 2 8 3.79 8 6s1.791 4 4 4 4-1.79 4-4-1.791-4-4-4z"
+                      }
+                    />
+                  </g>
+                </svg>
+                <span className="flex-1 text-base font-medium grid-cols-4">
+                  Profile
+                </span>
+              </Link>
+              <li
+                // className="flex-1 text-base font-medium grid-cols-4"
+                onClick={logoutUser}
+                className="grid grid-cols-5 gap-x-1 items-center p-2 my-2 cursor-pointer hover:bg-gray-200"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  className="inline h-[25px] grid-cols-1"
+                >
+                  <g>
+                    <path
+                      d={
+                        "M17.863 13.44c1.477 1.58 2.366 3.8 2.632 6.46l.11 1.1H3.395l.11-1.1c.266-2.66 1.155-4.88 2.632-6.46C7.627 11.85 9.648 11 12 11s4.373.85 5.863 2.44zM12 2C9.791 2 8 3.79 8 6s1.791 4 4 4 4-1.79 4-4-1.791-4-4-4z"
+                      }
+                    />
+                  </g>
+                </svg>
+                <span className="flex-1 text-base font-medium grid-cols-4">
+                  Logout
+                </span>
+              </li>
+            </ul>
+          ) : null}
+          <span
+            className="grid grid-cols-5 gap-x-1 items-center p-2 my-2 cursor-pointer hover:bg-gray-200"
+            onClick={() => setOpenProfile(!openProfile)}
+            // to={item.to}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="inline h-[25px] grid-cols-1"
+            >
+              <g>
+                <path
+                  d={
+                    "M17.863 13.44c1.477 1.58 2.366 3.8 2.632 6.46l.11 1.1H3.395l.11-1.1c.266-2.66 1.155-4.88 2.632-6.46C7.627 11.85 9.648 11 12 11s4.373.85 5.863 2.44zM12 2C9.791 2 8 3.79 8 6s1.791 4 4 4 4-1.79 4-4-1.791-4-4-4z"
+                  }
+                />
+              </g>
+            </svg>
+            <span className="flex-1 text-base font-medium grid-cols-4">
+              {user?.full_name}
+            </span>
+          </span>
+        </div>
       </nav>
     </aside>
   );
