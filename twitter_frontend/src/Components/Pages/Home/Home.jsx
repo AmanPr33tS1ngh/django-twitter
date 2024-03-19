@@ -3,31 +3,13 @@ import Navbar from "../../Navbar/Navbar";
 import axios from "../../Redux/Axios/axios";
 import Post from "../../ReUsableComponents/Post/Post";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { LOGOUT } from "../../Redux/ActionTypes/ActionTypes";
+import { useSelector } from "react-redux";
 
 const Home = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.reducer.reducer);
   const [tweets, setTweets] = useState([]);
   const [activeTab, setActiveTab] = useState("For you");
-  const logoutUser = () => {
-    const endpoint = "http://127.0.0.1:8000/users/sign_out/";
-    axios.post(endpoint).then((res) => {
-      const responseData = res.data;
-      if (responseData.success) {
-        localStorage.removeItem("authTokens");
-        dispatch({
-          type: LOGOUT,
-          payload: {
-            authenticated: false,
-          },
-        });
-        navigate("/sign_in");
-      }
-    });
-  };
 
   useEffect(() => {
     getTweets();
@@ -69,8 +51,6 @@ const Home = () => {
   return (
     <div>
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
-      <button onClick={logoutUser}>LOG OUT</button>
-      {/* {console.log("tweets", tweets)} */}
       {tweets.map((tweet) => (
         <Post post={tweet} actions={actions} />
       ))}
