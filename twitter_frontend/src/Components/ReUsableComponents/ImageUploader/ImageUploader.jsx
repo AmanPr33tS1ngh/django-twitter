@@ -12,21 +12,20 @@ const ImageUploader = ({
   const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
-    const fetchImageBlob = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:8000/media/${savedImage}`
-        );
-        const blob = await response.blob();
-        setSelectedImage(blob);
-      } catch (error) {
-        console.error("Error fetching image:", error);
-      }
-    };
-
     fetchImageBlob();
   }, []);
 
+  const fetchImageBlob = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/media/${savedImage}`);
+      const blob = await response.blob();
+      if (blob?.type?.startsWith("image/")) {
+        setSelectedImage(blob);
+      }
+    } catch (error) {
+      console.error("Error fetching image:", error);
+    }
+  };
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setSelectedImage(file);
@@ -45,7 +44,12 @@ const ImageUploader = ({
       <button className="absolute right-1" onClick={onClose}>
         <FontAwesomeIcon icon={faCircleXmark} />
       </button>
-      <div className="modal-content p-4 bg-white rounded-lg shadow-md w-[80vw] h-[80vh]">
+      {console.log("selectedImage", selectedImage)}
+      <div
+        className={`modal-content p-4 bg-white rounded-lg shadow-md ${
+          selectedImage && "w-[80vw] h-[80vh]"
+        }`}
+      >
         {selectedImage && (
           <div className="selected-image-preview mb-4 flex justify-center">
             <img

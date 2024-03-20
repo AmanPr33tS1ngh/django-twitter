@@ -62,7 +62,7 @@ const Requests = () => {
             </div>
           ))
         ) : (
-          <p>No requests</p>
+          <p className="p-4 text-lg font-bold">No requests</p>
         )}
       </div>
     </div>

@@ -4,17 +4,17 @@ const Input = ({
   placeholder,
   onChange,
   value,
-  className = "",
+  className = " w-full",
   name,
   disabled = false,
 }) => {
   return (
     <input
-      id={'input'}
+      id={"input"}
       placeholder={placeholder}
       onChange={onChange}
       value={value}
-      className={`p-2 rounded-lg bg-gray-200 my-2 w-full mx-auto ${className}`}
+      className={`p-2 rounded-lg bg-gray-200 my-2 mx-auto ${className}`}
       name={name}
       disabled={disabled}
     />

@@ -6,13 +6,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationArrow } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
-const ChatPanel = ({ room, messageHandler, deleteMessage }) => {
+const ChatPanel = ({ room, messageHandler, deleteMessage, setCreateRoom }) => {
   const { user } = useSelector((state) => state.reducer.reducer);
   const navigate = useNavigate();
   const navigateToProfile = () => {
     if (room?.participant) navigate(`/${room.participant.username}`);
   };
-  return (
+  return room?.slug ? (
     <div className={"p-4"}>
       <div className={"text-xl font-semibold pb-5 flex justify-between"}>
         <span>
@@ -22,29 +22,7 @@ const ChatPanel = ({ room, messageHandler, deleteMessage }) => {
           <FontAwesomeIcon icon={faLocationArrow} />
         </button>
       </div>
-      <div className={"h-[88vh] overflow-y-scroll pb-20"}>
-        {/* <div
-          className={
-            "mt-4 text-center py-2 px-4 cursor-pointer hover:bg-gray-200"
-          }
-        >
-          <div>
-            {room?.participant ? room?.participant?.full_name : room?.name}
-          </div>
-          {room?.participant ? (
-            <div className={"text-gray-600"}>
-              @{room?.participant?.username}
-            </div>
-          ) : null}
-          {room?.participant ? (
-            <div className={"mt-4"}>{room?.participant?.biography}</div>
-          ) : null}
-          {room?.participant ? (
-            <div className={"text-gray-600 mt-4"}>
-              Joined on {room?.participant?.joining_date}
-            </div>
-          ) : null}
-        </div> */}
+      <div className={"overflow-y-scroll pb-20"}>
         <div>
           {room?.messages?.map((message) => (
             <Message
@@ -56,6 +34,24 @@ const ChatPanel = ({ room, messageHandler, deleteMessage }) => {
         </div>
       </div>
       <MessageHandler messageHandler={messageHandler} />
+    </div>
+  ) : (
+    <div className=" flex justify-center items-center h-[100vh] m-10">
+      <div>
+        <h1 className="text-3xl font-bold"> Select a message</h1>
+        <h4 className={"my-2 text-gray-500"}>
+          Choose from your existing conversations, start a new one, or just keep
+          swimming.
+        </h4>
+        <div className="flex justify-center items-center">
+          <button
+            className="text-white rounded-full bg-blue-400 py-3 px-8 font-bold"
+            onClick={setCreateRoom}
+          >
+            New message
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

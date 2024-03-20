@@ -48,7 +48,7 @@ const SignIn = () => {
     <div className="flex justify-center items-center h-screen">
       <form onSubmit={handleSignIn}>
         <div className="bg-white p-20 rounded-lg shadow-md max-w-md w-full text-center">
-          <h1 className="">Join the community</h1>
+          <h1 className="py-3 px-8 font-bold">Join the community</h1>
           <Input
             placeholder="Enter username"
             className="block m-5"
@@ -71,8 +71,15 @@ const SignIn = () => {
               Sign In
             </button>
           </div>
-          <p className="block text-blue-500 hover:text-blue-700 mt-2 text-sm">
-            Don't have an account? <Link to={"/sign_up"}>Sign up here</Link>.
+          <p className="block mt-2 text-sm">
+            Don't have an account?{" "}
+            <Link
+              className=" text-blue-500 hover:text-blue-700"
+              to={"/sign_up"}
+            >
+              Sign up here
+            </Link>
+            .
           </p>
         </div>
       </form>

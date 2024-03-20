@@ -44,7 +44,9 @@ const Explore = () => {
       setMatchingUsers(responseData.users);
     });
   };
-
+  const handleShowResults = () => {
+    setInputVal("");
+  };
   return (
     <div className={"relative"}>
       <div className="flex justify-center">
@@ -59,6 +61,7 @@ const Explore = () => {
         results={matchingTweets}
         users={matchingUsers}
         showResults={!!inputVal}
+        handleShowResults={handleShowResults}
       />
       <FeedPost feedPosts={feedPosts} />
     </div>

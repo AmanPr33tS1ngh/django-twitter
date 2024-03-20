@@ -3,11 +3,20 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { LOGOUT } from "../Redux/ActionTypes/ActionTypes";
 import axios from "axios";
+import OutsideClickHandler from "react-outside-click-handler";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faLocationArrow,
+  faRightFromBracket,
+} from "@fortawesome/free-solid-svg-icons";
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [openProfile, setOpenProfile] = useState(false);
+  const changeOpenProfile = () => {
+    setOpenProfile(!openProfile);
+  };
   const logoutUser = () => {
     const endpoint = "http://127.0.0.1:8000/users/sign_out/";
     axios.post(endpoint).then((res) => {
@@ -91,15 +100,19 @@ const Sidebar = () => {
             className="grid grid-cols-5 gap-x-1 items-center p-2 my-2"
             to={item.to}
           >
-            <svg
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              className="inline h-[25px] grid-cols-1"
-            >
-              <g>
-                <path d={item.path} />
-              </g>
-            </svg>
+            {item.to === "/post" ? (
+              <FontAwesomeIcon className=" text-xl" icon={faLocationArrow} />
+            ) : (
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                className="inline h-[25px] grid-cols-1"
+              >
+                <g>
+                  <path d={item.path} />
+                </g>
+              </svg>
+            )}
             <span className="flex-1 text-base font-medium grid-cols-4">
               {item.name}
             </span>
@@ -107,61 +120,55 @@ const Sidebar = () => {
         ))}
         <div className=" absolute bottom-1">
           {openProfile ? (
-            <ul className="shadow-lg">
-              <Link
-                to={`/${user?.username}`}
-                // className="flex-1 text-base font-medium grid-cols-4"
-                className="grid grid-cols-5 gap-x-1 items-center p-2 cursor-pointer hover:bg-gray-200"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                  className="inline h-[25px] grid-cols-1"
+            <OutsideClickHandler onOutsideClick={changeOpenProfile}>
+              <ul className="shadow-lg rounded-xl">
+                <Link
+                  onClick={changeOpenProfile}
+                  to={`/${user?.username}`}
+                  // className="flex-1 text-base font-medium grid-cols-4"
+                  className="grid grid-cols-5 gap-x-1 items-center p-2 cursor-pointer hover:bg-gray-200 rounded-xl"
                 >
-                  <g>
-                    <path
-                      d={
-                        "M17.863 13.44c1.477 1.58 2.366 3.8 2.632 6.46l.11 1.1H3.395l.11-1.1c.266-2.66 1.155-4.88 2.632-6.46C7.627 11.85 9.648 11 12 11s4.373.85 5.863 2.44zM12 2C9.791 2 8 3.79 8 6s1.791 4 4 4 4-1.79 4-4-1.791-4-4-4z"
-                      }
-                    />
-                  </g>
-                </svg>
-                <span className="flex-1 text-base font-medium grid-cols-4">
-                  Profile
-                </span>
-              </Link>
-              <hr />
-              <li
-                // className="flex-1 text-base font-medium grid-cols-4"
-                onClick={logoutUser}
-                className="grid grid-cols-5 gap-x-1 items-center p-2 cursor-pointer hover:bg-gray-200"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                  className="inline h-[25px] grid-cols-1"
+                  <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    className="inline h-[25px] col-span-1"
+                  >
+                    <g>
+                      <path
+                        d={
+                          "M17.863 13.44c1.477 1.58 2.366 3.8 2.632 6.46l.11 1.1H3.395l.11-1.1c.266-2.66 1.155-4.88 2.632-6.46C7.627 11.85 9.648 11 12 11s4.373.85 5.863 2.44zM12 2C9.791 2 8 3.79 8 6s1.791 4 4 4 4-1.79 4-4-1.791-4-4-4z"
+                        }
+                      />
+                    </g>
+                  </svg>
+                  <span className="flex-1 text-base font-medium col-span-4">
+                    Profile
+                  </span>
+                </Link>
+                <hr />
+                <li
+                  // className="flex-1 text-base font-medium grid-cols-4"
+                  onClick={logoutUser}
+                  className="grid grid-cols-5 gap-x-1 items-center p-2 cursor-pointer hover:bg-gray-200 rounded-xl"
                 >
-                  <g>
-                    <path
-                      d={
-                        "M17.863 13.44c1.477 1.58 2.366 3.8 2.632 6.46l.11 1.1H3.395l.11-1.1c.266-2.66 1.155-4.88 2.632-6.46C7.627 11.85 9.648 11 12 11s4.373.85 5.863 2.44zM12 2C9.791 2 8 3.79 8 6s1.791 4 4 4 4-1.79 4-4-1.791-4-4-4z"
-                      }
-                    />
-                  </g>
-                </svg>
-                <span className="flex-1 text-base font-medium grid-cols-4">
-                  Logout
-                </span>
-              </li>
-            </ul>
+                  <FontAwesomeIcon
+                    className="col-span-1 ml-1"
+                    icon={faRightFromBracket}
+                  />
+                  <span className="flex-1 text-base font-medium col-span-4">
+                    Logout
+                  </span>
+                </li>
+              </ul>
+            </OutsideClickHandler>
           ) : null}
           <span
             className="grid grid-cols-3 gap-x-1 items-center p-2 my-2 cursor-pointer hover:bg-gray-200"
-            onClick={() => setOpenProfile(!openProfile)}
+            onClick={changeOpenProfile}
             // to={item.to}
           >
             <img
-              className=" rounded-full mr-2 grid-cols-1 w-52"
+              className=" rounded-full mr-2 grid-cols-1 w-1/2"
               src={`http://localhost:8000/media/${user?.profile_picture}`}
             />
             <span className="flex-1 text-base font-medium grid-cols-2">

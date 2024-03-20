@@ -15,7 +15,7 @@ const Messages = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.reducer.reducer);
   const [rooms, setRooms] = useState([]);
-  const [notAcceptedRooms, setNotAcceptedRooms] = useState([]);
+  // const [notAcceptedRooms, setNotAcceptedRooms] = useState([]);
   const [room, setRoom] = useState(null);
   const [createRoom, setCreateRoom] = useState(false);
   const [sender, setSender] = useState(null);
@@ -141,16 +141,18 @@ const Messages = () => {
   return (
     <div className="grid grid-cols-2">
       <div className={"col-span-1 border-r border-gray-300  relative"}>
-        <h1 className={"text-lg font-medium ml-4"}>Messages</h1>
+        <h1 className={"text-lg p-2 font-bold ml-4"}>Messages</h1>
         <button
           onClick={() => setCreateRoom(!createRoom)}
           className={"absolute top-0 right-4 p-2"}
         >
           <FontAwesomeIcon icon={faCommentMedical} />
         </button>
-        <div className="flex justify-center">
-          <Input className="w-[92%]" placeholder={"Search..."} />
-        </div>
+        {rooms.length ? (
+          <div className="flex justify-center">
+            <Input className="w-[92%]" placeholder={"Search..."} />
+          </div>
+        ) : null}
 
         {createRoom ? (
           <CreateRoom
@@ -159,17 +161,41 @@ const Messages = () => {
             username={user?.username}
           />
         ) : null}
-        <div>
-          {rooms.map((room) => (
-            <Room room={room} openMessage={openMessage} />
-          ))}
-        </div>
+        {rooms.length ? (
+          <div>
+            {rooms.map((room) => (
+              <Room room={room} openMessage={openMessage} />
+            ))}
+          </div>
+        ) : (
+          <div className="m-6">
+            <div>
+              <h1 className="text-3xl font-bold">
+                {" "}
+                Welcome to your inbox! Drop a line, share posts and more with
+                private
+              </h1>
+              <h4 className={"my-2 text-gray-500"}>
+                Start conversations between you and others on Twista
+              </h4>
+              <div className="flex justify-center items-center">
+                <button
+                  className="text-white rounded-full bg-blue-400 py-3 px-8 font-bold"
+                  onClick={setCreateRoom}
+                >
+                  Write a message
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-      <div className={"col-span-1 relative"}>
+      <div className={"col-span-1 relative  h-[100vh]"}>
         <ChatPanel
           sender={sender}
           room={room}
           messageHandler={messageHandler}
+          setCreateRoom={handleClose}
           deleteMessage={deleteMessage}
         />
       </div>

@@ -99,6 +99,14 @@ const Profile = () => {
     const endpoint = `http://127.0.0.1:8000/users/upload_image/`;
     axios.post(endpoint, formData).then((res) => {
       const responseData = res.data;
+      console.log("ress upload", uploadType, responseData);
+      if (responseData.success && responseData.profile_picture) {
+        setUser({ ...user, [uploadType]: responseData.profile_picture });
+        console.log(user, "|||||", {
+          ...user,
+          [uploadType]: responseData.profile_picture,
+        });
+      }
     });
   };
   const uploadOpener = (type) => {
@@ -135,7 +143,7 @@ const Profile = () => {
     };
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
-      if (responseData.success) navigate();
+      // if (responseData.success) navigate();
     });
   };
   const hasProfileViewAccess =
@@ -178,7 +186,7 @@ const Profile = () => {
             >
               <img
                 className={"h-inherit"}
-                src={`http://127.0.0.1:8000/media/${user?.profile_picture}`}
+                src={`http://localhost:8000/media/${user?.profile_picture}`}
                 alt="Profile picture"
               />
             </div>

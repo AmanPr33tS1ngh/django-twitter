@@ -27,14 +27,21 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         username = attrs.get('username')
         password = attrs.get('password')
         request = self.context.get('request')
-        user = authenticate(request=request, username=username, password=password)
 
-        if user:
-            print("logginding")
-            login(request, user)
-        print('request user', request.user)
+        print("Request object:", request)  # Debugging statement
+
+        if request:
+            user = authenticate(request=request, username=username, password=password)
+            if user:
+                print("Logging in...")
+                login(request, user)
+                print('Request user:', request.user)  # Debugging statement
+        else:
+            print("Request object is None.")
+
         data = super().validate(attrs)
         return data
+
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -180,14 +187,18 @@ class GetProfile(APIView):
 
             access_for_profile = Connection.objects.filter(sender=user, receiver=profile).exists() or not_private or user == profile
             
+            posts = Tweet.objects.none()
+            
             if access_for_profile and view_type == 'likes':
                 likes = Interaction.objects.filter(user=profile, interaction_type="like").first()
-                posts = likes.tweets.all().order_by("timestamp")
+                if likes:
+                    posts = likes.tweets.all().order_by("timestamp")
             elif access_for_profile  and view_type == 'replies':
                 posts = Tweet.objects.filter(parent__isnull=False, user=profile).order_by("timestamp")
             elif access_for_profile  and view_type == 'bookmarks':
                 bookmark = Interaction.objects.filter(user=profile, interaction_type="bookmark").first()
-                posts = bookmark.tweets.all().order_by("timestamp")
+                if bookmark:
+                    posts = bookmark.tweets.all().order_by("timestamp")
             else:
                 posts = Tweet.objects.filter(user=profile).order_by("timestamp")
 
@@ -215,16 +226,19 @@ class UploadImage(APIView):
                 if image.size > 4194304:
                     return JsonResponse({'success': False, 'msg': 'Image Size Too Big. Please upload an image with '
                                                                   'size less than 4MB.'})
-
+                    
+            img_url = None
             if upload_type == 'profile_picture':
                 user.profile_picture = image
+                img_url = str(user.profile_picture)
             elif upload_type == 'banner':
                 user.banner = image
+                img_url = str(user.banner)
             else:
                 return JsonResponse({'success': False, 'msg': 'Provide valid type!'})
             user.save()
 
-            return JsonResponse({'success': True, 'msg': "Updated Picture!"})
+            return JsonResponse({'success': True, 'msg': "Updated Picture!", 'profile_picture': img_url})
         except Exception as e:
             print('err at get_profile', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
