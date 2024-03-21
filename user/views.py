@@ -186,9 +186,9 @@ class GetProfile(APIView):
             view_type = request.data.get('view_type')
 
             access_for_profile = Connection.objects.filter(sender=user, receiver=profile).exists() or not_private or user == profile
-            
+
             posts = Tweet.objects.none()
-            
+
             if access_for_profile and view_type == 'likes':
                 likes = Interaction.objects.filter(user=profile, interaction_type="like").first()
                 if likes:
@@ -226,8 +226,7 @@ class UploadImage(APIView):
                 if image.size > 4194304:
                     return JsonResponse({'success': False, 'msg': 'Image Size Too Big. Please upload an image with '
                                                                   'size less than 4MB.'})
-                    
-            img_url = None
+
             if upload_type == 'profile_picture':
                 user.profile_picture = image
                 img_url = str(user.profile_picture)

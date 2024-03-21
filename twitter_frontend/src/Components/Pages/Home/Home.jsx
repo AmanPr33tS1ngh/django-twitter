@@ -51,9 +51,9 @@ const Home = () => {
   return (
     <div>
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
-      {tweets.map((tweet) => (
+      <div className={'ml-10'}>{tweets.map((tweet) => (
         <Post post={tweet} actions={actions} />
-      ))}
+      ))}</div>
     </div>
   );
 };

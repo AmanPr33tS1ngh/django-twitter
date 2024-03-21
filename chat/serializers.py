@@ -35,21 +35,28 @@ class RoomSerializer(serializers.ModelSerializer):
 
             return UserProfileSerializer(participants, many=True).data
         except Exception as e:
-            print('seriii', str(e))
+            print('get_participants', str(e))
             return list()
 
     def get_participant(self, obj):
         try:
             user = self.context.get('user')
-            participant = obj.participants.filter().exclude(username=user.username)
+            participants = obj.participants.filter()
+            if participants.distinct('username').count() == 1:
+                print('inside distinct')
+                participant = participants.first()
+                return UserProfileSerializer(participant).data
 
-            if participant.count() == 1:
-                participant = participant.first()
+            participants = participants.exclude(username=user.username)
+            print('participant', participant)
+            if participants.count() == 1:
+                print('inside count')
+                participant = participants.first()
                 return UserProfileSerializer(participant).data
             return None
 
         except Exception as e:
-            print('seriii', str(e))
+            print('get_participant', str(e))
             return list()
 
     def get_last_message(self, obj):

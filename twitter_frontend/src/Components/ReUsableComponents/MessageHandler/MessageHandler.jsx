@@ -10,7 +10,7 @@ const MessageHandler = ({ messageHandler }) => {
   return (
     <div>
       <form
-        className={"absolute w-[95%] bottom-[16px] bg-white"}
+        className={"absolute w-[95%] bottom-0 bg-white"}
         onSubmit={sendMessage}
       >
         <Input
@@ -21,7 +21,7 @@ const MessageHandler = ({ messageHandler }) => {
         <button
           disabled={!message?.trim()}
           className={
-            "absolute top-1/3 w-[1.5rem] right-[0.5rem] text-blue-500 w-25 float-right top-15"
+            "absolute top-1/3 w-[1.5rem] right-[0.5rem] text-blue-500 w-25 float-right top-15 cursor-pointer"
           }
           type="submit"
         >

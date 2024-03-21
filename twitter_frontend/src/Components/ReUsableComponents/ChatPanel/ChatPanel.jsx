@@ -14,15 +14,16 @@ const ChatPanel = ({ room, messageHandler, deleteMessage, setCreateRoom }) => {
   };
   return room?.slug ? (
     <div className={"p-4"}>
-      <div className={"text-xl font-semibold pb-5 flex justify-between"}>
+      <div onClick={navigateToProfile} className={"text-xl font-semibold pb-5 flex justify-between"}>
         <span>
+            {console.log("checkaaa", room)}
           {room?.participant ? room?.participant?.full_name : room?.name}
         </span>
-        <button onClick={navigateToProfile}>
+        <button>
           <FontAwesomeIcon icon={faLocationArrow} />
         </button>
       </div>
-      <div className={"overflow-y-scroll pb-20"}>
+      <div className={"overflow-y-scroll h-[85vh] pb-30"}>
         <div>
           {room?.messages?.map((message) => (
             <Message

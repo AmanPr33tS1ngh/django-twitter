@@ -25,6 +25,11 @@ const reducer = (state = initialState, action) => {
         accessToken: null,
         refreshToken: null,
       };
+    case actionTypes.SET_USER:
+      return {
+        ...state,
+        user: action.payload.user,
+      };
     default:
       return state;
   }

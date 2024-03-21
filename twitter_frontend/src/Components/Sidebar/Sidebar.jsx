@@ -75,7 +75,7 @@ const Sidebar = () => {
     []
   );
   return (
-    <aside className="col-span-1 items-center p-2  border-r border-gray-300">
+    <aside className="col-span-1 items-center px-2  border-r border-gray-300">
       <nav className="relative h-[100vh] flex flex-col flex-1 space-y-6 ">
         <Link to={"/"} className="items-center p-2 mpt-0">
           <img
@@ -118,7 +118,7 @@ const Sidebar = () => {
             </span>
           </Link>
         ))}
-        <div className=" absolute bottom-1">
+        <div className=" absolute bottom-0">
           {openProfile ? (
             <OutsideClickHandler onOutsideClick={changeOpenProfile}>
               <ul className="shadow-lg rounded-xl">
@@ -167,10 +167,14 @@ const Sidebar = () => {
             onClick={changeOpenProfile}
             // to={item.to}
           >
-            <img
-              className=" rounded-full mr-2 grid-cols-1 w-1/2"
-              src={`http://localhost:8000/media/${user?.profile_picture}`}
-            />
+            <div className={'flex h-[40px] w-[40px] mr-2  rounded-full'}>
+                <img className={' rounded-full'}
+              src={`http://localhost:8000/media/${user?.profile_picture}`}/>
+            </div>
+            {/*<img*/}
+            {/*  className=" rounded-full mr-2 grid-cols-1 w-1/2"*/}
+            {/*  src={`http://localhost:8000/media/${user?.profile_picture}`}*/}
+            {/*/>*/}
             <span className="flex-1 text-base font-medium grid-cols-2">
               {user?.full_name}
             </span>

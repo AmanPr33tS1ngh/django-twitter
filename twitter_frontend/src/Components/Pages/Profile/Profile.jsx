@@ -14,10 +14,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import EditProfile from "../../ReUsableComponents/EditProfile/EditProfile";
 import PrivateProfile from "../../ReUsableComponents/PrivateProfile/PrivateProfile";
+import {useDispatch} from "react-redux";
+import { SET_USER} from "../../Redux/ActionTypes/ActionTypes";
 
 const Profile = () => {
   const { profile, view_type } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getProfile();
@@ -99,12 +102,14 @@ const Profile = () => {
     const endpoint = `http://127.0.0.1:8000/users/upload_image/`;
     axios.post(endpoint, formData).then((res) => {
       const responseData = res.data;
-      console.log("ress upload", uploadType, responseData);
       if (responseData.success && responseData.profile_picture) {
-        setUser({ ...user, [uploadType]: responseData.profile_picture });
-        console.log(user, "|||||", {
-          ...user,
-          [uploadType]: responseData.profile_picture,
+        const newUser = { ...user, [uploadType]: responseData.profile_picture }
+        setUser(newUser);
+        dispatch({
+          type: SET_USER,
+          payload: {
+            user: newUser,
+          },
         });
       }
     });
@@ -140,10 +145,11 @@ const Profile = () => {
     let endpoint = "http://127.0.0.1:8000/chat/create_room/";
     let data = {
       participant_usernames: [user?.username],
+      get_only_slug: true,
     };
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
-      // if (responseData.success) navigate();
+      if (responseData.success && responseData.room) navigate(responseData.room);
     });
   };
   const hasProfileViewAccess =
@@ -185,7 +191,7 @@ const Profile = () => {
               className="cursor-pointer	w-32 h-32 z-2 relative bg-white overflow-hidden rounded-full border-4 border-white mb-8"
             >
               <img
-                className={"h-inherit"}
+                className={"h-[inherit]"}
                 src={`http://localhost:8000/media/${user?.profile_picture}`}
                 alt="Profile picture"
               />
@@ -258,7 +264,7 @@ const Profile = () => {
             ))}
           </div>
         ) : null}
-        <div>
+        <div className={'mt-5'}>
           {hasProfileViewAccess ? (
             posts.length ? (
               posts.map((post) => <Post post={post} actions={actions} />)

@@ -32,8 +32,13 @@ class CreateRoom(APIView):
             room = Room.objects.create(slug=slug, name=group_name)
             room.participants.add(*participants)
             room.participants.add(user)
+            get_only_slug = request.data.get('get_only_slug')
+            if get_only_slug:
+                room_data = room.slug
+            else:
+                room_data = RoomSerializer(room).data
 
-            return JsonResponse({'success': True, 'msg': 'room created', "room": RoomSerializer(room).data})
+            return JsonResponse({'success': True, 'msg': 'room created', "room": room_data})
 
         except Exception as e:
             print(str(e))

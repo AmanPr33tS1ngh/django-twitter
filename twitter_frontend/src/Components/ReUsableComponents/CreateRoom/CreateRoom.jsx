@@ -40,6 +40,7 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
       let responseData = res.data;
       // console.log("ressss", responseData);
       setRooms(responseData.room);
+      handleClose();
     });
   };
   const handleChange = (e) => {
@@ -109,7 +110,7 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
         </div>
         {inputVal ? <hr style={{ margin: "1rem" }} /> : null}
         {inputVal ? (
-          <ul className={"h-500 px-4 py-2 overflow-y-scroll h-60vh"}>
+          <ul className={"h-500 px-4 py-2  h-60vh"}>
             {users.map((user, index) => (
               <button
                 key={index}
