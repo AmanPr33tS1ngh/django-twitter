@@ -11,6 +11,7 @@ from django.db.models import F, Count
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 
+from twitter.utils import paginate
 from django.db.models import Case, Value, When
 from django.db.models.functions import Mod
 # Views
@@ -182,8 +183,6 @@ class GetFeed(APIView):
             user = request.user
             if not user:
                 return JsonResponse({'success': False, 'msg': "User not found"})
-            image_content_type = ContentType.objects.get_for_model(Tweet)
-            print('image_content_type', image_content_type)
 
             posts = Tweet.objects.filter(file__isnull=False).annotate(
                     file_type_order=Case(
@@ -193,8 +192,11 @@ class GetFeed(APIView):
                     ),
                     sequence_order=Mod(models.F('id'), 5),
                 ).order_by('file_type_order', 'sequence_order', 'id')
-            
-            return JsonResponse({'success': True, 'posts': TweetSerializer(posts, many=True).data})
+
+            page = request.data.get('page')
+            has_next, next_page_no, posts = paginate(page, posts, 18)
+            return JsonResponse({'success': True, 'has_next': has_next, 'next_page': next_page_no,
+                                 'posts': TweetSerializer(posts, many=True).data})
         except Exception as e:
             print('err', str(e))
             return JsonResponse({'success': False, 'msg': str(e)})

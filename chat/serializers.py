@@ -48,9 +48,7 @@ class RoomSerializer(serializers.ModelSerializer):
                 return UserProfileSerializer(participant).data
 
             participants = participants.exclude(username=user.username)
-            print('participant', participant)
             if participants.count() == 1:
-                print('inside count')
                 participant = participants.first()
                 return UserProfileSerializer(participant).data
             return None
@@ -95,9 +93,16 @@ class RoomSerializerWithMessage(serializers.ModelSerializer):
     def get_participant(self, obj):
         try:
             user = self.context.get('user')
-            participant = obj.participants.filter().exclude(username=user.username)
-            if participant.count() == 1:
-                participant = participant.first()
+
+            participants = obj.participants.filter()
+            if participants.distinct('username').count() == 1:
+                print('inside distinct')
+                participant = participants.first()
+                return UserProfileSerializer(participant).data
+
+            participants = participants.exclude(username=user.username)
+            if participants.count() == 1:
+                participant = participants.first()
                 return UserProfileSerializer(participant).data
             return None
 
@@ -106,7 +111,7 @@ class RoomSerializerWithMessage(serializers.ModelSerializer):
             return list()
 
     def get_messages(self, obj):
-        last_message = obj.get_messages().order_by('timestamp')
+        last_message = obj.get_messages().order_by('timestamp')[:12]
         if not last_message.exists():
             return list()
         return MessageSerializer(last_message, many=True).data

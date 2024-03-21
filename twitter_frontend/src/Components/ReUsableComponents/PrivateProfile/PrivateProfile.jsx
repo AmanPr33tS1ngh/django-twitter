@@ -34,13 +34,13 @@ const PrivateProfile = ({ follow }) => {
         <div className="mt-3">
           <button
             onClick={follow}
-            className="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+            className="bg-blue-500 text-white rounded-md px-10 py-2 hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
           >
             Follow
           </button>
-          <button className="ml-3 text-gray-600 hover:text-blue-600 focus:outline-none">
-            Learn More
-          </button>
+          {/*<button className="ml-3 text-gray-600 hover:text-blue-600 focus:outline-none">*/}
+          {/*  Learn More*/}
+          {/*</button>*/}
         </div>
       </div>
     </div>

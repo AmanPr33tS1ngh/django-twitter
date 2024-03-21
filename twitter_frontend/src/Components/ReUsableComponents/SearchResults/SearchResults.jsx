@@ -21,7 +21,7 @@ const SearchResults = ({ results, users, showResults, handleShowResults }) => {
   );
 };
 
-const Result = ({ results, type, iconType }) => {
+const Result = ({ results, type }) => {
   return (
     <ul>
       {results?.map((result, index) => (
@@ -30,9 +30,10 @@ const Result = ({ results, type, iconType }) => {
             className="grid grid-cols-10 text-black items-center font-medium text-base"
             to={`/${type === "user" ? "" : "status/"}${result.value}`}
           >
-            <span className={"col-span-1"}>
-              <FontAwesomeIcon icon={iconType} />
-            </span>
+              {type === 'user' ? <div className={'flex h-[30px] w-[30px] mr-2  rounded-full'}>
+                  <img alt={'img'} className={' rounded-full'}
+                       src={`http://localhost:8000/media/${result?.profile_picture}`}/>
+              </div>:null}
             <span className={"col-span-9"}>{result.label}</span>
           </Link>
         </li>

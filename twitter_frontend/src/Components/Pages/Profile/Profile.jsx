@@ -16,6 +16,7 @@ import EditProfile from "../../ReUsableComponents/EditProfile/EditProfile";
 import PrivateProfile from "../../ReUsableComponents/PrivateProfile/PrivateProfile";
 import {useDispatch} from "react-redux";
 import { SET_USER} from "../../Redux/ActionTypes/ActionTypes";
+import Loader from "../../ReUsableComponents/Loader/Loader";
 
 const Profile = () => {
   const { profile, view_type } = useParams();
@@ -31,6 +32,7 @@ const Profile = () => {
   const [uploadProfilePicture, setUploadProfilePicture] = useState(false);
   const [uploadType, setUploadType] = useState(null);
   const [editModal, setEditModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const buttons = useMemo(
     () => [
@@ -45,9 +47,11 @@ const Profile = () => {
   const getProfile = () => {
     const endpoint = "http://127.0.0.1:8000/users/get_profile/";
     const data = { profile: profile, view_type: view_type };
+    setLoading(true)
     axios.post(endpoint, data).then((res) => {
       const responseData = res.data;
 
+    setLoading(false);
       const user = responseData.user;
       const posts = responseData.posts;
       setUser(user);
@@ -149,13 +153,13 @@ const Profile = () => {
     };
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
-      if (responseData.success && responseData.room) navigate(responseData.room);
+      if (responseData.success && responseData.room) navigate(`/messages/${responseData.room}/`);
     });
   };
   const hasProfileViewAccess =
     user?.is_user_profile || !user?.is_private || user?.has_connection;
 
-  return (
+  return (loading ? <Loader/>:
     <div>
       {uploadProfilePicture ? (
         <ModalBackground>

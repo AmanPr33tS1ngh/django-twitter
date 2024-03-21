@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import MessageHandler from "../MessageHandler/MessageHandler";
 import Message from "../Message/Message";
 import { useSelector } from "react-redux";
@@ -15,10 +15,14 @@ const ChatPanel = ({ room, messageHandler, deleteMessage, setCreateRoom }) => {
   return room?.slug ? (
     <div className={"p-4"}>
       <div onClick={navigateToProfile} className={"text-xl font-semibold pb-5 flex justify-between"}>
+          <div className={'flex items-center'}>
+          {room?.participant?.profile_picture ? <div className={'flex h-[30px] w-[30px] mr-2  rounded-full'}>
+                <img alt={'img'} className={' rounded-full'} src={`http://localhost:8000/media/${room.participant.profile_picture}`}/>
+            </div>: null}
         <span>
             {console.log("checkaaa", room)}
           {room?.participant ? room?.participant?.full_name : room?.name}
-        </span>
+        </span></div>
         <button>
           <FontAwesomeIcon icon={faLocationArrow} />
         </button>

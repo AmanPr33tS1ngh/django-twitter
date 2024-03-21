@@ -2,12 +2,14 @@ import { faComment, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import ReactPlayer from "react-player";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import InfiniteScroll from "react-infinite-scroll-component";
+import Loader from "../../Loader/Loader";
 
-const FeedPost = ({ feedPosts }) => {
+const FeedPost = ({ feedPosts, getPosts, hasMore }) => {
   const navigate = useNavigate();
   return (
-    <div className="grid grid-cols-6">
+    <InfiniteScroll next={getPosts} hasMore={hasMore} loader={<Loader/>} dataLength={feedPosts.length } className="grid grid-cols-6">
       {feedPosts.map((post) =>
         post?.image || post?.video ? (
           <div
@@ -30,7 +32,7 @@ const FeedPost = ({ feedPosts }) => {
                 url={`http://localhost:8000${post?.video}`}
               />
             ) : null}
-            <div class="overlay absolute inset-0 bg-black bg-opacity-50 text-white justify-center items-center opacity-0 group-hover:opacity-100 flex">
+            <div className="overlay absolute inset-0 bg-black bg-opacity-50 text-white justify-center items-center opacity-0 group-hover:opacity-100 flex">
               {/* <div class="text-center"> */}
               <div className="mr-5">
                 <FontAwesomeIcon icon={faHeart} />
@@ -46,7 +48,7 @@ const FeedPost = ({ feedPosts }) => {
           </div>
         ) : null
       )}
-    </div>
+    </InfiniteScroll>
   );
 };
 const VideoPlayer = ({ url }) => {

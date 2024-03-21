@@ -8,6 +8,7 @@ import { faCommentMedical } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useParams } from "react-router-dom";
 import ChatPanel from "../../ReUsableComponents/ChatPanel/ChatPanel";
 import { useSelector } from "react-redux";
+import Loader from "../../ReUsableComponents/Loader/Loader";
 
 let socket = null;
 const Messages = () => {
@@ -19,6 +20,8 @@ const Messages = () => {
   const [room, setRoom] = useState(null);
   const [createRoom, setCreateRoom] = useState(false);
   const [sender, setSender] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [roomLoading, setRoomLoading] = useState(false);
 
   const createConnection = () => {
     socket = new WebSocket(
@@ -92,12 +95,15 @@ const Messages = () => {
       username: user?.username,
       slug: slug,
     };
+
+    setRoomLoading(true)
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
       if (responseData.room) {
         setRoom(responseData.room);
         setSender(responseData.user);
       }
+      setRoomLoading(false);
     });
   };
   const getRooms = () => {
@@ -105,9 +111,11 @@ const Messages = () => {
     let data = {
       username: user?.username,
     };
+    setLoading(true)
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
       if (responseData.rooms) setRooms(responseData.rooms);
+      setLoading(false);
     });
   };
   const handleClose = () => {
@@ -161,7 +169,7 @@ const Messages = () => {
             username={user?.username}
           />
         ) : null}
-        {rooms.length ? (
+        {loading ? <Loader/> : rooms.length ? (
           <div>
             {rooms.map((room) => (
               <Room room={room} openMessage={openMessage} />
@@ -191,13 +199,13 @@ const Messages = () => {
         )}
       </div>
       <div className={"col-span-1 relative  h-[100vh]"}>
-        <ChatPanel
-          sender={sender}
-          room={room}
-          messageHandler={messageHandler}
-          setCreateRoom={handleClose}
-          deleteMessage={deleteMessage}
-        />
+        {roomLoading ? <Loader/>: <ChatPanel
+            sender={sender}
+            room={room}
+            messageHandler={messageHandler}
+            setCreateRoom={handleClose}
+            deleteMessage={deleteMessage}
+        />}
       </div>
     </div>
   );

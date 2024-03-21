@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Sidebar from "../Sidebar/Sidebar";
-import axios from "axios";
 
 const AuthRoute = ({ element, isSign }) => {
   const { isAuthenticated, user } = useSelector(
@@ -78,7 +77,9 @@ const AuthRoute = ({ element, isSign }) => {
       className={`${isAuthenticated ? "grid grid-cols-4 px-12" : ""} h-screen`}
     >
       {isAuthenticated ? <Sidebar /> : null}
-      <div className={"col-span-3"}>{element}</div>
+      <div className={"col-span-3"
+          // + " h-[100vh] overflow-y-scroll"
+      }>{element}</div>
     </div>
   ) : (
     <Navigate to="/sign_in" />

@@ -103,6 +103,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 sender=user,
                 content=message,
             )
+            room.room_creation_timestamp = message.timestamp
+            room.save()
+
             return RoomSerializerWithMessage(room, context={'user': user}).data
         except Exception as e:
             print('Error creating message:', str(e))
@@ -115,11 +118,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if not room:
                 return None
 
-            Message.objects.filter(
-                room=room,
-                sender=user,
-                id=message_id,
-            ).delete()
+            messages = Message.objects.filter(room=room)
+            messages.filter(sender=user, id=message_id).delete()
+            last_message = messages.order_by('room_creation_timestamp').last()
+            if last_message and last_message.timestamp:
+                room.room_creation_timestamp = last_message.timestamp
+                room.save()
 
             return RoomSerializerWithMessage(room, context={'user': user}).data
         except Room.DoesNotExist:

@@ -1,17 +1,21 @@
 import axios from "../../Redux/Axios/axios";
 import React, { useEffect, useState } from "react";
+import Loader from "../../ReUsableComponents/Loader/Loader";
 
 const Requests = () => {
   const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getRequests();
   }, []);
   const getRequests = () => {
     const endpoint = "http://127.0.0.1:8000/users/get_requests/";
+    setLoading(true);
     axios.post(endpoint).then((res) => {
       const responseData = res.data;
       setRequests(responseData.requests);
+    setLoading(false);
     });
   };
   const requestApi = (id, type) => {
@@ -36,7 +40,7 @@ const Requests = () => {
       </h1>
       <hr style={{ marginTop: "1rem", marginBottom: "1rem" }} />
       <div className="m-5">
-        {requests?.length ? (
+        {loading ? <Loader/> : requests?.length ? (
           requests.map((request) => (
             <div className="flex justify-between items-center">
               <p>

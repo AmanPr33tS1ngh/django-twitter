@@ -4,12 +4,14 @@ import axios from "../../Redux/Axios/axios";
 import Post from "../../ReUsableComponents/Post/Post";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import Loader from "../../ReUsableComponents/Loader/Loader";
 
 const Home = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.reducer.reducer);
   const [tweets, setTweets] = useState([]);
   const [activeTab, setActiveTab] = useState("For you");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getTweets();
@@ -20,10 +22,12 @@ const Home = () => {
     const data = {
       type: activeTab,
     };
+    setLoading(true);
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
       console.log("HOme resss", responseData);
       setTweets(responseData.tweets);
+      setLoading(false);
     });
   };
 
@@ -41,7 +45,7 @@ const Home = () => {
         })
         .then((res) => {
           let responseData = res.data;
-          // console.log(responseData);
+          console.log('actionsss', responseData);
           // setTweets(responseData.tweets);
         });
     } else if (action_type === "comment") {
@@ -51,7 +55,8 @@ const Home = () => {
   return (
     <div>
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
-      <div className={'ml-10'}>{tweets.map((tweet) => (
+      {loading ? <Loader/> : null}
+      <div className={'ml-10'}>{ tweets.map((tweet) => (
         <Post post={tweet} actions={actions} />
       ))}</div>
     </div>

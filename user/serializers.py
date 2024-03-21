@@ -60,6 +60,7 @@ class UserConnectionSerializer(serializers.ModelSerializer):
 class UserLabelValueSerializer(serializers.ModelSerializer):
     label = serializers.SerializerMethodField()
     value = serializers.SerializerMethodField()
+    profile_picture = serializers.SerializerMethodField()
 
     def get_label(self, obj):
         try:
@@ -75,9 +76,16 @@ class UserLabelValueSerializer(serializers.ModelSerializer):
             print('err', str(e))
             return None
 
+    def get_profile_picture(self, obj):
+        try:
+            return str(obj.profile_picture)
+        except Exception as e:
+            print('err', str(e))
+            return None
+
     class Meta:
         model = User
-        fields = ("label", "value", )
+        fields = ("label", "value", 'profile_picture')
 
 class UserProfileSerializer(serializers.ModelSerializer):
     profile_picture = serializers.SerializerMethodField()

@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from .serializers import *
 import uuid
 from django.utils.text import slugify
+from django.db.models import Q
 
 def generate_room_id():
     unique_id = uuid.uuid4().hex[:8]
@@ -22,12 +23,14 @@ class CreateRoom(APIView):
             if not participant_usernames:
                 participant_usernames = list()
 
-            participants = User.objects.filter(username__in=participant_usernames)
+            participants = User.objects.filter(Q(username__in=participant_usernames) | Q(id=user.id))
             if not participants.exists():
                 return JsonResponse({'success': False, 'msg': "add users to chat with them"})
+
             group_name = request.data.get('group_name')
             slug = generate_room_id()
-            if Room.objects.filter(participants__username__in=participants.values_list('username'), participants=user).exists():
+
+            if Room.objects.filter(participants__username__in=participants.values_list('username')).exists():
                 return JsonResponse({'success': False, 'msg': 'Room already exists!'})
             room = Room.objects.create(slug=slug, name=group_name)
             room.participants.add(*participants)

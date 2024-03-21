@@ -1,4 +1,5 @@
 from django.utils import timezone
+from django.core.paginator import Paginator
 
 def get_timestamp_difference(timestamp):
     try:
@@ -19,3 +20,15 @@ def get_timestamp_difference(timestamp):
             return "Just now"
     except:
         return None
+
+def paginate(page_num, objects, per_page):
+    paginator = Paginator(objects, per_page)
+    result = paginator.get_page(page_num)
+    has_next = result.has_next()
+    if has_next:
+        next_page_no = result.next_page_number()
+    else:
+        next_page_no = None
+
+    return has_next, next_page_no, result
+
