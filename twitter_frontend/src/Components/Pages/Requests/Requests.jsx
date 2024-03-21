@@ -15,7 +15,7 @@ const Requests = () => {
     axios.post(endpoint).then((res) => {
       const responseData = res.data;
       setRequests(responseData.requests);
-    setLoading(false);
+      setLoading(false);
     });
   };
   const requestApi = (id, type) => {
@@ -40,15 +40,26 @@ const Requests = () => {
       </h1>
       <hr style={{ marginTop: "1rem", marginBottom: "1rem" }} />
       <div className="m-5">
-        {loading ? <Loader/> : requests?.length ? (
+        {loading ? (
+          <Loader />
+        ) : requests?.length ? (
           requests.map((request) => (
             <div className="flex justify-between items-center">
-              <p>
-                <span className="font-semibold">
-                  {request.sender?.username}
-                </span>{" "}
-                requested to follow you
-              </p>
+              <div className="flex items-center">
+                <div className={"flex h-[30px] w-[30px] mr-2  rounded-full"}>
+                  <img
+                    alt={"img"}
+                    className={"rounded-full"}
+                    src={`http://localhost:8000/media/${request.sender?.profile_picture}`}
+                  />
+                </div>
+                <p>
+                  <span className="font-semibold">
+                    {request.sender?.username}
+                  </span>{" "}
+                  requested to follow you
+                </p>
+              </div>
               <div>
                 <button
                   onClick={() => requestApi(request.id, "accept")}

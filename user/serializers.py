@@ -2,6 +2,7 @@
 from rest_framework import serializers
 from .models import *
 from chat.models import Room
+from django.db.models import Q
 
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
@@ -47,7 +48,7 @@ class UserConnectionSerializer(serializers.ModelSerializer):
     def get_can_message(self, obj):
         try:
             receiver = self.context.get('user')
-            return Connection.objects.filter(sender=obj, receiver=receiver, is_accepted=True).exists() or not\
+            return Connection.objects.filter(sender=receiver, receiver=obj, is_accepted=True).exists() or not\
                 obj.is_private or receiver == obj
         except Exception as e:
             print('err', str(e))
@@ -96,6 +97,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     is_user_profile = serializers.SerializerMethodField()
     has_connection = serializers.SerializerMethodField()
     room_slug = serializers.SerializerMethodField()
+    req_sent = serializers.SerializerMethodField()
 
     def get_profile_picture(self, obj):
         try:
@@ -145,17 +147,25 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_has_connection(self, obj):
         try:
             user = self.context.get('user')
-            print('eeeeee', user, obj.user, obj)
-            return Connection.objects.filter(sender=self.context.get('user'), receiver=obj, is_accepted=True).exists() or not obj.is_private
+            return Connection.objects.filter(sender=user, receiver=obj, is_accepted=True).exists() or not obj.is_private
         except Exception as e:
             print('str((()))', str(e))
             return None
 
+    def get_req_sent(self, obj):
+        try:
+            user = self.context.get('user')
+            conn = Connection.objects.filter(sender=user, receiver=obj, is_accepted=False).exists()
+            print(conn, obj.is_private)
+            return conn and obj.is_private
+        except Exception as e:
+            print('str((()))', str(e))
+            return None
+        
     def get_can_message(self, obj):
         try:
             user = self.context.get('user')
-            print('eeeeee', user, obj.user, obj)
-            return Connection.objects.filter(sender=self.context.get('user'), receiver=obj, is_accepted=True).exists() or not obj.is_private
+            return Connection.objects.filter(sender=user, receiver=obj, is_accepted=True).exists() or not obj.is_private
         except Exception as e:
             print('str((()))', str(e))
             return None
@@ -163,7 +173,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_room_slug(self, obj):
         try:
             user = self.context.get('user')
-            room = Room.objects.filter(participants__in=[user, obj]).first()
+            print('alalalala', user, obj)
+            room = Room.objects.filter(Q(participants=user) & Q(participants=obj)).first()
+            print(room)
             if not room:
                 return None
             return str(room.slug)
@@ -173,7 +185,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("banner", "full_name", "first_name", "last_name", "username", "location", "profile_picture", "biography", "joining_date", 'is_user_profile', 'is_private', 'has_connection', 'room_slug')
+        fields = ("banner", "full_name", "first_name", "last_name", "username", "location", "profile_picture", "biography", "joining_date", 'is_user_profile', 'is_private', 'has_connection', 'room_slug', 'req_sent')
 
 class ConnectionSerializer(serializers.ModelSerializer):
     sender = serializers.SerializerMethodField()

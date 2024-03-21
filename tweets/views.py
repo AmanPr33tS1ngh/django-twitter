@@ -4,16 +4,10 @@ from .models import *
 from user.models import User, Connection
 from .serializers import *
 from user.serializers import UserLabelValueSerializer
-from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q
-from django.db.models import F, Count
-
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import TokenAuthentication
-
 from twitter.utils import paginate
 from django.db.models import Case, Value, When
 from django.db.models.functions import Mod
+
 # Views
 
 class GetHomeTweets(APIView):
@@ -32,8 +26,11 @@ class GetHomeTweets(APIView):
                 tweets = Tweet.objects.filter(user__in=connections)
             else:
                 tweets = Tweet.objects.filter(parent__isnull=True)
-
-            return JsonResponse({'success': True, 'tweets': TweetSerializer(tweets, many=True,context={'user':user} ).data})
+                
+            page_num = request.data.get('page')
+            has_next, next_page_no, tweets = paginate(page_num, tweets, 5)
+            
+            return JsonResponse({'success': True, 'has_next': has_next, 'page': next_page_no, 'tweets': TweetSerializer(tweets, many=True,context={'user':user} ).data})
         except Exception as e:
             print('error while getting tweets', str(e))
             return JsonResponse({'success': False, "msg": str(e)})

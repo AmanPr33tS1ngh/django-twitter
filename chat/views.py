@@ -30,7 +30,7 @@ class CreateRoom(APIView):
             group_name = request.data.get('group_name')
             slug = generate_room_id()
 
-            if Room.objects.filter(participants__username__in=participants.values_list('username')).exists():
+            if Room.objects.filter(participants__username__in=participant_usernames).exists():
                 return JsonResponse({'success': False, 'msg': 'Room already exists!'})
             room = Room.objects.create(slug=slug, name=group_name)
             room.participants.add(*participants)

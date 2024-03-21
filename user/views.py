@@ -184,7 +184,7 @@ class GetProfile(APIView):
                 return JsonResponse({'success': False, 'msg': 'Please provide valid username'})
             not_private = not profile.is_private
             view_type = request.data.get('view_type')
-
+            print('user', user, 'profile', profile)
             access_for_profile = Connection.objects.filter(sender=user, receiver=profile).exists() or not_private or user == profile
 
             posts = Tweet.objects.none()
@@ -277,7 +277,7 @@ class ConnectionAPI(APIView):
             else:
                 return JsonResponse({'success': False, 'msg': 'Wrong connection type!'})
 
-            return JsonResponse({'success': True, 'msg': f'Connection {connection_type}d!'})
+            return JsonResponse({'success': True, 'msg': f'Connection {connection_type}d!', 'user': UserProfileSerializer(receiver, context={'user': user}).data})
 
         except Exception as e:
             print("err ConnectionAPI", str(e))

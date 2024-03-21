@@ -15,6 +15,7 @@ const Post = ({ post, actions }) => {
       className="bg-white p-4 rounded-md shadow-md mb-4 transition-colors duration-300 hover:bg-red-50 cursor-pointer"
       onClick={() => navigate(`/status/${post?.id}`)}
     >
+      {console.log("postpostpostpost", post)}
       <div className="flex items-center">
         <img
           className="w-12 h-12 rounded-full mr-4"

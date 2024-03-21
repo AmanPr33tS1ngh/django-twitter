@@ -11,11 +11,12 @@ import {
   faUserPlus,
   faUserSlash,
   faMessage,
+  faUserTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import EditProfile from "../../ReUsableComponents/EditProfile/EditProfile";
 import PrivateProfile from "../../ReUsableComponents/PrivateProfile/PrivateProfile";
-import {useDispatch} from "react-redux";
-import { SET_USER} from "../../Redux/ActionTypes/ActionTypes";
+import { useDispatch } from "react-redux";
+import { SET_USER } from "../../Redux/ActionTypes/ActionTypes";
 import Loader from "../../ReUsableComponents/Loader/Loader";
 
 const Profile = () => {
@@ -47,11 +48,11 @@ const Profile = () => {
   const getProfile = () => {
     const endpoint = "http://127.0.0.1:8000/users/get_profile/";
     const data = { profile: profile, view_type: view_type };
-    setLoading(true)
+    setLoading(true);
     axios.post(endpoint, data).then((res) => {
       const responseData = res.data;
 
-    setLoading(false);
+      setLoading(false);
       const user = responseData.user;
       const posts = responseData.posts;
       setUser(user);
@@ -107,7 +108,7 @@ const Profile = () => {
     axios.post(endpoint, formData).then((res) => {
       const responseData = res.data;
       if (responseData.success && responseData.profile_picture) {
-        const newUser = { ...user, [uploadType]: responseData.profile_picture }
+        const newUser = { ...user, [uploadType]: responseData.profile_picture };
         setUser(newUser);
         dispatch({
           type: SET_USER,
@@ -126,6 +127,7 @@ const Profile = () => {
     const endpoint = `http://127.0.0.1:8000/users/connection_api/`;
     axios.post(endpoint, { receiver: profile, type: type }).then((res) => {
       const responseData = res.data;
+      setUser(responseData.user);
     });
   };
   const changeEditModal = () => {
@@ -135,7 +137,10 @@ const Profile = () => {
     const endpoint = `http://127.0.0.1:8000/users/edit_profile/`;
     axios.post(endpoint, { user: user }).then((res) => {
       const responseData = res.data;
-      if (responseData.success) setUser(responseData.user);
+      if (responseData.success) {
+        setUser(responseData.user);
+        setEditModal(!editModal);
+      }
     });
   };
   const navigateToMessage = () => {
@@ -153,14 +158,18 @@ const Profile = () => {
     };
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
-      if (responseData.success && responseData.room) navigate(`/messages/${responseData.room}/`);
+      if (responseData.success && responseData.room)
+        navigate(`/messages/${responseData.room}/`);
     });
   };
   const hasProfileViewAccess =
     user?.is_user_profile || !user?.is_private || user?.has_connection;
 
-  return (loading ? <Loader/>:
+  return loading ? (
+    <Loader />
+  ) : (
     <div>
+      {console.log("kskskskaaabbcbcb", user, user?.req_sent)}
       {uploadProfilePicture ? (
         <ModalBackground>
           <ImageUploader
@@ -209,7 +218,11 @@ const Profile = () => {
                 </div>
               ) : null}
               <div>
-                {user?.is_user_profile ? (
+                {user?.req_sent ? (
+                  <button onClick={() => createOrDeleteConnection("delete")}>
+                    <FontAwesomeIcon icon={faUserTimes} />
+                  </button>
+                ) : user?.is_user_profile ? (
                   <button
                     className="text-sm border font-semibold border-gray-300 rounded-full px-4 py-1"
                     onClick={changeEditModal}
@@ -268,7 +281,7 @@ const Profile = () => {
             ))}
           </div>
         ) : null}
-        <div className={'mt-5'}>
+        <div className={"mt-5"}>
           {hasProfileViewAccess ? (
             posts.length ? (
               posts.map((post) => <Post post={post} actions={actions} />)
@@ -276,7 +289,11 @@ const Profile = () => {
               "No Posts"
             )
           ) : (
-            <PrivateProfile follow={() => createOrDeleteConnection("create")} />
+            <PrivateProfile
+              showCancelReq={user?.req_sent}
+              cancelReq={() => createOrDeleteConnection("delete")}
+              follow={() => createOrDeleteConnection("create")}
+            />
           )}
         </div>
       </div>

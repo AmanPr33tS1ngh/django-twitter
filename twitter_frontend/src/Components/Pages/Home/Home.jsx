@@ -5,6 +5,7 @@ import Post from "../../ReUsableComponents/Post/Post";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Loader from "../../ReUsableComponents/Loader/Loader";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -12,6 +13,8 @@ const Home = () => {
   const [tweets, setTweets] = useState([]);
   const [activeTab, setActiveTab] = useState("For you");
   const [loading, setLoading] = useState(false);
+  const [hasNext, setHasNext] = useState(true);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     getTweets();
@@ -21,16 +24,27 @@ const Home = () => {
     let endpoint = "http://127.0.0.1:8000/tweets/get_home_tweets/";
     const data = {
       type: activeTab,
+      page: page,
     };
     setLoading(true);
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
       console.log("HOme resss", responseData);
-      setTweets(responseData.tweets);
+      const newTweets = tweets;
+      newTweets.push(...responseData.tweets);
+
+      console.log("newTweets", newTweets);
+      setTweets(newTweets);
       setLoading(false);
+      setPage(responseData.page);
+      setHasNext(responseData.has_next);
     });
   };
-
+  const changeActiveTab = (tab) => {
+    setActiveTab(tab);
+    setPage(1);
+    setTweets([]);
+  };
   const actions = (e, post, action_type) => {
     // console.log("post, action_type, ", post, action_type);
     e.stopPropagation();
@@ -45,7 +59,7 @@ const Home = () => {
         })
         .then((res) => {
           let responseData = res.data;
-          console.log('actionsss', responseData);
+          console.log("actionsss", responseData);
           // setTweets(responseData.tweets);
         });
     } else if (action_type === "comment") {
@@ -54,11 +68,19 @@ const Home = () => {
   };
   return (
     <div>
-      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
-      {loading ? <Loader/> : null}
-      <div className={'ml-10'}>{ tweets.map((tweet) => (
-        <Post post={tweet} actions={actions} />
-      ))}</div>
+      <Navbar activeTab={activeTab} setActiveTab={changeActiveTab} />
+      {loading ? <Loader /> : null}
+      <InfiniteScroll
+        next={getTweets}
+        hasMore={hasNext}
+        loader={<Loader />}
+        dataLength={tweets.length}
+        className={"ml-10"}
+      >
+        {tweets.map((tweet) => (
+          <Post post={tweet} actions={actions} />
+        ))}
+      </InfiniteScroll>
     </div>
   );
 };

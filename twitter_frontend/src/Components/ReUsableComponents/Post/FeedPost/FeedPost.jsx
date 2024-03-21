@@ -9,11 +9,17 @@ import Loader from "../../Loader/Loader";
 const FeedPost = ({ feedPosts, getPosts, hasMore }) => {
   const navigate = useNavigate();
   return (
-    <InfiniteScroll next={getPosts} hasMore={hasMore} loader={<Loader/>} dataLength={feedPosts.length } className="grid grid-cols-6">
+    <InfiniteScroll
+      next={getPosts}
+      hasMore={hasMore}
+      loader={<Loader />}
+      dataLength={feedPosts.length}
+      className="grid grid-cols-6"
+    >
       {feedPosts.map((post) =>
         post?.image || post?.video ? (
           <div
-            className={`flex w-fit col-span-2 relative group cursor-pointer`}
+            className={`flex w-auto col-span-2 relative group cursor-pointer`}
             onClick={() => navigate(`/status/${post?.id}`)}
           >
             {post?.image ? (
