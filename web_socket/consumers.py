@@ -52,6 +52,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         username = data.get("username")
         room_name = data.get("room_name")
         user = await self.get_user_details(username)
+
         if not user:
             await self.send(text_data=json.dumps({"success": False, "msg": "Please authenticate first!"}))
         room = await self.create_message_and_return_room(room_name, user, message)
@@ -105,7 +106,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
             room.room_creation_timestamp = message.timestamp
             room.save()
-
             return RoomSerializerWithMessage(room, context={'user': user}).data
         except Exception as e:
             print('Error creating message:', str(e))

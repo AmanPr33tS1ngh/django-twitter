@@ -76,10 +76,15 @@ const AuthRoute = ({ element, isSign }) => {
     <div
       className={`${isAuthenticated ? "grid grid-cols-4 px-12" : ""} h-screen`}
     >
-      {isAuthenticated ? <Sidebar /> : null}
-      <div className={"col-span-3"
-          + " h-[100vh] overflow-y-scroll"
-      }>{element}</div>
+      <div>{isAuthenticated ? <Sidebar /> : null}</div>
+      <div
+        className={
+          "col-span-3"
+          // + " h-[100vh] overflow-y-scroll"
+        }
+      >
+        {element}
+      </div>
     </div>
   ) : (
     <Navigate to="/sign_in" />

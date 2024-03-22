@@ -75,7 +75,7 @@ const Sidebar = () => {
     []
   );
   return (
-    <aside className="col-span-1 items-center px-2  border-r border-gray-300">
+    <aside className="sticky  top-0 items-center px-2  border-r border-gray-300">
       <nav className="relative h-[100vh] flex flex-col flex-1 space-y-6 ">
         <Link to={"/"} className="items-center p-2 mpt-0">
           <img

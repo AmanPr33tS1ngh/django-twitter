@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Input from "../../ReUsableComponents/Input/Input";
+// import Input from "../../ReUsableComponents/Input/Input";
 import axios from "../../Redux/Axios/axios";
 import Room from "../../ReUsableComponents/Room/Room";
 import CreateRoom from "../../ReUsableComponents/CreateRoom/CreateRoom";
@@ -9,6 +9,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import ChatPanel from "../../ReUsableComponents/ChatPanel/ChatPanel";
 import { useSelector } from "react-redux";
 import Loader from "../../ReUsableComponents/Loader/Loader";
+import { Search } from "@chatscope/chat-ui-kit-react";
 
 let socket = null;
 const Messages = () => {
@@ -46,7 +47,7 @@ const Messages = () => {
     socket.onmessage = function (event) {
       try {
         let data = JSON.parse(event.data);
-        console.log("datatatata", data);
+        console.log("datatatata123", data);
         if (
           (data.action_type === "chat_message" ||
             data.action_type === "delete_message") &&
@@ -61,6 +62,7 @@ const Messages = () => {
   };
 
   const messageHandler = (message) => {
+    console.log("callingggigigi", message);
     if (!socket) {
       console.error("WebSocket connection is not initialized.");
       return;
@@ -71,6 +73,7 @@ const Messages = () => {
       room_name: slug,
       action_type: "chat_message",
     };
+    console.log("data", data);
     console.log("WebSocket.OPEN", WebSocket.OPEN);
     if (socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify(data));
@@ -96,7 +99,7 @@ const Messages = () => {
       slug: slug,
     };
 
-    setRoomLoading(true)
+    setRoomLoading(true);
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
       if (responseData.room) {
@@ -111,7 +114,7 @@ const Messages = () => {
     let data = {
       username: user?.username,
     };
-    setLoading(true)
+    setLoading(true);
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
       if (responseData.rooms) setRooms(responseData.rooms);
@@ -158,7 +161,8 @@ const Messages = () => {
         </button>
         {rooms.length ? (
           <div className="flex justify-center">
-            <Input className="w-[92%]" placeholder={"Search..."} />
+            <Search className="w-[92%]" placeholder="Search..." />
+            {/* <Input className="w-[92%]" placeholder={"Search..."} /> */}
           </div>
         ) : null}
 
@@ -169,8 +173,10 @@ const Messages = () => {
             username={user?.username}
           />
         ) : null}
-        {loading ? <Loader/> : rooms.length ? (
-          <div>
+        {loading ? (
+          <Loader />
+        ) : rooms.length ? (
+          <div className="mt-2">
             {rooms.map((room) => (
               <Room room={room} openMessage={openMessage} />
             ))}
@@ -199,13 +205,17 @@ const Messages = () => {
         )}
       </div>
       <div className={"col-span-1 relative  h-[100vh]"}>
-        {roomLoading ? <Loader/>: <ChatPanel
+        {roomLoading ? (
+          <Loader />
+        ) : (
+          <ChatPanel
             sender={sender}
             room={room}
             messageHandler={messageHandler}
             setCreateRoom={handleClose}
             deleteMessage={deleteMessage}
-        />}
+          />
+        )}
       </div>
     </div>
   );
