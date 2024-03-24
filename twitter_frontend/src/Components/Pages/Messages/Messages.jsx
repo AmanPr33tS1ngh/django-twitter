@@ -17,7 +17,7 @@ const Messages = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.reducer.reducer);
   const [rooms, setRooms] = useState([]);
-  // const [notAcceptedRooms, setNotAcceptedRooms] = useState([]);
+  const [fetchedRooms, setFetchedRooms] = useState([]);
   const [room, setRoom] = useState(null);
   const [createRoom, setCreateRoom] = useState(false);
   const [sender, setSender] = useState(null);
@@ -117,7 +117,10 @@ const Messages = () => {
     setLoading(true);
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
-      if (responseData.rooms) setRooms(responseData.rooms);
+      if (responseData.rooms) {
+        setRooms(responseData.rooms);
+        setFetchedRooms(responseData.rooms);
+      }
       setLoading(false);
     });
   };
@@ -126,10 +129,26 @@ const Messages = () => {
   };
 
   const setCreatedRoom = (room) => {
-    if (room) setRooms([...rooms, room]);
+    if (room) {
+      console.log("roommmmm", room);
+      setRooms([...rooms, room]);
+      setFetchedRooms([...fetchedRooms, room]);
+    }
   };
   const openMessage = (room) => {
     navigate(`/messages/${room}`);
+  };
+  const filterMessages = (e) => {
+    console.log("eeeee", e);
+    const filteredRooms = e
+      ? fetchedRooms.filter((room) =>
+          room?.participant
+            ? room?.participant?.full_name?.toLowerCase().includes(e)
+            : room?.name?.toLowerCase().includes(e)
+        )
+      : fetchedRooms;
+    console.log(filteredRooms);
+    setRooms(filteredRooms);
   };
   const deleteMessage = (message) => {
     if (!socket) {
@@ -159,9 +178,13 @@ const Messages = () => {
         >
           <FontAwesomeIcon icon={faCommentMedical} />
         </button>
-        {rooms.length ? (
+        {fetchedRooms.length ? (
           <div className="flex justify-center">
-            <Search className="w-[92%]" placeholder="Search..." />
+            <Search
+              className="w-[92%]"
+              placeholder="Search..."
+              onChange={filterMessages}
+            />
             {/* <Input className="w-[92%]" placeholder={"Search..."} /> */}
           </div>
         ) : null}
@@ -173,37 +196,38 @@ const Messages = () => {
             username={user?.username}
           />
         ) : null}
-        <div className={'mt-2 h-[88vh] overflow-y-scroll'}>
-        {loading ? (
-          <Loader />
-        ) : rooms.length ? (
-          <div>
-            {rooms.map((room) => (
-              <Room room={room} openMessage={openMessage} />
-            ))}
-          </div>
-        ) : (
-          <div className="m-6">
+        <div className={"mt-2 h-[88vh] overflow-y-scroll"}>
+          {loading ? (
+            <Loader />
+          ) : fetchedRooms.length ? (
             <div>
-              <h1 className="text-3xl font-bold">
-                {" "}
-                Welcome to your inbox! Drop a line, share posts and more with
-                private
-              </h1>
-              <h4 className={"my-2 text-gray-500"}>
-                Start conversations between you and others on Twista
-              </h4>
-              <div className="flex justify-center items-center">
-                <button
-                  className="text-white rounded-full bg-blue-400 py-3 px-8 font-bold"
-                  onClick={setCreateRoom}
-                >
-                  Write a message
-                </button>
+              {rooms.map((room) => (
+                <Room room={room} openMessage={openMessage} />
+              ))}
+            </div>
+          ) : (
+            <div className="m-6">
+              <div>
+                <h1 className="text-3xl font-bold">
+                  {" "}
+                  Welcome to your inbox! Drop a line, share posts and more with
+                  private
+                </h1>
+                <h4 className={"my-2 text-gray-500"}>
+                  Start conversations between you and others on Twista
+                </h4>
+                <div className="flex justify-center items-center">
+                  <button
+                    className="text-white rounded-full bg-blue-400 py-3 px-8 font-bold"
+                    onClick={setCreateRoom}
+                  >
+                    Write a message
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}</div>
+          )}
+        </div>
       </div>
       <div className={"col-span-1 relative  h-[100vh]"}>
         {roomLoading ? (

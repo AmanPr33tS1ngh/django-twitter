@@ -34,10 +34,9 @@ const Profile = () => {
   const [uploadProfilePicture, setUploadProfilePicture] = useState(false);
   const [uploadType, setUploadType] = useState(null);
   const [editModal, setEditModal] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [hasNext, setHasNext] = useState(true);
   const [page, setPage] = useState(1);
-
 
   const buttons = useMemo(
     () => [
@@ -51,9 +50,7 @@ const Profile = () => {
 
   const getProfile = () => {
     const endpoint = "http://127.0.0.1:8000/users/get_profile/";
-    const data = { profile: profile, view_type: view_type,
-      page: page,
-    };
+    const data = { profile: profile, view_type: view_type, page: page };
     setLoading(true);
     axios.post(endpoint, data).then((res) => {
       const responseData = res.data;
@@ -176,7 +173,9 @@ const Profile = () => {
   const hasProfileViewAccess =
     user?.is_user_profile || !user?.is_private || user?.has_connection;
 
-  return  (
+  return loading ? (
+    <Loader />
+  ) : (
     <div>
       {console.log("kskskskaaabbcbcb", user, user?.req_sent)}
       {uploadProfilePicture ? (
@@ -291,25 +290,29 @@ const Profile = () => {
           </div>
         ) : null}
 
-          {hasProfileViewAccess ? (
-            posts.length ? (
-               <InfiniteScroll
-            next={getProfile}
-        hasMore={hasNext}
-        loader={<Loader />}
-        dataLength={posts.length}
-            className={"mt-5"}>{posts.map((post) => <Post post={post} actions={actions}/>)}
-        </InfiniteScroll>
-            ) : (
-              "No Posts"
-            )
+        {hasProfileViewAccess ? (
+          posts.length ? (
+            <InfiniteScroll
+              next={getProfile}
+              hasMore={hasNext}
+              loader={<Loader />}
+              dataLength={posts.length}
+              className={"mt-5"}
+            >
+              {posts.map((post) => (
+                <Post post={post} actions={actions} />
+              ))}
+            </InfiniteScroll>
           ) : (
-            <PrivateProfile
-              showCancelReq={user?.req_sent}
-              cancelReq={() => createOrDeleteConnection("delete")}
-              follow={() => createOrDeleteConnection("create")}
-            />
-          )}
+            "No Posts"
+          )
+        ) : (
+          <PrivateProfile
+            showCancelReq={user?.req_sent}
+            cancelReq={() => createOrDeleteConnection("delete")}
+            follow={() => createOrDeleteConnection("create")}
+          />
+        )}
       </div>
       {editModal ? (
         <EditProfile

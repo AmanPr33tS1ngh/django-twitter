@@ -38,7 +38,7 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
     // console.log("data", data);
     axios.post(endpoint, data).then((res) => {
       let responseData = res.data;
-      // console.log("ressss", responseData);
+      console.log("room creation ressss", responseData);
       setRooms(responseData.room);
       handleClose();
     });
@@ -49,7 +49,7 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
     debouncedHandleChange(val);
   };
   const groupHandleChange = (e) => {
-    setGroupName(e.target.value);
+    setGroupName(e);
   };
 
   const debouncedHandleChange = useCallback(
@@ -83,19 +83,23 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
         >
           Next <FontAwesomeIcon icon={faArrowRight} />
         </button>
-        <Input
-          placeholder="Search..."
-          value={inputVal}
-          type={'chat-ui'}
-          onChange={handleChange}
-        />
-        {participants?.length > 1 ? (
+        <div className="mt-2 mb-2">
           <Input
-          type={'chat-ui'}
-            placeholder="Group name..."
-            value={groupName}
-            onChange={groupHandleChange}
+            placeholder="Search..."
+            value={inputVal}
+            viewType={"chat-ui"}
+            onChange={handleChange}
           />
+        </div>
+        {participants?.length > 1 ? (
+          <div className="mt-2 mb-2">
+            <Input
+              viewType={"chat-ui"}
+              placeholder="Group name..."
+              value={groupName}
+              onChange={groupHandleChange}
+            />
+          </div>
         ) : null}
         <div className={"m-2"}>
           {participants?.map((participant) => (

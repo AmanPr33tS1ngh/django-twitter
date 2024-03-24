@@ -98,11 +98,12 @@ class SignUp(APIView):
             password = request.data.get('password').strip()
             email = request.data.get('email').strip()
             verify_pass = request.data.get('verifyPassword').strip()
-            if User.objects.filter(username=username).exists():
-                return JsonResponse({'success': False, 'msg': "Username/email already registered. Please try with another username."})
+            
+            if not username or not first_name or not last_name or not password or not email:
+                return JsonResponse({'success': False, 'msg': "Please enter all details."})
 
-            if not username.isalnum():
-                return JsonResponse({'success': False, 'msg': "Username should be alpha numeric"})
+            if User.objects.filter(Q(username=username) | Q(email=email)).exists():
+                return JsonResponse({'success': False, 'msg': "Username/email already registered. Please try with another username/email."})
 
             if password != verify_pass:
                 return JsonResponse({'success': False, 'msg': "Both passwords should match"})

@@ -74,10 +74,12 @@ const SignUp = () => {
           onChange={handleChange}
           value={credentials.password}
           name={"password"}
+          type="password"
           placeholder={"Password..."}
         />
         <Input
           onChange={handleChange}
+          type="password"
           value={credentials.verifyPassword}
           name={"verifyPassword"}
           placeholder={"Verify Password..."}

@@ -22,10 +22,10 @@ const Explore = () => {
   const getFeed = () => {
     const endpoint = "http://127.0.0.1:8000/tweets/get_feed/";
     setLoading(true);
-    axios.post(endpoint, {page: page, has_next: hasNext}).then((res) => {
+    axios.post(endpoint, { page: page, has_next: hasNext }).then((res) => {
       const responseData = res.data;
       const newFeed = feedPosts;
-      newFeed.push(...responseData.posts)
+      newFeed.push(...responseData.posts);
       setFeedPosts(newFeed);
       setLoading(false);
       setPage(responseData.next_page);
@@ -58,9 +58,9 @@ const Explore = () => {
   };
   return (
     <div className={"relative"}>
-      <div className="flex justify-center">
+      <div className="flex justify-center  m-2">
         <Input
-          type={'chat-ui'}
+          viewType={"chat-ui"}
           placeholder="Search..."
           value={inputVal}
           className="w-[90%]"
@@ -73,7 +73,7 @@ const Explore = () => {
         showResults={!!inputVal}
         handleShowResults={handleShowResults}
       />
-      {loading ? <Loader/>:null}
+      {loading ? <Loader /> : null}
       <FeedPost feedPosts={feedPosts} getPosts={getFeed} hasMore={hasNext} />
     </div>
   );

@@ -55,7 +55,7 @@ class RoomSerializer(serializers.ModelSerializer):
 
         except Exception as e:
             print('get_participant', str(e))
-            return list()
+            return None
 
     def get_last_message(self, obj):
         last_message = obj.get_messages().order_by('timestamp').last()

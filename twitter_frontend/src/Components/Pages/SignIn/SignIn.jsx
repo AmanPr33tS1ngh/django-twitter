@@ -25,23 +25,29 @@ const SignIn = () => {
   const handleSignIn = (e) => {
     e.preventDefault();
     const endpoint = "http://127.0.0.1:8000/users/api/token/";
-    axios.post(endpoint, user).then((res) => {
-      const responseData = res.data;
+    axios
+      .post(endpoint, user)
+      .then((res) => {
+        const responseData = res.data;
+        console.log("working till here!");
 
-      localStorage.setItem("authTokens", JSON.stringify(responseData));
-      const user = jwtDecode(responseData.access).user;
+        localStorage.setItem("authTokens", JSON.stringify(responseData));
+        const user = jwtDecode(responseData.access).user;
 
-      dispatch({
-        type: LOGIN,
-        payload: {
-          authenticated: true,
-          user: user,
-          accessToken: responseData.access,
-          refreshToken: responseData.refresh,
-        },
+        dispatch({
+          type: LOGIN,
+          payload: {
+            authenticated: true,
+            user: user,
+            accessToken: responseData.access,
+            refreshToken: responseData.refresh,
+          },
+        });
+        navigate("/");
+      })
+      .catch((error) => {
+        console.log("Error:", error);
       });
-      navigate("/");
-    });
   };
 
   return (
@@ -59,6 +65,7 @@ const SignIn = () => {
             placeholder="Enter password"
             className="block m-5"
             name="password"
+            type="password"
             onChange={handleChange}
           />
           <div className="flex flex-1 justify-center items-center">
