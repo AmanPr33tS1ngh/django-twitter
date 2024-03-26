@@ -15,6 +15,7 @@ from tweets.models import Tweet, Interaction
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from twitter.utils import paginate
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -202,10 +203,14 @@ class GetProfile(APIView):
             else:
                 posts = Tweet.objects.filter(user=profile).order_by("timestamp")
 
-            serialized_data = TweetSerializer(posts, many=True, context={'user': user}).data
+            page = request.data.get('page')
+            print(page)
+            has_next, next_page_no, posts = paginate(page, posts, 5)
 
-            return JsonResponse({'success': True, 'msg': "Got profile!", "user": UserProfileSerializer(profile, context={'user': user}).data,
-                                 'posts': serialized_data,})
+            return JsonResponse({'success': True, 'msg': "Got profile!", 'has_next': has_next,
+                                 'posts': TweetSerializer(posts, many=True, context={'user': user}).data,
+                                 "user": UserProfileSerializer(profile, context={'user': user}).data,
+                                 'page': next_page_no,})
         except Exception as e:
             print('err at get_profile', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})

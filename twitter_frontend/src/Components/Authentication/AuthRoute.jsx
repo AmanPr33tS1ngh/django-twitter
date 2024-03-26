@@ -78,7 +78,7 @@ const AuthRoute = ({ element, isSign }) => {
     >
       {isAuthenticated ? <Sidebar /> : null}
       <div className={"col-span-3"
-          // + " h-[100vh] overflow-y-scroll"
+          + " h-[100vh] overflow-y-scroll"
       }>{element}</div>
     </div>
   ) : (

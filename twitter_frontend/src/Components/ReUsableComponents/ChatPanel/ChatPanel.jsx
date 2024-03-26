@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationArrow } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import InfiniteScroll from "react-infinite-scroll-component";
+import Loader from "../Loader/Loader";
 
 const ChatPanel = ({ room, messageHandler, deleteMessage, setCreateRoom }) => {
   const { user } = useSelector((state) => state.reducer.reducer);
@@ -27,6 +29,22 @@ const ChatPanel = ({ room, messageHandler, deleteMessage, setCreateRoom }) => {
           <FontAwesomeIcon icon={faLocationArrow} />
         </button>
       </div>
+      {/*  <InfiniteScroll*/}
+      {/*  next={getMessages}*/}
+      {/*  hasMore={hasNext}*/}
+      {/*  loader={<Loader />}*/}
+      {/*  dataLength={room?.messages?.length}*/}
+      {/*  inverse={true}*/}
+      {/*  className={" pb-30"}>*/}
+      {/*    /!*overflow-y-scroll h-[85vh]*!/*/}
+      {/*    {room?.messages?.map((message) => (*/}
+      {/*      <Message*/}
+      {/*        message={message}*/}
+      {/*        user={user}*/}
+      {/*        deleteMessage={deleteMessage}*/}
+      {/*      />*/}
+      {/*    ))}*/}
+      {/*</InfiniteScroll>*/}
       <div className={"overflow-y-scroll h-[85vh] pb-30"}>
         <div>
           {room?.messages?.map((message) => (

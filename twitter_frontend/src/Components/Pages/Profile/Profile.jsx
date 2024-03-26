@@ -18,6 +18,7 @@ import PrivateProfile from "../../ReUsableComponents/PrivateProfile/PrivateProfi
 import { useDispatch } from "react-redux";
 import { SET_USER } from "../../Redux/ActionTypes/ActionTypes";
 import Loader from "../../ReUsableComponents/Loader/Loader";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const Profile = () => {
   const { profile, view_type } = useParams();
@@ -34,6 +35,9 @@ const Profile = () => {
   const [uploadType, setUploadType] = useState(null);
   const [editModal, setEditModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [hasNext, setHasNext] = useState(true);
+  const [page, setPage] = useState(1);
+
 
   const buttons = useMemo(
     () => [
@@ -47,19 +51,26 @@ const Profile = () => {
 
   const getProfile = () => {
     const endpoint = "http://127.0.0.1:8000/users/get_profile/";
-    const data = { profile: profile, view_type: view_type };
+    const data = { profile: profile, view_type: view_type,
+      page: page,
+    };
     setLoading(true);
     axios.post(endpoint, data).then((res) => {
       const responseData = res.data;
 
-      setLoading(false);
       const user = responseData.user;
-      const posts = responseData.posts;
+      const newPosts = posts;
+      newPosts.push(...responseData.posts);
       setUser(user);
-      setPosts(posts || []);
+      setPosts(newPosts);
+      setPage(responseData.page);
+      setHasNext(responseData.has_next);
+      setLoading(false);
     });
   };
   const navigateTo = (type) => {
+    setPage(1);
+    setPosts([]);
     navigate(`/${user?.username}/${type}`);
   };
 
@@ -165,9 +176,7 @@ const Profile = () => {
   const hasProfileViewAccess =
     user?.is_user_profile || !user?.is_private || user?.has_connection;
 
-  return loading ? (
-    <Loader />
-  ) : (
+  return  (
     <div>
       {console.log("kskskskaaabbcbcb", user, user?.req_sent)}
       {uploadProfilePicture ? (
@@ -281,10 +290,16 @@ const Profile = () => {
             ))}
           </div>
         ) : null}
-        <div className={"mt-5"}>
+
           {hasProfileViewAccess ? (
             posts.length ? (
-              posts.map((post) => <Post post={post} actions={actions} />)
+               <InfiniteScroll
+            next={getProfile}
+        hasMore={hasNext}
+        loader={<Loader />}
+        dataLength={posts.length}
+            className={"mt-5"}>{posts.map((post) => <Post post={post} actions={actions}/>)}
+        </InfiniteScroll>
             ) : (
               "No Posts"
             )
@@ -295,7 +310,6 @@ const Profile = () => {
               follow={() => createOrDeleteConnection("create")}
             />
           )}
-        </div>
       </div>
       {editModal ? (
         <EditProfile

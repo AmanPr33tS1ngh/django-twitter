@@ -60,7 +60,24 @@ const Home = () => {
         .then((res) => {
           let responseData = res.data;
           console.log("actionsss", responseData);
-          // setTweets(responseData.tweets);
+          if (responseData.success) {
+          const newPost = tweets?.filter((p) => {
+            if (p.id === post?.id) {
+              if (action_type === "bookmark") {
+                p.is_bookmarked = !p.is_bookmarked;
+              } else if (action_type === "like") {
+                p.is_liked = !p.is_liked;
+                if (p.is_liked) {
+                  p.like_count += 1;
+                } else {
+                  p.like_count -= 1;
+                }
+              }
+            }
+            return p;
+          });
+          setTweets(newPost);
+        }
         });
     } else if (action_type === "comment") {
       navigate(`/post/${post?.user?.username}/${post?.id}`);
