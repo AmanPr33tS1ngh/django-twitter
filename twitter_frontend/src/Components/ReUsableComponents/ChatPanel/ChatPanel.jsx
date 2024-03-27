@@ -124,7 +124,7 @@ const ChatPanel = ({ room, messageHandler, deleteMessage, setCreateRoom }) => {
       </MainContainer>
     </div>
   ) : (
-    <div className=" flex justify-center items-center h-[100vh] m-10">
+    <div className=" flex justify-center items-center m-10">
       <div>
         <h1 className="text-3xl font-bold"> Select a message</h1>
         <h4 className={"my-2 text-gray-500"}>

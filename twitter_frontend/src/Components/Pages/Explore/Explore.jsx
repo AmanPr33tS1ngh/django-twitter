@@ -33,7 +33,7 @@ const Explore = () => {
     });
   };
   const handleChange = (e) => {
-    const val = e.target.value;
+    const val = e;
     setInputVal(val);
     debouncedHandleChange(val);
   };
@@ -60,6 +60,7 @@ const Explore = () => {
     <div className={"relative"}>
       <div className="flex justify-center">
         <Input
+          type={'chat-ui'}
           placeholder="Search..."
           value={inputVal}
           className="w-[90%]"

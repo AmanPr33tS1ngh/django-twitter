@@ -11,7 +11,7 @@ const Room = ({ room, openMessage }) => {
     <ConversationList>
       <Conversation
         onClick={() => openMessage(room?.slug)}
-        info="Yes i can do it for you"
+        info={room.last_message?.content ? `${room.last_message?.content} ${room.last_message?.timestamp}`:null}
         name={room?.participant ? room?.participant?.full_name : room?.name}
       >
         <Avatar

@@ -173,10 +173,11 @@ const Messages = () => {
             username={user?.username}
           />
         ) : null}
+        <div className={'mt-2 h-[88vh] overflow-y-scroll'}>
         {loading ? (
           <Loader />
         ) : rooms.length ? (
-          <div className="mt-2">
+          <div>
             {rooms.map((room) => (
               <Room room={room} openMessage={openMessage} />
             ))}
@@ -202,7 +203,7 @@ const Messages = () => {
               </div>
             </div>
           </div>
-        )}
+        )}</div>
       </div>
       <div className={"col-span-1 relative  h-[100vh]"}>
         {roomLoading ? (

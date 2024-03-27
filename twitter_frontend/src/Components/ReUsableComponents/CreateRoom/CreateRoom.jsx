@@ -44,7 +44,7 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
     });
   };
   const handleChange = (e) => {
-    const val = e.target.value;
+    const val = e;
     setInputVal(val);
     debouncedHandleChange(val);
   };
@@ -73,7 +73,7 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
   };
   return (
     <ModalBackground>
-      <div className="bg-white rounded-lg w-1/2 absolute p-8 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-[80vh]">
+      <div className="bg-white rounded-lg w-1/2 absolute p-12 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-[80vh]">
         <button className="absolute top-2 left-2" onClick={handleClose}>
           <FontAwesomeIcon icon={faCircleXmark} />
         </button>
@@ -86,10 +86,12 @@ const CreateRoom = ({ handleClose, setRooms, username }) => {
         <Input
           placeholder="Search..."
           value={inputVal}
+          type={'chat-ui'}
           onChange={handleChange}
         />
         {participants?.length > 1 ? (
           <Input
+          type={'chat-ui'}
             placeholder="Group name..."
             value={groupName}
             onChange={groupHandleChange}

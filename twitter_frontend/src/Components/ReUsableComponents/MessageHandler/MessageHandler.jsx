@@ -15,7 +15,8 @@ const MessageHandler = ({ messageHandler }) => {
       >
         <Input
           placeholder={"Start a new message..."}
-          onChange={(e) => setMessage(e.target.value)}
+          type={'chat-ui'}
+          onChange={(e) => setMessage(e)}
           value={message}
         />
         <button

@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from .serializers import *
 import uuid
 from django.utils.text import slugify
-from django.db.models import Q
+from django.db.models import Q, Max
 
 def generate_room_id():
     unique_id = uuid.uuid4().hex[:8]
@@ -56,7 +56,10 @@ class GetRooms(APIView):
             if not user:
                 return JsonResponse({'success': False, 'msg': "Authenticate first"})
 
-            rooms = Room.objects.filter(participants=user)
+            rooms = Room.objects.filter(participants=user).annotate(
+                latest_message_timestamp=Max('messages__timestamp')
+            ).order_by('-latest_message_timestamp')
+
             return JsonResponse({'success': True, 'msg': 'got rooms', "rooms": RoomSerializer(rooms, many=True, context={"user": user}).data})
 
         except Exception as e:
