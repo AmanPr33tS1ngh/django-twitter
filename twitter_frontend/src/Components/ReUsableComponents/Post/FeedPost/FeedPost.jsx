@@ -22,10 +22,11 @@ const FeedPost = ({ feedPosts, getPosts, hasMore }) => {
             className={`flex w-auto col-span-2 relative group cursor-pointer`}
             onClick={() => navigate(`/status/${post?.id}`)}
           >
+            {console.log("posssddttt", post)}
             {post?.image ? (
               <img
                 className="w-full h-full object-cover cursor-pointer border border-solid border-opacity-40 border-gray-300"
-                src={`http://localhost:8000/media/${post?.image}`}
+                src={post?.image}
                 alt="User Avatar"
               />
             ) : post?.video ? (
@@ -35,7 +36,7 @@ const FeedPost = ({ feedPosts, getPosts, hasMore }) => {
                 width="100%"
                 height="100%"
                 control
-                url={`http://localhost:8000${post?.video}`}
+                url={post?.video}
               />
             ) : null}
             <div className="overlay absolute inset-0 bg-black bg-opacity-50 text-white justify-center items-center opacity-0 group-hover:opacity-100 flex">

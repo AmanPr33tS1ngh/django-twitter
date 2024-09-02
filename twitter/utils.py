@@ -32,3 +32,6 @@ def paginate(page_num, objects, per_page):
 
     return has_next, next_page_no, result
 
+
+def create_image_url(img):
+    return f'http://localhost:8000/media/{img}'

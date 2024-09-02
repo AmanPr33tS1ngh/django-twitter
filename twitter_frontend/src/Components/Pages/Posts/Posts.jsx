@@ -27,13 +27,12 @@ const Posts = () => {
   const navigate = useNavigate();
 
   const actions = (e, post, action_type) => {
-    e.stopPropagation();
+    // e.stopPropagation();
     if (action_type === "comment") {
       navigate(`/post/${post?.user?.username}/${post?.id}`);
       return;
     }
     let endpoint = `http://127.0.0.1:8000/tweets/take_action/`;
-
     axios
       .post(endpoint, {
         tweet_id: post?.id,
@@ -44,9 +43,10 @@ const Posts = () => {
         let responseData = res.data;
         if (responseData.success) {
           if (tweet?.id === post?.id) {
-            const newTweet = tweet;
+            let newTweet = tweet;
             if (action_type === "bookmark") {
               newTweet.is_bookmarked = !tweet.is_bookmarked;
+              setTweet(newTweet);
             } else if (action_type === "like") {
               newTweet.is_liked = !tweet.is_liked;
               if (newTweet.is_liked) {
@@ -54,33 +54,34 @@ const Posts = () => {
               } else {
                 newTweet.like_count -= 1;
               }
+              setTweet(newTweet);
             }
-            setTweet(newTweet);
-            return;
           }
-          const newReplies = replies?.filter((p) => {
-            if (p.id === post?.id) {
-              if (action_type === "bookmark") {
-                p.is_bookmarked = !p.is_bookmarked;
-              } else if (action_type === "like") {
-                p.is_liked = !p.is_liked;
-                if (p.is_liked) {
-                  p.like_count += 1;
-                } else {
-                  p.like_count -= 1;
-                }
-              }
-            }
-            return p;
-          });
-          setReplies(newReplies);
+          // const newReplies = replies?.filter((p) => {
+          //   if (p.id === post?.id) {
+          //     if (action_type === "bookmark") {
+          //       p.is_bookmarked = !p.is_bookmarked;
+          //     } else if (action_type === "like") {
+          //       p.is_liked = !p.is_liked;
+          //       if (p.is_liked) {
+          //         p.like_count += 1;
+          //       } else {
+          //         p.like_count -= 1;
+          //       }
+          //     }
+          //   }
+          //   return p;
+          // });
+          // setReplies(newReplies);
         }
       });
   };
+  const memoizedTweet = React.useMemo(() => {
+    return tweet && <Post post={tweet} actions={actions} />;
+  }, [tweet, actions]);
   return (
     <div className={"relative"}>
-      {tweet ? <Post post={tweet} actions={actions} /> : null}
-
+      {memoizedTweet}
       {replies?.length ? (
         <div>
           <hr />

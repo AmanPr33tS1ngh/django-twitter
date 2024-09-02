@@ -7,7 +7,7 @@ from django.db.models import Q
 from .serializers import UserSerializer, UserProfileSerializer, ConnectionRequestSerializer, UserConnectionSerializer
 # Create your views here.
 from rest_framework import permissions
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.views.decorators.csrf import csrf_exempt
 from tweets.serializers import TweetSerializer, BookmarkSerializer
@@ -29,16 +29,10 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         password = attrs.get('password')
         request = self.context.get('request')
 
-        print("Request object:", request)  # Debugging statement
-
         if request:
             user = authenticate(request=request, username=username, password=password)
             if user:
-                print("Logging in...")
                 login(request, user)
-                print('Request user:', request.user)  # Debugging statement
-        else:
-            print("Request object is None.")
 
         data = super().validate(attrs)
         return data
@@ -50,6 +44,12 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 
 class UserAPI(APIView):
+    def get(self, request):
+        try:
+            user = request.user
+            return JsonResponse({'success': True, 'users': UserSerializer(user).data})
+        except Exception as e:
+            return JsonResponse({'success': False,'msg': "err: " + str(e)})
     def post(self, request, *args, **kwargs):
         try:
             username = request.user
@@ -63,7 +63,6 @@ class UserAPI(APIView):
             )
             return JsonResponse({'success': True, 'msg': "user created"})
         except Exception as e:
-            print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
 class GetUsers(APIView):
@@ -82,11 +81,10 @@ class GetUsers(APIView):
                 users, context={'user': user}, many=True).data})
 
         except Exception as e:
-            print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
 class SignUp(APIView):
-    permission_classes = (permissions.AllowAny, )
+    permission_classes = (permissions.AllowAny,)
     def post(self, request, *args, **kwargs):
         try:
             user = request.user
@@ -98,7 +96,6 @@ class SignUp(APIView):
             password = request.data.get('password').strip()
             email = request.data.get('email').strip()
             verify_pass = request.data.get('verifyPassword').strip()
-            
             if not username or not first_name or not last_name or not password or not email:
                 return JsonResponse({'success': False, 'msg': "Please enter all details."})
 
@@ -115,7 +112,6 @@ class SignUp(APIView):
                 password=password,
                 email=email
             )
-            print("created_user", user)
             authenticated_user = authenticate(request, username=username, password=password)
 
             refresh = RefreshToken.for_user(user)
@@ -132,13 +128,12 @@ class SignUp(APIView):
                                     "token": {'access_token': access_token, 'refresh_token': str(refresh)}})
 
         except Exception as e:
-            print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
 
 class SignIn(APIView):
-    permission_classes = (permissions.AllowAny, )
-    authentication_classes = (SessionAuthentication, )
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = (BasicAuthentication,)
 
     def post(self, request, *args, **kwargs):
         try:
@@ -153,10 +148,8 @@ class SignIn(APIView):
             if user:
                 login(request, user)
                 return JsonResponse({'success': True, 'msg': "Sign up successful!"})
-            print(request.user)
             return JsonResponse({'success': True, 'msg': "Couldn't signin due to an error. Please try again later"})
         except Exception as e:
-            print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
 
@@ -166,7 +159,6 @@ class LogOut(APIView):
             logout(request)
             return JsonResponse({'success': True, 'msg': "Logged out!"})
         except Exception as e:
-            print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
 
@@ -176,8 +168,6 @@ class GetProfile(APIView):
     def post(self, request, *args, **kwargs):
         try:
             user = request.user
-            print(request.user.is_authenticated)
-            print(request.user)
             profile_name = request.data.get('profile')
             if not profile_name:
                 return JsonResponse({'success': False, 'msg': 'Please provide valid username'})
@@ -186,7 +176,6 @@ class GetProfile(APIView):
                 return JsonResponse({'success': False, 'msg': 'Please provide valid username'})
             not_private = not profile.is_private
             view_type = request.data.get('view_type')
-            print('user', user, 'profile', profile)
             access_for_profile = Connection.objects.filter(sender=user, receiver=profile).exists() or not_private or user == profile
 
             posts = Tweet.objects.none()
@@ -205,7 +194,6 @@ class GetProfile(APIView):
                 posts = Tweet.objects.filter(user=profile).order_by("timestamp")
 
             page = request.data.get('page')
-            print(page)
             has_next, next_page_no, posts = paginate(page, posts, 5)
 
             return JsonResponse({'success': True, 'msg': "Got profile!", 'has_next': has_next,
@@ -213,7 +201,6 @@ class GetProfile(APIView):
                                  "user": UserProfileSerializer(profile, context={'user': user}).data,
                                  'page': next_page_no,})
         except Exception as e:
-            print('err at get_profile', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
 
@@ -245,7 +232,6 @@ class UploadImage(APIView):
 
             return JsonResponse({'success': True, 'msg': "Updated Picture!", 'profile_picture': img_url})
         except Exception as e:
-            print('err at get_profile', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
 
@@ -257,8 +243,8 @@ class ConnectionAPI(APIView):
                 return JsonResponse({'success': False, 'msg': 'Authenticate!'})
 
             receiver_username = request.data.get("receiver")
-            # if not receiver_username:
-            #     return JsonResponse({'success': False, 'msg': 'Wrong user!'})
+            if not receiver_username:
+                return JsonResponse({'success': False, 'msg': 'Wrong user!'})
 
             receiver = User.objects.filter(username=receiver_username).first()
             if not receiver or receiver == user:
@@ -278,15 +264,13 @@ class ConnectionAPI(APIView):
             elif connection_type == 'delete':
                 Connection.objects.filter(
                     sender=user,
-                    receiver=receiver,
-                ).delete()
+                    receiver=receiver,).delete()
             else:
                 return JsonResponse({'success': False, 'msg': 'Wrong connection type!'})
 
             return JsonResponse({'success': True, 'msg': f'Connection {connection_type}d!', 'user': UserProfileSerializer(receiver, context={'user': user}).data})
 
         except Exception as e:
-            print("err ConnectionAPI", str(e))
             return JsonResponse({'success': False, 'msg': str(e)})
 
 
@@ -299,12 +283,12 @@ class GetRequests(APIView):
 
             connections = Connection.objects.filter(
                 receiver=user,
-                is_accepted=False,
-            )
+                is_accepted=False,)
+           
             return JsonResponse({'success': True, 'msg': "requests received", 'requests': ConnectionRequestSerializer(connections, many=True).data})
 
         except Exception as e:
-            print('err GetRequests', str(e))
+           
             return JsonResponse({'success': False, 'msg': str(e), 'requests': list()})
 
 
@@ -317,12 +301,11 @@ class GetRequests(APIView):
 
             connections = Connection.objects.filter(
                 receiver=user,
-                is_accepted=False,
-            )
+                is_accepted=False,)
+           
             return JsonResponse({'success': True, 'msg': "requests received", 'requests': ConnectionRequestSerializer(connections, many=True).data})
 
         except Exception as e:
-            print('err GetRequests', str(e))
             return JsonResponse({'success': False, 'msg': str(e), 'requests': list()})
 
 
@@ -335,8 +318,7 @@ class RequestApi(APIView):
 
             id = request.data.get('id')
             connection = Connection.objects.filter(
-                id=id,
-            ).first()
+                id=id,).first()
             if not connection:
                 return JsonResponse({'success': False, 'msg': 'Connection not found!'})
 
@@ -353,7 +335,6 @@ class RequestApi(APIView):
             return JsonResponse({'success': True, 'msg': f'Request {request_action_type} successfully!'})
 
         except Exception as e:
-            print('err GetRequests', str(e))
             return JsonResponse({'success': False, 'msg': str(e)})
 
 
@@ -395,5 +376,4 @@ class EditProfile(APIView):
             return JsonResponse({'success': True, 'msg': f'Profile updated!', 'user': UserProfileSerializer(user, context={'user': user}).data})
 
         except Exception as e:
-            print('err GetRequests', str(e))
             return JsonResponse({'success': False, 'msg': str(e)})

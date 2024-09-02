@@ -229,6 +229,7 @@ const Messages = () => {
           )}
         </div>
       </div>
+      {console.log("roomss", room)}
       <div className={"col-span-1 relative  h-[100vh]"}>
         {roomLoading ? (
           <Loader />

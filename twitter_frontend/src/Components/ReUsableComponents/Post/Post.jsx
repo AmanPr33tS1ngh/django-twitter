@@ -19,8 +19,8 @@ const Post = ({ post, actions }) => {
       <div className="flex items-center">
         <img
           className="w-12 h-12 rounded-full mr-4"
-          src="https://via.placeholder.com/50"
-          alt="User Avatar"
+          src={post?.user?.profile_picture}
+          alt="User Avatar1"
         />
         {/* <div className="font-bold"> */}
         <p className="text-base font-bold">{post?.user?.full_name}</p>
@@ -35,13 +35,13 @@ const Post = ({ post, actions }) => {
       {post?.image ? (
         <img
           className="w-80 rounded-lg m-auto"
-          src={`http://localhost:8000/media/${post?.image}`}
-          alt="User Avatar"
+          src={post?.image}
+          alt="User Avatar2"
         />
       ) : post?.video ? (
         <div>
           <ReactPlayer
-            url={`http://localhost:8000${post?.video}`}
+            url={post?.video}
             controls
             width="100%"
             height="25rem"

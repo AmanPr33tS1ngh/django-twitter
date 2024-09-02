@@ -177,7 +177,7 @@ const Profile = () => {
     <Loader />
   ) : (
     <div>
-      {console.log("kskskskaaabbcbcb", user, user?.req_sent)}
+        {console.log("kskskskaaabbcbcb", user, user?.req_sent, user?.has_connection)}
       {uploadProfilePicture ? (
         <ModalBackground>
           <ImageUploader
@@ -198,7 +198,7 @@ const Profile = () => {
       >
         <img
           className={"h-inherit"}
-          src={`http://127.0.0.1:8000/media/${user?.banner}`}
+          src={user?.banner}
           alt="Banner"
         />
       </div>
@@ -213,7 +213,7 @@ const Profile = () => {
             >
               <img
                 className={"h-[inherit]"}
-                src={`http://localhost:8000/media/${user?.profile_picture}`}
+                src={user?.profile_picture}
                 alt="Profile picture"
               />
             </div>

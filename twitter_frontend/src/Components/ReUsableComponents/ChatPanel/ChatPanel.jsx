@@ -17,6 +17,7 @@ import {
 } from "@chatscope/chat-ui-kit-react";
 
 const ChatPanel = ({ room, messageHandler, deleteMessage, setCreateRoom }) => {
+  console.log("room", room)
   const { user } = useSelector((state) => state.reducer.reducer);
   const [message, setMessage] = useState("");
 
@@ -43,17 +44,17 @@ const ChatPanel = ({ room, messageHandler, deleteMessage, setCreateRoom }) => {
         className={"text-xl font-semibold pb-5 flex justify-between"}
       >
         <div className={"flex items-center"}>
+          {console.log("room?.participant?.profile_picture", room?.participant?.profile_picture)}
           {room?.participant?.profile_picture ? (
             <div className={"flex h-[30px] w-[30px] mr-2  rounded-full"}>
               <img
                 alt={"img"}
                 className={" rounded-full"}
-                src={`http://localhost:8000/media/${room.participant.profile_picture}`}
+                src={room.participant.profile_picture}
               />
             </div>
           ) : null}
           <span>
-            {console.log("checkaaa", room)}
             {room?.participant ? room?.participant?.full_name : room?.name}
           </span>
         </div>

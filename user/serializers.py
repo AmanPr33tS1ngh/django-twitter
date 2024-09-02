@@ -3,6 +3,7 @@ from rest_framework import serializers
 from .models import *
 from chat.models import Room
 from django.db.models import Q
+from twitter.utils import create_image_url
 
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
@@ -12,14 +13,12 @@ class UserSerializer(serializers.ModelSerializer):
         try:
             return f"{obj.first_name} {obj.last_name}"
         except Exception as e:
-            print('er', str(e))
             return None
 
     def get_profile_picture(self, obj):
         try:
-            return str(obj.profile_picture)
+            return create_image_url(obj.profile_picture)
         except Exception as e:
-            print('err', str(e))
             return None
 
     class Meta:
@@ -35,14 +34,12 @@ class UserConnectionSerializer(serializers.ModelSerializer):
         try:
             return f"{obj.first_name} {obj.last_name}"
         except Exception as e:
-            print('er', str(e))
             return None
 
     def get_profile_picture(self, obj):
         try:
-            return str(obj.profile_picture)
+            return create_image_url(obj.profile_picture)
         except Exception as e:
-            print('err', str(e))
             return None
 
     def get_can_message(self, obj):
@@ -51,7 +48,6 @@ class UserConnectionSerializer(serializers.ModelSerializer):
             return Connection.objects.filter(sender=receiver, receiver=obj, is_accepted=True).exists() or not\
                 obj.is_private or receiver == obj
         except Exception as e:
-            print('err', str(e))
             return False
 
     class Meta:
@@ -67,21 +63,18 @@ class UserLabelValueSerializer(serializers.ModelSerializer):
         try:
             return f"{obj.first_name} {obj.last_name}"
         except Exception as e:
-            print('er', str(e))
             return None
 
     def get_value(self, obj):
         try:
             return str(obj.username)
         except Exception as e:
-            print('err', str(e))
             return None
 
     def get_profile_picture(self, obj):
         try:
-            return str(obj.profile_picture)
+            return create_image_url(obj.profile_picture)
         except Exception as e:
-            print('err', str(e))
             return None
 
     class Meta:
@@ -101,43 +94,38 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_profile_picture(self, obj):
         try:
-            return str(obj.profile_picture)
+            return create_image_url(obj.profile_picture)
         except Exception as e:
-            print('er', str(e))
             return None
 
     def get_banner(self, obj):
         try:
-            return str(obj.banner)
+            return create_image_url(obj.profile_picture)
         except Exception as e:
-            print('err', str(e))
             return None
 
     def get_full_name(self, obj):
         try:
             return f"{obj.first_name} {obj.last_name}"
         except Exception as e:
-            print('err', str(e))
             return None
 
     def get_joining_date(self, obj):
         try:
             return obj.joining_date.strftime("%d %b %Y")
         except Exception as e:
-            print('err', str(e))
             return None
 
     def get_biography(self, obj):
         try:
             return obj.biography
         except Exception as e:
-            print('err', str(e))
             return None
 
     def get_is_user_profile(self, obj):
         try:
             user = self.context.get('user')
-            print(self.context, obj.username)
+            
             if not user:
                 return False
             return user.username == obj.username
@@ -147,19 +135,17 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_has_connection(self, obj):
         try:
             user = self.context.get('user')
-            return Connection.objects.filter(sender=user, receiver=obj, is_accepted=True).exists() or not obj.is_private
+            return Connection.objects.filter(sender=user, receiver=obj, is_accepted=True).exists()
         except Exception as e:
-            print('str((()))', str(e))
             return None
 
     def get_req_sent(self, obj):
         try:
             user = self.context.get('user')
             conn = Connection.objects.filter(sender=user, receiver=obj, is_accepted=False).exists()
-            print(conn, obj.is_private)
+            
             return conn and obj.is_private
         except Exception as e:
-            print('str((()))', str(e))
             return None
         
     def get_can_message(self, obj):
@@ -167,20 +153,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
             user = self.context.get('user')
             return Connection.objects.filter(sender=user, receiver=obj, is_accepted=True).exists() or not obj.is_private
         except Exception as e:
-            print('str((()))', str(e))
             return None
 
     def get_room_slug(self, obj):
         try:
             user = self.context.get('user')
-            print('alalalala', user, obj)
             room = Room.objects.filter(Q(participants=user) & Q(participants=obj)).first()
-            print(room)
             if not room:
                 return None
             return str(room.slug)
         except Exception as e:
-            print('str((()))', str(e))
             return None
 
     class Meta:

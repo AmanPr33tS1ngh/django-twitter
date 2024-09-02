@@ -79,9 +79,9 @@ const Sidebar = () => {
       <nav className="relative h-[100vh] flex flex-col flex-1 space-y-6 ">
         <Link to={"/"} className="items-center p-2 mpt-0">
           <img
-            width={"100"}
+            className="w-1/2 rounded-3xl"
             height={"100"}
-            src="http://localhost:8000/media/twista.png"
+            src="/twista_logo.png"
             alt="Twista Logo"
             decoding="async"
           />
@@ -170,13 +170,9 @@ const Sidebar = () => {
             <div className={"flex h-[40px] w-[40px] mr-2  rounded-full"}>
               <img
                 className={" rounded-full"}
-                src={`http://localhost:8000/media/${user?.profile_picture}`}
+                src={user?.profile_picture}
               />
             </div>
-            {/*<img*/}
-            {/*  className=" rounded-full mr-2 grid-cols-1 w-1/2"*/}
-            {/*  src={`http://localhost:8000/media/${user?.profile_picture}`}*/}
-            {/*/>*/}
             <span className="flex-1 text-base font-medium ">
               {user?.full_name}
             </span>

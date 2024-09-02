@@ -30,31 +30,24 @@ class RoomSerializer(serializers.ModelSerializer):
             if not user:
                 return UserProfileSerializer(obj.participants.all(), many=True).data
             participants = obj.participants.filter().exclude(username=user.username)
-            if participants.count() <= 1:
-                return list()
+            print(participants)
+            # if participants.count() <= 1:
+            #     return list()
 
             return UserProfileSerializer(participants, many=True).data
         except Exception as e:
-            print('get_participants', str(e))
             return list()
 
     def get_participant(self, obj):
         try:
             user = self.context.get('user')
-            participants = obj.participants.filter()
-            if participants.distinct('username').count() == 1:
-                print('inside distinct')
-                participant = participants.first()
-                return UserProfileSerializer(participant).data
-
-            participants = participants.exclude(username=user.username)
+            participants = obj.participants.exclude(username=user.username)
             if participants.count() == 1:
                 participant = participants.first()
                 return UserProfileSerializer(participant).data
             return None
 
         except Exception as e:
-            print('get_participant', str(e))
             return None
 
     def get_last_message(self, obj):
@@ -83,12 +76,11 @@ class RoomSerializerWithMessage(serializers.ModelSerializer):
             if not user:
                 return UserProfileSerializer(obj.participants.all(), many=True).data
             participants = obj.participants.filter().exclude(username=user.username)
-            if participants.count() <= 1:
-                return list()
+            # if participants.count() <= 1:
+            #     return list()
 
             return UserProfileSerializer(participants, many=True).data
         except Exception as e:
-            print('seriii', str(e))
             return list()
 
     def get_participant(self, obj):
@@ -96,7 +88,7 @@ class RoomSerializerWithMessage(serializers.ModelSerializer):
             user = self.context.get('user')
 
             participants = obj.participants.filter()
-            if participants.distinct('username').count() == 1:
+            if participants.count() == 1:
                 participant = participants.first()
                 return UserProfileSerializer(participant).data
 
@@ -107,7 +99,6 @@ class RoomSerializerWithMessage(serializers.ModelSerializer):
             return None
 
         except Exception as e:
-            print('seriii', str(e))
             return list()
 
     def get_messages(self, obj):

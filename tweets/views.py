@@ -18,11 +18,11 @@ class GetHomeTweets(APIView):
                 return JsonResponse({'success': False, 'tweets': list(), 'msg': 'Authenticate!'})
 
             view_type = request.data.get('type')
-            print('view_type', view_type)
+            
             if view_type == 'Following':
-                print('followowo')
+                
                 connections = list(Connection.objects.filter(sender=user).values_list('receiver'))
-                print('connections', connections)
+                
                 tweets = Tweet.objects.filter(user__in=connections)
             else:
                 tweets = Tweet.objects.filter(parent__isnull=True)
@@ -32,7 +32,6 @@ class GetHomeTweets(APIView):
             
             return JsonResponse({'success': True, 'has_next': has_next, 'page': next_page_no, 'tweets': TweetSerializer(tweets, many=True,context={'user':user} ).data})
         except Exception as e:
-            print('error while getting tweets', str(e))
             return JsonResponse({'success': False, "msg": str(e)})
 
 
@@ -50,18 +49,17 @@ class GetTweets(APIView):
             parent_id = request.data.get('id')
             parent_username = request.data.get("parent_username")
 
-            print('parent_id', parent_id)
+            
             if parent_id == 'null' or parent_id == 'undefined':
                 parent_id = None
 
             parent = Tweet.objects.filter(id=parent_id, user__username=parent_username).first()
-            print('requuue', request.FILES, request.FILES.get('file'))
             if 'file' in request.FILES:
                 file = request.FILES.get('file')
                 if file.size > 4194304:
                     return JsonResponse({'success': False, 'msg': 'File Size Too Big. Please upload an image with '
                                                                   'size less than 4MB.'})
-            print('file', file)
+            
             tweet = Tweet.objects.create(
                 user=user,
                 content=content,
@@ -71,7 +69,6 @@ class GetTweets(APIView):
 
             return JsonResponse({'success': True, 'msg': 'new tweet', 'tweet': TweetSerializer(tweet).data})
         except Exception as e:
-            print('error while creating tweet', str(e))
             return JsonResponse({'success': False, "msg": str(e)})
 
 
@@ -79,8 +76,8 @@ class GetMatchingTweets(APIView):
     def post(self, request, *args, **kwargs):
         try:
             user = request.user
-            # if user.is_anonymous:
-                # return JsonResponse({'success': False, 'msg': 'You need to authenticate first to search!'})
+            if user.is_anonymous:
+                return JsonResponse({'success': False, 'msg': 'You need to authenticate first to search!'})
             input_val = request.data.get('input_val')
             if not input_val:
                 return JsonResponse({'success': True, 'results': list()})
@@ -92,7 +89,6 @@ class GetMatchingTweets(APIView):
             matching_users = UserLabelValueSerializer(users, many=True).data
             return JsonResponse({'success': True, 'msg': 'new tweet', 'results': result, "users": matching_users})
         except Exception as e:
-            print('error while creating tweet', str(e))
             return JsonResponse({'success': False, "msg": str(e)})
 
 
@@ -114,7 +110,6 @@ class GetTweet(APIView):
                                  'tweet': TweetSerializer(tweet, context={'user': user}).data})
 
         except Exception as e:
-            print('error while creating tweet', str(e))
             return JsonResponse({'success': False, "msg": str(e)})
 
 
@@ -124,7 +119,7 @@ class TakeAction(APIView):
     def post(self, request, *args, **kwargs):
         try:
             user = request.user
-            print('usercheck', user)
+            
             if user.is_anonymous:
                 return JsonResponse({'success': False, 'msg': 'Please login to bookmark tweets'})
 
@@ -154,7 +149,6 @@ class TakeAction(APIView):
             return JsonResponse({'success': True, 'msg': "Got profile!",})
 
         except Exception as e:
-            print('err while creating user', str(e))
             return JsonResponse({'success': False, 'msg': "err: " + str(e)})
 
 
@@ -169,14 +163,13 @@ class GetBookmarks(APIView):
                 return JsonResponse({'success': False, 'msg': "No bookmarks found"})
             return JsonResponse({'success': True, 'bookmarks': TweetSerializer(bookmark.tweets.all(), many=True).data})
         except Exception as e:
-            print('err', str(e))
             return JsonResponse({'success': False, 'msg': str(e)})
 
 
 class GetFeed(APIView):
     def post(self, request,  *args, **kwargs):
         try:
-            print('inside get feed')
+            
             user = request.user
             if not user:
                 return JsonResponse({'success': False, 'msg': "User not found"})
@@ -195,5 +188,4 @@ class GetFeed(APIView):
             return JsonResponse({'success': True, 'has_next': has_next, 'next_page': next_page_no,
                                  'posts': TweetSerializer(posts, many=True).data})
         except Exception as e:
-            print('err', str(e))
             return JsonResponse({'success': False, 'msg': str(e)})

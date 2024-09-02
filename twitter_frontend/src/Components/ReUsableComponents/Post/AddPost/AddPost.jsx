@@ -24,7 +24,7 @@ const AddPost = ({ showClose }) => {
 
     axios.post(endpoint, formData).then((res) => {
       let responseData = res.data;
-      // if (responseData.success) navigate("/");
+      if (responseData.success) navigate("/");
     });
   };
 

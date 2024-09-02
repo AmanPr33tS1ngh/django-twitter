@@ -50,7 +50,7 @@ const Requests = () => {
                   <img
                     alt={"img"}
                     className={"rounded-full"}
-                    src={`http://localhost:8000/media/${request.sender?.profile_picture}`}
+                    src={request.sender?.profile_picture}
                   />
                 </div>
                 <p>

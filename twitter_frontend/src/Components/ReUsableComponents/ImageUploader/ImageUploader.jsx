@@ -17,7 +17,7 @@ const ImageUploader = ({
 
   const fetchImageBlob = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/media/${savedImage}`);
+      const response = await fetch(savedImage);
       const blob = await response.blob();
       if (blob?.type?.startsWith("image/")) {
         setSelectedImage(blob);

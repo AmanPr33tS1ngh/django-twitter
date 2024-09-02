@@ -32,7 +32,7 @@ const Result = ({ results, type }) => {
           >
               {type === 'user' ? <div className={'flex h-[30px] w-[30px] mr-2  rounded-full'}>
                   <img alt={'img'} className={' rounded-full'}
-                       src={`http://localhost:8000/media/${result?.profile_picture}`}/>
+                       src={result?.profile_picture}/>
               </div>:null}
             <span className={"col-span-9"}>{result.label}</span>
           </Link>

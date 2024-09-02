@@ -6,7 +6,7 @@ import mimetypes
 from django.conf import settings
 import os
 from twitter.utils import get_timestamp_difference
-
+from twitter.utils import create_image_url
 class TweetSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     post_duration = serializers.SerializerMethodField()
@@ -21,7 +21,7 @@ class TweetSerializer(serializers.ModelSerializer):
         return UserSerializer(obj.user).data
     
     def get_like_count(self, obj):
-        return Interaction.objects.filter(interaction_type="like").count()
+        return Interaction.objects.filter(interaction_type="like", tweets__id=obj.id).count()
     
     def get_replies_count(self, obj):
         return Tweet.objects.filter(parent=obj).count()
@@ -53,7 +53,7 @@ class TweetSerializer(serializers.ModelSerializer):
             file = str(obj.file)
             content_type, _ = mimetypes.guess_type(file)
             if content_type.startswith('image/'):
-                return file
+                return create_image_url(file)
             return None
         except Exception as e:
             return None

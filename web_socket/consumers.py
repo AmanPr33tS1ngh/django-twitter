@@ -33,7 +33,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         action_type = text_data_json.get("action_type")
-        print('action_type', text_data_json)
         if action_type == 'connect':
             await self.create_chat_room(text_data_json)
         elif (action_type == 'chat_message' or action_type == 'delete_message') and self.username == text_data_json.get('username'):
@@ -89,7 +88,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             user = User.objects.get(username=username)
             return user
         except Exception as e:
-            print('get_user_details', str(e))
             return None
 
     @database_sync_to_async
@@ -108,7 +106,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             room.save()
             return RoomSerializerWithMessage(room, context={'user': user}).data
         except Exception as e:
-            print('Error creating message:', str(e))
             return None
 
     @database_sync_to_async
@@ -127,8 +124,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             return RoomSerializerWithMessage(room, context={'user': user}).data
         except Room.DoesNotExist:
-            print('Room does not exist:', room_name)
             return None
         except Exception as e:
-            print('Error creating message:', str(e))
             return None
